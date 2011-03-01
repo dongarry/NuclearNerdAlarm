@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Nuclear Alarms</string>
+    <string name="app_name">Nuclear Droid Alarm</string>
+    <string name="add">Add Alarm</string>
+    <string name="clear">Clear All</string>
+    <string name="preferences">Preferences</string>
+    <string name="wakeup">Wakey Wakey!!</string>
+    <string name="changetime">Change the time!!</string>
+    <string name="title">Title</string>
+    <string name="enabled">Enabled</string>
+    <string name="mode_select">Please select a mode</string>
+    
+<string-array name="modes_array">
+	<item>Slouch</item>
+	<item>Sunrise</item>
+	<item>Nuclear</item>
+	<item>Cuckoo</item>
+	</string-array>
+</resources>

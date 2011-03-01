@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<Button android:id="@+id/addalarm"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:drawableLeft="@drawable/nuclear"
+	android:text="@string/add"
+	android:onClick="addalarm"
+/>
+<ImageView android:id="@+id/icon"
+android:layout_width="52px"
+android:paddingLeft="2px" 
+android:paddingRight="2px"
+android:paddingTop="2px" 
+android:layout_height="wrap_content" 
+android:src="@drawable/icon"
+android:onClick="setalarm"
+/>
+<TextView
+android:id="@+id/label"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="44sp"
+android:text="Press the icon"
+/> 
+</LinearLayout>
