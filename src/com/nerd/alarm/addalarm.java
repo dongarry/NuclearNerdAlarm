@@ -8,6 +8,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+//import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,7 +24,8 @@ import android.view.View.OnKeyListener;
 public class addalarm extends Activity {
 	private TextView mTimeDisplay;
 	private Button mPickTime;
-
+	private TextView mSelectTime;
+	
 	private int mHour;
 	private int mMinute;
 
@@ -33,6 +35,7 @@ public class addalarm extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getString(R.string.add));
         setContentView(R.layout.addalarm);
         
         //This will be the main screen to set the characteristics of the alarm.
@@ -41,10 +44,17 @@ public class addalarm extends Activity {
         // Time widget..
         // capture our View elements
         mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
+        mSelectTime = (TextView) findViewById(R.id.secondLine);
         mPickTime = (Button) findViewById(R.id.pickTime);
-
-        // add a click listener to the button
+        
         mPickTime.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showDialog(TIME_DIALOG_ID);
+            }
+        });
+        
+        // add a click listener to the button
+        mSelectTime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 showDialog(TIME_DIALOG_ID);
             }
@@ -118,7 +128,7 @@ public class addalarm extends Activity {
             return "0" + String.valueOf(c);
     }
     
- // the callback received when the user "sets" the time in the dialog
+ // the call back received when the user "sets" the time in the dialog
     private TimePickerDialog.OnTimeSetListener mTimeSetListener =
         new TimePickerDialog.OnTimeSetListener() {
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

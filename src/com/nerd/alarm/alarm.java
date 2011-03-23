@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.Window;
 import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
 
@@ -22,8 +23,17 @@ public class alarm extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main); 
 
+        //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE); //We want our screens to be different!
+
+        setContentView(R.layout.main); 
+        
+        //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
+        
+        setTitle(getString(R.string.app_name));
+        
+        
+        
 	//Taken from Tutorial on TexttoSpeech
     Intent checkIntent = new Intent();
     checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);

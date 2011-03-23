@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Nuclear Alarms</string>
-    <string name="app_name">Nuclear Droid Alarm</string>
+    <string name="app_name">Nuclear Nerd Alarm</string>
     <string name="add">Add Alarm</string>
     <string name="clear">Clear All</string>
     <string name="preferences">Preferences</string>

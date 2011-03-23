@@ -1,0 +1,28 @@
+<resources>
+     <style name="NuclearWindowTitleText" parent="android:TextAppearance.WindowTitle">
+          <item name="android:textSize">20dip</item>
+          <item name="android:textColor">#5599FF</item>
+          <item name="android:textStyle">bold|italic</item>
+     </style>
+     <!-- Changes the background color of the title bar -->
+     <style name="NuclearWindowTitleBackground">
+           <item name="android:background">#222222</item>
+     </style>
+
+     <!-- Set the theme for the window title -->
+     <!-- NOTE: setting android:textAppearence to style defined above -->
+     <style name="NuclearWindowTitle" parent="android:WindowTitle">
+          <item name="android:textAppearance">@style/NuclearWindowTitleText</item>
+          <item name="android:shadowDx">0</item>
+          <item name="android:shadowDy">0</item>
+          <item name="android:shadowRadius">5</item>
+          <item name="android:shadowColor">#1155CC</item>
+      </style>
+      <!-- Override properties in the default theme -->
+      <!-- NOTE: you must explicitly the windowTitleSize property, the title bar will not re-size automatically, text will be clipped -->
+      <style name="NuclearTheme" parent="android:Theme">
+           <item name="android:windowTitleSize">40dip</item>
+           <item name="android:windowTitleStyle">@style/NuclearWindowTitle</item>
+           <item name="android:windowTitleBackgroundStyle">@style/NuclearWindowTitleBackground</item>
+      </style>
+</resources>
