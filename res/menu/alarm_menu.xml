@@ -2,10 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/clear_all"
           android:icon="@drawable/nuclear"
-          android:title="@string/clear" />
+          android:title="@string/clear" 
+          android:onClick="alarm_delete_all"/>
     <item android:id="@+id/preferences"
           android:icon="@drawable/icon"
-          android:title="@string/preferences" />
+          android:title="@string/preferences" 
+          android:onClick="alarm_preferences"/>
 </menu>
     
     

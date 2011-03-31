@@ -20,6 +20,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".alarm_pref"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.nerd.alarm_pref" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".display_records"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.nerd.display_records" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
                 <activity android:name=".AlarmActivity" android:label="AlarmActivity"/>
         		<service android:name=".NuclearService" android:label="AlarmService"/>
 	</application>

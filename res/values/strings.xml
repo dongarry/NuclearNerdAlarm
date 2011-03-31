@@ -7,8 +7,19 @@
     <string name="preferences">Preferences</string>
     <string name="wakeup">Wakey Wakey!!</string>
     <string name="changetime">Change the time!!</string>
+    <string name="setthetime">Set alarm time</string>
+    <string name="timesetto">Alarm set for </string>
+    <string name="savealarm">Save</string>
     <string name="title">Title</string>
+    <string name="sound">Sound</string>
+    <string name="testme">Test Me</string>
+    <string name="nerd">Nerd</string>
+    <string name="snooze">Snooze</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="music">Music</string>
+    <string name="volume">Volume</string>
     <string name="enabled">Enabled</string>
+    <string name="mode">Mode</string>
     <string name="mode_select">Please select a mode</string>
     
 <string-array name="modes_array">
@@ -16,5 +27,12 @@
 	<item>Sunrise</item>
 	<item>Nuclear</item>
 	<item>Cuckoo</item>
+	</string-array>
+<string-array name="snooze_array">
+	<item>5 mins</item>
+	<item>10 mins</item>
+	<item>15 mins</item>
+	<item>20 mins</item>
+	<item>30 mins</item>
 	</string-array>
 </resources>

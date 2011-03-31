@@ -1,0 +1,119 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"    
+    android:padding="1dip">
+    <TextView  
+        android:id="@+id/mode_opt_1"
+        android:layout_width="fill_parent"
+        android:layout_height="26dip" 
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:gravity="bottom"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textSize="10sp"
+        android:text="Default Mode" />
+
+    <TextView
+        android:id="@+id/mode_opt_2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:text="@string/mode" />
+</RelativeLayout>
+<View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"    
+    android:padding="1dip">
+    
+    <CheckBox android:id="@+id/nerd_opt_1"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+        android:layout_centerInParent ="true"
+        android:gravity="bottom"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textSize="10sp" />
+
+    <TextView
+    	android:id="@+id/nerd_opt_2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:text="@string/nerd" />
+</RelativeLayout>
+
+<View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+			
+	<TextView
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:text="@string/snooze"
+	android:textSize="20sp"
+	/>
+	<Spinner android:id="@+id/snooze_option"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:drawSelectorOnTop="true"
+	/>
+	<View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+	
+	<TextView
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:text="@string/sound"
+	android:textSize="20sp"
+	/>
+	<Spinner android:id="@+id/sound_option"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:drawSelectorOnTop="true"
+	/>
+	<View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+
+<LinearLayout
+android:orientation="horizontal"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content">
+
+	<Button android:id="@+id/okButton"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:text="@android:string/ok"
+	android:gravity="bottom"
+	/>
+	<Button android:id="@+id/cancelButton"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:text="@android:string/cancel"
+	android:gravity="bottom"/>
+	
+</LinearLayout>
+</LinearLayout>

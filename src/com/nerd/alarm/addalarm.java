@@ -24,17 +24,24 @@ import android.view.View.OnKeyListener;
 public class addalarm extends Activity {
 	private TextView mTimeDisplay;
 	private Button mPickTime;
+	private Button mSaveAlarm;
 	private TextView mSelectTime;
-	
+	//private byte mAlarmOk = 0;   
 	private int mHour;
 	private int mMinute;
-
+	private String mAlarmtime;
+	private String mAlarmTitle;
+	
+	
 	static final int TIME_DIALOG_ID = 0;
-	    
+	
+	database_adapter db = new database_adapter(this); 
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setTitle(getString(R.string.add));
         setContentView(R.layout.addalarm);
         
@@ -45,13 +52,14 @@ public class addalarm extends Activity {
         // capture our View elements
         mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
         mSelectTime = (TextView) findViewById(R.id.secondLine);
-        mPickTime = (Button) findViewById(R.id.pickTime);
+        //mPickTime = (Button) findViewById(R.id.pickTime);
+        mSaveAlarm=(Button) findViewById(R.id.saveAlarm);
         
-        mPickTime.setOnClickListener(new View.OnClickListener() {
+        /*mPickTime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 showDialog(TIME_DIALOG_ID);
             }
-        });
+        });*/ 
         
         // add a click listener to the button
         mSelectTime.setOnClickListener(new View.OnClickListener() {
@@ -111,14 +119,37 @@ public class addalarm extends Activity {
 	                this, R.array.modes_array, android.R.layout.simple_spinner_item);
 	        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	        spinner.setAdapter(adapter);
-        
-    	}
+	        
+	        // Handle Save button
+	        mSaveAlarm.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	            	db.open();        
+	                long id;
+	                Toast.makeText(addalarm.this,mAlarmtime, Toast.LENGTH_SHORT).show();;
+	                //Toast.makeText(addalarm.this,edittext.getText().toString(), Toast.LENGTH_SHORT).show();;
+	                id = db.insertAlarm(
+	                		mAlarmtime,
+	                		edittext.getText().toString(),
+	                		0);     
+	                
+	                
+	                db.close();
+	                Toast.makeText(addalarm.this,"Saved" + id, Toast.LENGTH_SHORT).show();;
+	
+	            }
+	        });
+    	
+    }
     
     private void updateDisplay() {
-        mTimeDisplay.setText(
-            new StringBuilder()
-                    .append(pad(mHour)).append(":")
-                    .append(pad(mMinute)));
+    	StringBuilder sAlarmTime = new StringBuilder()
+        .append(pad(mHour)).append(":")
+        .append(pad(mMinute));
+        
+    	//mSelectTime.append(sAlarmTime);
+    	mSelectTime.setText(getString(R.string.timesetto)+ sAlarmTime);
+    	mAlarmtime=sAlarmTime.toString();
+    	        
     }
 
     private static String pad(int c) {
@@ -146,6 +177,7 @@ public class addalarm extends Activity {
                         mTimeSetListener, mHour, mMinute, false);
             }
             return null;
+        
         }
 }
 	

@@ -11,52 +11,7 @@
 	android:text="@string/add"
 	android:onClick="addalarm"
 />
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    
-    android:padding="6dip">
-    
-    <ImageView
-        android:id="@+id/icon"
-        
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="6dip"
-        
-        android:src="@drawable/icon" />
 
-    <TextView  
-        android:id="@+id/secondLine"
-
-        android:layout_width="fill_parent"
-        android:layout_height="26dip" 
-        
-        android:layout_toRightOf="@id/icon"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:text="Alarm details - time days repeat etc" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        
-        android:layout_toRightOf="@id/icon"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/secondLine"
-        android:layout_alignWithParentIfMissing="true"
-                
-        android:gravity="center_vertical"
-        android:text="Would contain alarm title" />
-
-</RelativeLayout>
 <ImageView android:id="@+id/icon"
 android:layout_width="52px"
 android:paddingLeft="2px" 
@@ -73,4 +28,10 @@ android:layout_height="wrap_content"
 android:textSize="44sp"
 android:text="Press the icon"
 /> 
+<ListView 
+        android:id="@+id/My_alarms" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:drawSelectorOnTop="false" 
+ /> 
 </LinearLayout>
