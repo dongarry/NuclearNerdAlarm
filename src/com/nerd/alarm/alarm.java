@@ -130,7 +130,7 @@ public class alarm extends Activity {
 	    }
     
 	   public void DisplayAlarm(Cursor data){
-		   Toast.makeText(alarm.this, "set alarm :" + data.getString(2), Toast.LENGTH_SHORT).show();
+		   //Toast.makeText(alarm.this, "set alarm :" + data.getString(2), Toast.LENGTH_SHORT).show();
 	       
 		   /*String RepeatDesc;
 
