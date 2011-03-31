@@ -22,17 +22,13 @@ import android.view.View.OnKeyListener;
 
 
 public class addalarm extends Activity {
-	private TextView mTimeDisplay;
-	private Button mPickTime;
 	private Button mSaveAlarm;
 	private TextView mSelectTime;
 	//private byte mAlarmOk = 0;   
 	private int mHour;
 	private int mMinute;
 	private String mAlarmtime;
-	private String mAlarmTitle;
-	
-	
+		
 	static final int TIME_DIALOG_ID = 0;
 	
 	database_adapter db = new database_adapter(this); 
@@ -50,7 +46,7 @@ public class addalarm extends Activity {
         		
         // Time widget..
         // capture our View elements
-        mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
+        TextView mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
         mSelectTime = (TextView) findViewById(R.id.secondLine);
         //mPickTime = (Button) findViewById(R.id.pickTime);
         mSaveAlarm=(Button) findViewById(R.id.saveAlarm);
@@ -132,9 +128,9 @@ public class addalarm extends Activity {
 	                		edittext.getText().toString(),
 	                		0);     
 	                
-	                
 	                db.close();
-	                Toast.makeText(addalarm.this,"Saved" + id, Toast.LENGTH_SHORT).show();;
+	                
+	                Toast.makeText(addalarm.this,"Status Saved" + id, Toast.LENGTH_SHORT).show();;
 	
 	            }
 	        });
