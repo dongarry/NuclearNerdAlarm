@@ -20,7 +20,10 @@
     <string name="volume">Volume</string>
     <string name="enabled">Enabled</string>
     <string name="mode">Mode</string>
+    <string name="delete_all">All Alarms Deleted!</string>
     <string name="mode_select">Please select a mode</string>
+    <string name="noalarmset">No Alarms set</string>
+    <string name="alarms">Alarms List</string>
     
 <string-array name="modes_array">
 	<item>Slouch</item>

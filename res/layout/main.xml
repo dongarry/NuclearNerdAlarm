@@ -4,6 +4,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
+    <View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
 <Button android:id="@+id/addalarm"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
@@ -26,12 +30,21 @@ android:id="@+id/label"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
 android:textSize="44sp"
-android:text="Press the icon"
+android:text="@string/alarms"
 /> 
-<ListView 
-        android:id="@+id/My_alarms" 
-        android:layout_width="wrap_content" 
+<View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+   	<ListView 
+		android:id="@android:id/list"
+         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:drawSelectorOnTop="false" 
- /> 
+/> 
+<TextView android:id="@android:id/empty"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/noalarmset"
+/>
 </LinearLayout>

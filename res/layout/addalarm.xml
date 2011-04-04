@@ -3,6 +3,10 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:text="Set Alarm">
+ <View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"

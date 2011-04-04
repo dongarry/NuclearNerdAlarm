@@ -25,19 +25,19 @@ public final class R {
         public static final int nuclear=0x7f020007;
     }
     public static final class id {
-        public static final int My_alarms=0x7f090015;
         public static final int addalarm=0x7f090013;
-        public static final int button=0x7f090000;
+        public static final int alarmTime=0x7f09000a;
+        public static final int button=0x7f090001;
         public static final int cancelButton=0x7f090011;
         public static final int checkbox=0x7f090005;
         public static final int clear_all=0x7f090018;
         public static final int display_alarms=0x7f090016;
         public static final int edittext=0x7f090004;
-        public static final int firstDivider=0x7f090001;
+        public static final int firstDivider=0x7f090000;
         public static final int firstLine=0x7f09000b;
         public static final int header=0x7f090017;
-        public static final int icon=0x7f09000a;
-        public static final int label=0x7f090014;
+        public static final int icon=0x7f090014;
+        public static final int label=0x7f090015;
         public static final int mode_opt_1=0x7f090006;
         public static final int mode_opt_2=0x7f090007;
         public static final int nerd_opt_1=0x7f09000c;
@@ -66,15 +66,18 @@ public final class R {
     }
     public static final class string {
         public static final int add=0x7f060002;
+        public static final int alarms=0x7f060017;
         public static final int app_name=0x7f060001;
         public static final int changetime=0x7f060006;
         public static final int clear=0x7f060003;
+        public static final int delete_all=0x7f060014;
         public static final int enabled=0x7f060012;
         public static final int hello=0x7f060000;
         public static final int mode=0x7f060013;
-        public static final int mode_select=0x7f060014;
+        public static final int mode_select=0x7f060015;
         public static final int music=0x7f060010;
         public static final int nerd=0x7f06000d;
+        public static final int noalarmset=0x7f060016;
         public static final int preferences=0x7f060004;
         public static final int savealarm=0x7f060009;
         public static final int setthetime=0x7f060007;

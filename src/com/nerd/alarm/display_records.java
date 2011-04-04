@@ -14,7 +14,6 @@ public class display_records extends ListActivity {
 	    public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
 	        
-
 	        setTitle(getString(R.string.app_name));
 	        
 	        database_adapter db = new database_adapter(this);
@@ -23,8 +22,7 @@ public class display_records extends ListActivity {
 	    		
 	    	        dataSource = new SimpleCursorAdapter(this,
 	    	            R.layout.alarm_list, data, fields,
-	    	            new int[] { R.id.firstLine, R.id.secondLine });
-	    	        setListAdapter(dataSource);
-	 
+	    	            new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine });
+	    	        setListAdapter(dataSource);	 
 	 }	
 }

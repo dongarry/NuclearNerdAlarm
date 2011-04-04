@@ -1,7 +1,8 @@
 package com.nerd.alarm;
 
 
-import android.app.Activity;
+//import android.app.Activity;
+import android.app.ListActivity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,23 +10,23 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.BaseColumns;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-//import android.view.Window;
 import android.speech.tts.TextToSpeech;
 import android.widget.CursorAdapter;
-import android.widget.ListView;
-//import android.widget.SimpleCursorAdapter;
-//import android.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-public class alarm extends Activity {
+public class alarm extends ListActivity {
     
 	private static final int MY_DATA_CHECK_CODE = 1;
-	//private CursorAdapter dataSource;
-	//ListView list = (ListView) findViewById(R.id.My_alarms);
+	database_adapter db = new database_adapter(this); 
+	private CursorAdapter dataSource;
+	private static final String fields[] = { "time", "title","repeat",BaseColumns._ID };
+
 	
 	/** Called when the activity is first created. */
     @Override
@@ -33,7 +34,6 @@ public class alarm extends Activity {
         super.onCreate(savedInstanceState);
 
         //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE); //We want our screens to be different!
-        database_adapter db = new database_adapter(this); 
         setContentView(R.layout.main); 
         
         //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
@@ -43,23 +43,8 @@ public class alarm extends Activity {
       //---get all Alarms---
         db.open();
         
-        /* test
-        long id;
-        id = db.insertAlarm(
-        		"10:05",
-        		"Title 1",
-        		0);        
-        */
-        
         Cursor a = db.getAllAlarms();
-        
-        if (a.moveToFirst())
-        {	
-        	do {          
-                DisplayAlarm(a);
-            } while (a.moveToNext());
-        }
-        db.close();
+        DisplayAlarm(a);
         
         
 	//Taken from Tutorial on TexttoSpeech
@@ -84,11 +69,11 @@ public class alarm extends Activity {
         }
     }
     
+    
     public void addalarm(View view) {
 		Intent addIntent = new Intent(this,addalarm.class); 
 		startActivity(addIntent);
 		Toast.makeText(alarm.this, "This is a test", Toast.LENGTH_SHORT).show();
-//      System.out.print("this is a test");
 	}
 
 	// Display our own custom menu when menu is selected.
@@ -109,10 +94,13 @@ public class alarm extends Activity {
 				startActivity(prefIntent);
 		      	return true;
 		    default:
-		    	Toast.makeText(alarm.this, "Delete Clicked, Careful now!", Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
+		    	return (db.deleteAllAlarms());
+		    	
+		    	/*
 		    	Intent displayIntent = new Intent(this,display_records.class); 
 				startActivity(displayIntent);
-		    	return true;
+		    	return true;*/
 		    }
 		}
 	 
@@ -130,22 +118,10 @@ public class alarm extends Activity {
 	    }
     
 	   public void DisplayAlarm(Cursor data){
-		   //Toast.makeText(alarm.this, "set alarm :" + data.getString(2), Toast.LENGTH_SHORT).show();
-	       
-		   /*String RepeatDesc;
-
-		   RepeatDesc=data.getString(3);
-		   String[] fields = new String[] {"title", "repeat"};
-		           
-		   
-		   if (RepeatDesc=="0"){
-			   RepeatDesc="All Week";}
-			   else{
-				   RepeatDesc="M T W Th F"; }
-	    	        
-	    	        dataSource = new SimpleCursorAdapter(this,
-	    	            R.layout.alarm_list, data, fields,
-	    	            new int[] { R.id.firstLine, R.id.secondLine });
-	    	        list.setAdapter(dataSource);*/
-	   }
+		    
+	    	 setListAdapter(new SimpleCursorAdapter(this, 
+	    			 R.layout.alarm_list, data, 
+                     fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine }));
+	    	 
+		   }
 }

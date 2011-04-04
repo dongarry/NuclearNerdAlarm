@@ -21,7 +21,8 @@ public class database_adapter{
 	    private static final String DATABASE_NAME = "NuclearAlarms";
 	    private static final String DATABASE_TABLE = "Alarms";
 	    private static final int DATABASE_VERSION = 1;
-
+	    
+	    private static final String ALARM_DELETE = "delete from Alarms;";
 	    private static final String DATABASE_CREATE =
 	        "create table NuclearAlarms (_id integer primary key autoincrement, "
 	        + "time text not null, title text not null, " 
@@ -76,7 +77,7 @@ public class database_adapter{
 	        DBHelper.close();
 	    }
 	    
-	    //---insert a title into the database---
+	    //---insert an alarm into the database---
 	    public long insertAlarm(String time, String title, int repeat) 
 	    {
 	        ContentValues initialValues = new ContentValues();
@@ -86,13 +87,19 @@ public class database_adapter{
 	        return db.insert(DATABASE_TABLE, null, initialValues);
 	    }
 
-	    //---deletes a particular title---
+	    //---deletes a particular alarm---
 	    public boolean deleteAlarm(long rowId) 
 	    {
-	        return db.delete(DATABASE_TABLE, KEY_ROWID + 
-	        		"=" + rowId, null) > 0;
+	    		db.execSQL(ALARM_DELETE);
+	    		return true;
 	    }
-
+	    
+	    //---deletes all particular alarms---
+	    public boolean deleteAllAlarms() 
+	    {
+	        return db.delete(DATABASE_TABLE, KEY_ROWID + 
+	        		"!=0", null) > 0;
+	    }
 	    //---retrieves all the alarms---
 	    public Cursor getAllAlarms() 
 	    {

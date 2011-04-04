@@ -3,12 +3,17 @@ package com.nerd.alarm;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
-//import android.view.Window;
+import android.app.AlarmManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -130,10 +135,31 @@ public class addalarm extends Activity {
 	                
 	                db.close();
 	                
-	                Toast.makeText(addalarm.this,"Status Saved" + id, Toast.LENGTH_SHORT).show();;
+	                setTime(mAlarmtime);
+	    
+	                
+	                //Toast.makeText(addalarm.this,"Status Saved" + id, Toast.LENGTH_SHORT).show();;
 	
 	            }
 	        });
+    	
+    }
+    
+    private void setTime(String aTime) {
+	      Intent alarmIntent = new Intent(this, AlarmActivity.class);
+  	      long currentTime = SystemClock.elapsedRealtime();
+  	      AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+  	      PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+  	      long diffhour = mHour;
+  	      java.sql.Time alarmTime = java.sql.Time.valueOf( aTime + ":00" );
+  	      
+  	      Toast.makeText(addalarm.this,"Alarm Time :" + alarmTime + " Current Time : " + currentTime, Toast.LENGTH_LONG).show();;
+  		
+  	      long timeDiff = alarmTime.getTime() - currentTime;
+  	      
+  	      //Toast.makeText(addalarm.this,"Time set :" + timeDiff, Toast.LENGTH_SHORT).show();;
+  		
+	        //alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, alarmtime, pendingIntent);
     	
     }
     
