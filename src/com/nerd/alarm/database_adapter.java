@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class database_adapter{
 	
-		// Used tutorial : http://www.devx.com/wireless/Article/40842
+		// Ref : http://www.devx.com/wireless/Article/40842
 	
 		public static final String KEY_ROWID = "_id";
 	    public static final String KEY_TIME = "time";
@@ -22,11 +22,11 @@ public class database_adapter{
 	    private static final String DATABASE_TABLE = "Alarms";
 	    private static final int DATABASE_VERSION = 1;
 	    
-	    private static final String ALARM_DELETE = "delete from Alarms;";
+	    private static final String ALL_ALARM_DELETE = "DELETE FROM " + DATABASE_TABLE + ";";
 	    private static final String DATABASE_CREATE =
-	        "create table NuclearAlarms (_id integer primary key autoincrement, "
-	        + "time text not null, title text not null, " 
-	        + "repeat integer not null);";
+	        "CREATE TABLE NuclearAlarms (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+	        + "time TEXT NOT NULL, title TEXT NOT NULL, " 
+	        + "repeat INTEGER NOT NULL);";
 	        
 	    private final Context context; 
 	    
@@ -88,20 +88,20 @@ public class database_adapter{
 	    }
 
 	    //---deletes a particular alarm---
-	    public boolean deleteAlarm(long rowId) 
+	    public boolean deleteAllAlarms() 
 	    {
-	    		db.execSQL(ALARM_DELETE);
+	    		db.execSQL(ALL_ALARM_DELETE);
 	    		return true;
 	    }
 	    
-	    //---deletes all particular alarms---
-	    public boolean deleteAllAlarms() 
+	    //---deletes all alarms---
+	    public boolean deleteAlarm(long rowID) 
 	    {
 	        return db.delete(DATABASE_TABLE, KEY_ROWID + 
-	        		"!=0", null) > 0;
+	        		"=" + rowID, null) > 0;
 	    }
 	    //---retrieves all the alarms---
-	    public Cursor getAllAlarms() 
+	    public Cursor getAlarms() 
 	    {
 	        return db.query(DATABASE_TABLE, new String[] {
 	        		KEY_ROWID, 

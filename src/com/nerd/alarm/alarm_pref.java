@@ -7,6 +7,8 @@ import android.widget.Toast;
 public class alarm_pref extends Activity {
 	
 	/** Called when the activity is first created. */
+	//http://stackoverflow.com/questions/4593552/android-get-set-media-volumenot-ringone-volume
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,7 +1,5 @@
 package com.nerd.alarm;
 
-import java.util.Calendar;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -9,11 +7,12 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
+import java.util.Calendar;
 import android.view.KeyEvent;
 import android.view.View;
-import android.app.AlarmManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -29,11 +28,10 @@ import android.view.View.OnKeyListener;
 public class addalarm extends Activity {
 	private Button mSaveAlarm;
 	private TextView mSelectTime;
-	//private byte mAlarmOk = 0;   
-	private int mHour;
-	private int mMinute;
+	private int mHour, mCurrHour, mEnabled=0;
+	private int mMinute, mCurrMin;
 	private String mAlarmtime;
-		
+    
 	static final int TIME_DIALOG_ID = 0;
 	
 	database_adapter db = new database_adapter(this); 
@@ -53,7 +51,6 @@ public class addalarm extends Activity {
         // capture our View elements
         TextView mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
         mSelectTime = (TextView) findViewById(R.id.secondLine);
-        //mPickTime = (Button) findViewById(R.id.pickTime);
         mSaveAlarm=(Button) findViewById(R.id.saveAlarm);
         
         /*mPickTime.setOnClickListener(new View.OnClickListener() {
@@ -77,15 +74,6 @@ public class addalarm extends Activity {
         // display the current date
         updateDisplay();
         	
-		        //icon Button handle
-		        final Button button = (Button) findViewById(R.id.button);
-		        button.setOnClickListener(new OnClickListener() {
-		            public void onClick(View v) {
-		                // Perform action on clicks
-		                Toast.makeText(addalarm.this, "Beep Bop", Toast.LENGTH_SHORT).show();
-		            }
-		        });
-        
 		        //Edit Text box handle
 		        final EditText edittext = (EditText) findViewById(R.id.edittext);
 		        edittext.setOnKeyListener(new OnKeyListener() {
@@ -105,11 +93,10 @@ public class addalarm extends Activity {
 		        final CheckBox checkbox = (CheckBox) findViewById(R.id.checkbox);
 		        checkbox.setOnClickListener(new OnClickListener() {
 		            public void onClick(View v) {
-		                // Perform action on clicks, depending on whether it's now checked
 		                if (((CheckBox) v).isChecked()) {
-		                    Toast.makeText(addalarm.this, "Selected", Toast.LENGTH_SHORT).show();
+		                	mEnabled=1;
 		                } else {
-		                    Toast.makeText(addalarm.this, "Not selected", Toast.LENGTH_SHORT).show();
+		                	mEnabled=0;
 		                }
 		            }
 		        });
@@ -125,41 +112,71 @@ public class addalarm extends Activity {
 	        mSaveAlarm.setOnClickListener(new View.OnClickListener() {
 	            public void onClick(View v) {
 	            	db.open();        
-	                long id;
-	                Toast.makeText(addalarm.this,mAlarmtime, Toast.LENGTH_SHORT).show();;
-	                //Toast.makeText(addalarm.this,edittext.getText().toString(), Toast.LENGTH_SHORT).show();;
-	                id = db.insertAlarm(
+	            	
+	                //Save alarm details
+	                long id = db.insertAlarm(
 	                		mAlarmtime,
 	                		edittext.getText().toString(),
 	                		0);     
 	                
 	                db.close();
 	                
-	                setTime(mAlarmtime);
-	    
+	                setTime(id);
+	                finish(); // We're done with this.
 	                
-	                //Toast.makeText(addalarm.this,"Status Saved" + id, Toast.LENGTH_SHORT).show();;
-	
-	            }
+	            							}
 	        });
     	
     }
     
-    private void setTime(String aTime) {
+    private void setTime(long alarmID) {
 	      Intent alarmIntent = new Intent(this, AlarmActivity.class);
-  	      long currentTime = SystemClock.elapsedRealtime();
-  	      AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+	      
+	      Bundle params = new Bundle();
+	      params.putLong("AlarmID",alarmID);   
+	      alarmIntent.putExtras(params); //Pass the Alarm ID
+  	      
+	      AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
   	      PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-  	      long diffhour = mHour;
-  	      java.sql.Time alarmTime = java.sql.Time.valueOf( aTime + ":00" );
   	      
-  	      Toast.makeText(addalarm.this,"Alarm Time :" + alarmTime + " Current Time : " + currentTime, Toast.LENGTH_LONG).show();;
-  		
-  	      long timeDiff = alarmTime.getTime() - currentTime;
+  	      long timeDiff =0;
+  	      int mDayFlag=0;
   	      
-  	      //Toast.makeText(addalarm.this,"Time set :" + timeDiff, Toast.LENGTH_SHORT).show();;
-  		
-	        //alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, alarmtime, pendingIntent);
+  	     Calendar alarmTime = Calendar.getInstance();
+  	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
+	      mCurrMin = alarmTime.get(Calendar.MINUTE);
+	      
+	      if (mCurrHour>mHour) {
+	    	  timeDiff+=86400000; //Set for next day
+	    	  mDayFlag=1;
+	      };
+	      
+	      if (mCurrHour<mHour) {
+	    	  timeDiff+=((mHour-mCurrHour)*3600000);
+	      };
+	      
+	      if (mCurrMin>mMinute) {
+	    	  mMinute+=60;
+	    	  if (mDayFlag==1){
+	    		  	timeDiff-=3600000; //Take off an hour
+	    	  }
+	    	  else {
+	    		  timeDiff+=86400000;  
+	    	  		}
+	    	  };
+	    	  
+	      if (mCurrMin<mMinute) {
+	    	  if (mDayFlag==1) {
+	    		  timeDiff-=3600000;
+	    	  }
+	    	  timeDiff+=(((mMinute-mCurrMin)*60000)); // Add minutes
+	      };
+	      
+	      timeDiff-=10000; //Let's start up 10 Seconds before we're due.
+	      
+	      if (mEnabled==1){timeDiff=3000;}; // For test purposes
+  	      
+	      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
     	
     }
     

@@ -2,15 +2,37 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <TextView android:id="@+id/wakeup"
+<View   android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+       <TextView android:id="@+id/wakeup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="54sp"
         android:text="@string/wakeup"/> 
+      <TextView android:id="@+id/details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="34sp"/> 
+   	    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@drawable/android_button" />
+		<TextView android:id="@+id/details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="@string/snooze"/> 
+   	
      <Button
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="Say Something"
+            android:text="@string/repeatthat"
             android:onClick="handleSpeak"
             />
+      
+   	    
 </LinearLayout>

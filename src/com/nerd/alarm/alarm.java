@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.speech.tts.TextToSpeech;
-import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
@@ -24,7 +23,8 @@ public class alarm extends ListActivity {
     
 	private static final int MY_DATA_CHECK_CODE = 1;
 	database_adapter db = new database_adapter(this); 
-	private CursorAdapter dataSource;
+	//private CursorAdapter dataSource;
+	//ListView lv = (ListView)this.findViewById(android.R.id.list);   
 	private static final String fields[] = { "time", "title","repeat",BaseColumns._ID };
 
 	
@@ -32,20 +32,12 @@ public class alarm extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //requestWindowFeature(Window.FEATURE_CUSTOM_TITLE); //We want our screens to be different!
-        setContentView(R.layout.main); 
-        
-        //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.window_title);
-        
-        setTitle(getString(R.string.app_name));
-        
-      //---get all Alarms---
         db.open();
         
-        Cursor a = db.getAllAlarms();
-        DisplayAlarm(a);
-        
+        setContentView(R.layout.main); 
+        setTitle(getString(R.string.app_name));
+          
+        loadAlarms();
         
 	//Taken from Tutorial on TexttoSpeech
     Intent checkIntent = new Intent();
@@ -53,7 +45,15 @@ public class alarm extends ListActivity {
     startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
     
     }
-
+    
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+   
+    protected void onClose(){
+        db.close();
+    }
     protected void onActivityResult( int requestCode, int resultCode, Intent data) {
         if (requestCode == MY_DATA_CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
@@ -69,6 +69,16 @@ public class alarm extends ListActivity {
         }
     }
     
+   
+    
+    public void loadAlarms(){
+    	//---get all Alarms---
+        //db.open();
+        
+        Cursor a = db.getAlarms();
+        DisplayAlarm(a);
+        //db.close();
+    }
     
     public void addalarm(View view) {
 		Intent addIntent = new Intent(this,addalarm.class); 
@@ -95,6 +105,7 @@ public class alarm extends ListActivity {
 		      	return true;
 		    default:
 		    	Toast.makeText(alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
+		    	//db.deleteAllAlarms();loadAlarms();
 		    	return (db.deleteAllAlarms());
 		    	
 		    	/*
@@ -122,6 +133,5 @@ public class alarm extends ListActivity {
 	    	 setListAdapter(new SimpleCursorAdapter(this, 
 	    			 R.layout.alarm_list, data, 
                      fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine }));
-	    	 
 		   }
 }

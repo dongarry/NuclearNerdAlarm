@@ -18,7 +18,7 @@ public class display_records extends ListActivity {
 	        
 	        database_adapter db = new database_adapter(this);
 	    	db.open();
-	    	Cursor data = db.getAllAlarms();
+	    	Cursor data = db.getAlarms();
 	    		
 	    	        dataSource = new SimpleCursorAdapter(this,
 	    	            R.layout.alarm_list, data, fields,

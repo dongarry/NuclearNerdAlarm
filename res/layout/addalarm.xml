@@ -7,17 +7,6 @@
         android:layout_height="1dp"
         android:layout_width="fill_parent"
         android:background="#1155CC" />
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:background="@drawable/android_button" />
-<View   android:id="@+id/firstDivider"
-        android:layout_height="1dp"
-        android:layout_width="fill_parent"
-        android:background="#1155CC" />
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"

@@ -24,6 +24,9 @@
     <string name="mode_select">Please select a mode</string>
     <string name="noalarmset">No Alarms set</string>
     <string name="alarms">Alarms List</string>
+    <string name="alarmtext1">Beep Beep This is your alarm</string>
+    <string name="alarmtext2">Nerd Alarm</string>
+    <string name="repeatthat">Repeat again</string>
     
 <string-array name="modes_array">
 	<item>Slouch</item>
