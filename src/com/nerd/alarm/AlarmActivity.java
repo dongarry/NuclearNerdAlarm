@@ -1,12 +1,16 @@
 package com.nerd.alarm;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +21,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     private long mAlarmID =0;
     private String myText1;
     private String myText2;
+    
     database_adapter db = new database_adapter(this); 
     
     
@@ -26,10 +31,18 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	setVolumeControlStream(AudioManager.STREAM_MUSIC); // We want the user to be able to turn us down..
     	super.onCreate(savedInstanceState);
         
-    	
-    	myText1=getString(R.string.alarmtext1);
     	myText2=getString(R.string.alarmtext2);
     	
+/*
+    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+    	PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Nerd Alarm");
+    	wl.acquire();
+    	*/
+    	/*
+    	getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
+    		    | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+    		    | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    	*/
         // see http://getablogger.blogspot.com/2008/01/android-pass-data-to-activity.html
         // http://www.androidcompetencycenter.com/2009/03/tutorial-how-to-start-a-new-activity/
         
@@ -49,7 +62,8 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
             }
         });
         
-    }
+        //wl.release();
+   }
     
     public void loadDetails (){
     	Bundle extras = getIntent().getExtras(); 
@@ -68,6 +82,12 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
             mTtitleDisplay.setText(myText1); 
             db.close();
         }
+        else
+        {
+        	finish();
+        	//myText1=getString(R.string.alarmtext1);
+        }
+        saySomething();
     }
     
     public void handleSpeak(View view) {

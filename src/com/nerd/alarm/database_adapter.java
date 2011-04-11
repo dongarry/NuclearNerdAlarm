@@ -16,17 +16,20 @@ public class database_adapter{
 	    public static final String KEY_TIME = "time";
 	    public static final String KEY_TITLE = "title";
 	    public static final String KEY_REPEAT = "repeat";    
+	    public static final String KEY_ENABLED = "enabled";    
 	    private static final String TAG = "DBAdapter";
 	    
 	    private static final String DATABASE_NAME = "NuclearAlarms";
 	    private static final String DATABASE_TABLE = "Alarms";
 	    private static final int DATABASE_VERSION = 1;
 	    
+	    private static final String DROP_TABLE = "DROP TABLE" + DATABASE_TABLE;
 	    private static final String ALL_ALARM_DELETE = "DELETE FROM " + DATABASE_TABLE + ";";
+	    private static final String LATEST_ALARM = "SELECT FROM " + DATABASE_TABLE + "WHERE ";
 	    private static final String DATABASE_CREATE =
-	        "CREATE TABLE NuclearAlarms (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+	        "CREATE TABLE " + DATABASE_TABLE + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
 	        + "time TEXT NOT NULL, title TEXT NOT NULL, " 
-	        + "repeat INTEGER NOT NULL);";
+	        + "repeat INTEGER NOT NULL, enabled INTEGER NOT NULL);";
 	        
 	    private final Context context; 
 	    
@@ -51,7 +54,7 @@ public class database_adapter{
 	        {
 	            db.execSQL(DATABASE_CREATE);
 	        }
-
+	        
 	        @Override
 	        public void onUpgrade(SQLiteDatabase db, int oldVersion, 
 	        int newVersion) 
@@ -63,6 +66,28 @@ public class database_adapter{
 	            onCreate(db);
 	        }
 	    }    
+	    
+	    public Cursor getLatestAlarm(long rowId) throws SQLException 
+	    {
+	        Cursor mCursor =
+	                db.query(true, DATABASE_TABLE, new String[] {
+	                		KEY_ROWID,
+	                		KEY_TIME, 
+	                		KEY_TITLE,
+	                		KEY_REPEAT,
+	                		KEY_ENABLED
+	                		}, 
+	                		KEY_ROWID + "=" + rowId, 
+	                		null,
+	                		null, 
+	                		null, 
+	                		null, 
+	                		null);
+	        if (mCursor != null) {
+	            mCursor.moveToFirst();
+	        }
+	        return mCursor;
+	    }
 	    
 	    //---opens the database---
 	    public database_adapter open() throws SQLException 
@@ -77,13 +102,21 @@ public class database_adapter{
 	        DBHelper.close();
 	    }
 	    
+	  //---Drops the alarm table---    
+	    public void drop() 
+	    {
+	    	db.execSQL("DROP TABLE IF EXISTS Alarms");
+	    }
+	    
 	    //---insert an alarm into the database---
-	    public long insertAlarm(String time, String title, int repeat) 
+	    public long insertAlarm(String time, String title, int repeat,int enabled) 
 	    {
 	        ContentValues initialValues = new ContentValues();
 	        initialValues.put(KEY_TIME, time);
 	        initialValues.put(KEY_TITLE, title);
 	        initialValues.put(KEY_REPEAT, repeat);
+	        initialValues.put(KEY_ENABLED, enabled);
+	        
 	        return db.insert(DATABASE_TABLE, null, initialValues);
 	    }
 
@@ -100,21 +133,22 @@ public class database_adapter{
 	        return db.delete(DATABASE_TABLE, KEY_ROWID + 
 	        		"=" + rowID, null) > 0;
 	    }
-	    //---retrieves all the alarms---
-	    public Cursor getAlarms() 
+	    
+	    
+	    public Cursor getAlarms() throws SQLException 
 	    {
 	        return db.query(DATABASE_TABLE, new String[] {
 	        		KEY_ROWID, 
 	        		KEY_TIME,
 	        		KEY_TITLE,
-	                KEY_REPEAT}, 
+	                KEY_REPEAT,
+	                KEY_ENABLED}, 
 	                null, 
 	                null, 
 	                null, 
 	                null, 
 	                null);
 	    }
-
 	    //---retrieves a particular Alarm---
 	    public Cursor getAlarm(long rowId) throws SQLException 
 	    {
@@ -123,28 +157,30 @@ public class database_adapter{
 	                		KEY_ROWID,
 	                		KEY_TIME, 
 	                		KEY_TITLE,
-	                		KEY_REPEAT
-	                		}, 
+	                		KEY_REPEAT},
 	                		KEY_ROWID + "=" + rowId, 
 	                		null,
 	                		null, 
 	                		null, 
-	                		null, 
+	                		null,
 	                		null);
 	        if (mCursor != null) {
 	            mCursor.moveToFirst();
 	        }
 	        return mCursor;
 	    }
-
+	    
+	    
+	    
 	    //---updates an alarm---
 	    public boolean updateAlarm(long rowId, String time, 
-	    String title, Integer repeat) 
+	    String title, Integer repeat, int enabled) 
 	    {
 	        ContentValues args = new ContentValues();
 	        args.put(KEY_TIME, time);
 	        args.put(KEY_TITLE, title);
 	        args.put(KEY_REPEAT, repeat);
+	        //args.put(KEY_ENABLED, enabled);
 	        return db.update(DATABASE_TABLE, args, 
 	                         KEY_ROWID + "=" + rowId, null) > 0;
 	    }

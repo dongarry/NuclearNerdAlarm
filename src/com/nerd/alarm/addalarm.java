@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
 import java.util.Calendar;
@@ -27,11 +26,12 @@ import android.view.View.OnKeyListener;
 
 public class addalarm extends Activity {
 	private Button mSaveAlarm;
-	private TextView mSelectTime;
+	private TextView mSelectTime,mRepeatTime;
 	private int mHour, mCurrHour, mEnabled=0;
 	private int mMinute, mCurrMin;
 	private String mAlarmtime;
-    
+	static final private int GET_REPEAT = 1;
+
 	static final int TIME_DIALOG_ID = 0;
 	
 	database_adapter db = new database_adapter(this); 
@@ -49,7 +49,8 @@ public class addalarm extends Activity {
         		
         // Time widget..
         // capture our View elements
-        TextView mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
+        //TextView mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
+        mRepeatTime = (TextView) findViewById(R.id.repeatLine);
         mSelectTime = (TextView) findViewById(R.id.secondLine);
         mSaveAlarm=(Button) findViewById(R.id.saveAlarm);
         
@@ -65,7 +66,15 @@ public class addalarm extends Activity {
                 showDialog(TIME_DIALOG_ID);
             }
         });
-
+        
+        mRepeatTime.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	Intent dayIntent = new Intent(addalarm.this,days.class);
+            	startActivityForResult (dayIntent,GET_REPEAT);
+        	}
+        });
+           
+        
         // get the current time
         final Calendar c = Calendar.getInstance();
         mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -74,62 +83,89 @@ public class addalarm extends Activity {
         // display the current date
         updateDisplay();
         	
-		        //Edit Text box handle
-		        final EditText edittext = (EditText) findViewById(R.id.edittext);
-		        edittext.setOnKeyListener(new OnKeyListener() {
-		            public boolean onKey(View v, int keyCode, KeyEvent event) {
-		                // If the event is a key-down event on the "enter" button
-		                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-		                    (keyCode == KeyEvent.KEYCODE_ENTER)) {
-		                  // Perform action on key press
-		                  Toast.makeText(addalarm.this, edittext.getText(), Toast.LENGTH_SHORT).show();
-		                  return true;
-		                }
-		                return false;
-		            }
+        //Edit Text box handle
+		final EditText edittext = (EditText) findViewById(R.id.edittext);
+		edittext.setOnKeyListener(new OnKeyListener() {
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				// If the event is a key-down event on the "enter" button
+				if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+						(keyCode == KeyEvent.KEYCODE_ENTER)) {
+		        			// Perform action on key press
+		        			return true;
+		                	}
+		                	return false;
+		            	}
 		        });
         
-		        //Handle CheckBox click
-		        final CheckBox checkbox = (CheckBox) findViewById(R.id.checkbox);
-		        checkbox.setOnClickListener(new OnClickListener() {
-		            public void onClick(View v) {
-		                if (((CheckBox) v).isChecked()) {
-		                	mEnabled=1;
-		                } else {
+		//Handle CheckBox click
+		final CheckBox checkbox = (CheckBox) findViewById(R.id.checkbox);
+		checkbox.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if (((CheckBox) v).isChecked()) {
+		                mEnabled=1;
+		        	} else {
 		                	mEnabled=0;
 		                }
 		            }
 		        });
         
-	        //Handle Spinner
-	        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-	        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-	                this, R.array.modes_array, android.R.layout.simple_spinner_item);
-	        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	        spinner.setAdapter(adapter);
+		//Handle Spinner
+	    Spinner spinner = (Spinner) findViewById(R.id.spinner);
+	    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+	    		this, R.array.modes_array, android.R.layout.simple_spinner_item);
+	        	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	        	spinner.setAdapter(adapter);
 	        
-	        // Handle Save button
-	        mSaveAlarm.setOnClickListener(new View.OnClickListener() {
-	            public void onClick(View v) {
+	        
+	    // Handle Save button
+	    mSaveAlarm.setOnClickListener(new View.OnClickListener() {
+	    	public void onClick(View v) {
 	            	db.open();        
-	            	
 	                //Save alarm details
 	                long id = db.insertAlarm(
 	                		mAlarmtime,
 	                		edittext.getText().toString(),
-	                		0);     
-	                
+	                		0,
+	                		mEnabled);     
 	                db.close();
-	                
-	                setTime(id);
+	                setTime((int)(id));
 	                finish(); // We're done with this.
-	                
-	            							}
+	            	}
 	        });
     	
-    }
+    } //OnCreate
     
-    private void setTime(long alarmID) {
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,Intent data) {
+    // You can use the requestCode to select between multiple child
+    // activities you may have started.  Here there is only one thing
+    // we launch.
+    	Toast.makeText(addalarm.this, "Repeat Result:", Toast.LENGTH_SHORT).show();
+  	  
+    	super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+        	Toast.makeText(addalarm.this, "Repeat :" + data.getStringExtra("SelectedBook"), Toast.LENGTH_SHORT).show();
+    	    
+        // This is a standard resultCode that is sent back if the
+        // activity doesn't supply an explicit result.  It will also
+        // be returned if the activity failed to launch.
+        //if (resultCode == RESULT_CANCELED) {
+        //    Toast.makeText(addalarm.this, "Repeat Selection Cancelled" + data.getStringExtra("SelectedBook"), Toast.LENGTH_SHORT).show();
+	    	
+        // Our protocol with the sending activity is that it will send
+        // text in 'data' as its result.
+        } 
+        else {
+        	Toast.makeText(addalarm.this, "Repeat :" + data.getStringExtra("SelectedBook"), Toast.LENGTH_SHORT).show();
+	    	
+        }
+
+    //}
+}
+
+    
+    private void setTime(int alarmID) {
 	      Intent alarmIntent = new Intent(this, AlarmActivity.class);
 	      
 	      Bundle params = new Bundle();
@@ -137,7 +173,7 @@ public class addalarm extends Activity {
 	      alarmIntent.putExtras(params); //Pass the Alarm ID
   	      
 	      AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-  	      PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+  	      PendingIntent pendingIntent = PendingIntent.getActivity(this, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
   	      
   	      long timeDiff =0;
   	      int mDayFlag=0;
@@ -146,37 +182,52 @@ public class addalarm extends Activity {
   	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
 	      mCurrMin = alarmTime.get(Calendar.MINUTE);
 	      
+	      Toast.makeText(addalarm.this, "Set : " + mCurrHour + ":" + mCurrMin + " - " + mHour + ":" + mMinute, Toast.LENGTH_SHORT).show();
+	      
+	      
 	      if (mCurrHour>mHour) {
 	    	  timeDiff+=86400000; //Set for next day
 	    	  mDayFlag=1;
+	    	  Toast.makeText(addalarm.this, "1 Hour > " + timeDiff, Toast.LENGTH_SHORT).show();		      
 	      };
 	      
 	      if (mCurrHour<mHour) {
 	    	  timeDiff+=((mHour-mCurrHour)*3600000);
+	    	  Toast.makeText(addalarm.this, "2 Hour < " + timeDiff, Toast.LENGTH_SHORT).show();
+
 	      };
 	      
 	      if (mCurrMin>mMinute) {
 	    	  mMinute+=60;
-	    	  if (mDayFlag==1){
-	    		  	timeDiff-=3600000; //Take off an hour
-	    	  }
-	    	  else {
-	    		  timeDiff+=86400000;  
-	    	  		}
+	    	 // if (mDayFlag==1){
+	    		//  	timeDiff-=3600000; //Take off an hour
+	  	    	//  Toast.makeText(addalarm.this, "3 Min > " + timeDiff, Toast.LENGTH_SHORT).show();
+
+	    	  //}
+	    	  //else {
+	    	//	  timeDiff+=86400000;  
+	    	  //		}
 	    	  };
 	    	  
 	      if (mCurrMin<mMinute) {
-	    	  if (mDayFlag==1) {
-	    		  timeDiff-=3600000;
+	    	  if (mMinute>60) {
+	    		  timeDiff-=3600000; // take off an hour
 	    	  }
+	    	  Toast.makeText(addalarm.this, "3 Min <" + timeDiff, Toast.LENGTH_SHORT).show();
 	    	  timeDiff+=(((mMinute-mCurrMin)*60000)); // Add minutes
+	    	  Toast.makeText(addalarm.this, "4 Min <" + timeDiff, Toast.LENGTH_SHORT).show();
+
 	      };
 	      
 	      timeDiff-=10000; //Let's start up 10 Seconds before we're due.
 	      
-	      if (mEnabled==1){timeDiff=3000;}; // For test purposes
+	      if (mEnabled==1){timeDiff=3000;
+	      	alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
+	      timeDiff=20000;
+	      }; // For test purposes
   	      
-	      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
+	      Toast.makeText(addalarm.this, "Set : " + timeDiff, Toast.LENGTH_SHORT).show();
+	      //alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
     	
     }
     

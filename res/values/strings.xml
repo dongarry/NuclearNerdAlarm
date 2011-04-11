@@ -27,12 +27,26 @@
     <string name="alarmtext1">Beep Beep This is your alarm</string>
     <string name="alarmtext2">Nerd Alarm</string>
     <string name="repeatthat">Repeat again</string>
-    
+    <string name="selectdays">Select days</string>
+    <string name="done">Done</string>
+    <string name="repeat">Repeating Alarm</string>
+    <string name="repeat_2">Default is just weekdays</string>
+
 <string-array name="modes_array">
 	<item>Slouch</item>
 	<item>Sunrise</item>
 	<item>Nuclear</item>
 	<item>Cuckoo</item>
+	</string-array>
+<string-array name="days_array">
+	<item>Repeat</item>
+	<item>Monday</item>
+	<item>Tuesday</item>
+	<item>Wednesday</item>
+	<item>Thursday</item>
+	<item>Friday</item>
+	<item>Saturday</item>
+	<item>Sunday</item>
 	</string-array>
 <string-array name="snooze_array">
 	<item>5 mins</item>

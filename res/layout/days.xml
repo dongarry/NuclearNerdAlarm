@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+    <View android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+	<Button android:id="@+id/addalarm"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:drawableLeft="@drawable/nuclear"
+	android:text="@string/done"
+	android:onClick="daySave"/>
+		<TextView android:id="@+id/label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="12sp"
+			android:text="@string/selectdays"/> 
+    <View android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+		<ListView android:id="@+id/daylist" 
+			android:layout_height="wrap_content" 	        
+			android:layout_width="fill_parent"
+			android:drawSelectorOnTop="false"/>  
+ 	<View android:id="@+id/firstDivider"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:background="#1155CC" />
+</LinearLayout>
