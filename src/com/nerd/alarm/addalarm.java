@@ -27,8 +27,8 @@ import android.view.View.OnKeyListener;
 public class addalarm extends Activity {
 	private Button mSaveAlarm;
 	private TextView mSelectTime,mRepeatTime;
-	private int mHour, mCurrHour, mEnabled=0;
-	private int mMinute, mCurrMin;
+	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0;
+	private int mMinute, mCurrMin,selectedDays=0;
 	private String mAlarmtime;
 	static final private int GET_REPEAT = 1;
 
@@ -125,8 +125,9 @@ public class addalarm extends Activity {
 	                long id = db.insertAlarm(
 	                		mAlarmtime,
 	                		edittext.getText().toString(),
-	                		0,
-	                		mEnabled);     
+	                		selectedDays,
+	                		mEnabled,
+	                		mCounter);//,mStat);     
 	                db.close();
 	                setTime((int)(id));
 	                finish(); // We're done with this.
@@ -138,32 +139,37 @@ public class addalarm extends Activity {
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode,Intent data) {
-    // You can use the requestCode to select between multiple child
-    // activities you may have started.  Here there is only one thing
-    // we launch.
-    	Toast.makeText(addalarm.this, "Repeat Result:", Toast.LENGTH_SHORT).show();
-  	  
+    // Take back the days selected for repeat
+   	
     	super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-        	Toast.makeText(addalarm.this, "Repeat :" + data.getStringExtra("SelectedBook"), Toast.LENGTH_SHORT).show();
-    	    
-        // This is a standard resultCode that is sent back if the
-        // activity doesn't supply an explicit result.  It will also
-        // be returned if the activity failed to launch.
-        //if (resultCode == RESULT_CANCELED) {
-        //    Toast.makeText(addalarm.this, "Repeat Selection Cancelled" + data.getStringExtra("SelectedBook"), Toast.LENGTH_SHORT).show();
-	    	
-        // Our protocol with the sending activity is that it will send
-        // text in 'data' as its result.
-        } 
+        	//Toast.makeText(addalarm.this, "Repeat :" + data.getIntExtra("SelectedDay", 0), Toast.LENGTH_SHORT).show();
+        	selectedDays=data.getIntExtra("SelectedDay", 0);  
+        	//Refresh the info on the screen
+        	mRepeatTime.setText(setDays(selectedDays));
+        	} 
         else {
-        	Toast.makeText(addalarm.this, "Repeat :" + data.getStringExtra("SelectedBook"), Toast.LENGTH_SHORT).show();
+        	//Toast.makeText(addalarm.this, "Repeat Failed:", Toast.LENGTH_SHORT).show();
 	    	
         }
-
-    //}
 }
 
+    private String setDays(int repeatSelect){
+    	 String days = getString(R.string.enabled);
+    	
+    	 if (repeatSelect==0) {days = getString(R.string.norepeatset);}
+    	 if ((repeatSelect & 2) == 2) {days += " " + getString(R.string.monday);}
+    	 if ((repeatSelect & 4) == 4) {days += " " + getString(R.string.tuesday);}
+    	 if ((repeatSelect & 8) == 8) {days += " " + getString(R.string.wednesday);}
+    	 if ((repeatSelect & 16) == 16) {days += " " + getString(R.string.thursday);}
+    	 if ((repeatSelect & 32) == 32) {days += " " + getString(R.string.friday);}
+    	 if ((repeatSelect & 64) == 64) {days += " " + getString(R.string.saturday);}
+    	 if ((repeatSelect & 128) == 128) {days += " " + getString(R.string.sunday);}
+    	 if (repeatSelect ==254){days = getString(R.string.enabled) + " " + getString(R.string.everyday);}
+     	if (repeatSelect ==62){days = getString(R.string.enabled) + " " + getString(R.string.weekdays);}
+    	
+    	return days;
+    }
     
     private void setTime(int alarmID) {
 	      Intent alarmIntent = new Intent(this, AlarmActivity.class);
@@ -176,7 +182,7 @@ public class addalarm extends Activity {
   	      PendingIntent pendingIntent = PendingIntent.getActivity(this, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
   	      
   	      long timeDiff =0;
-  	      int mDayFlag=0;
+  	      //int mDayFlag=0;
   	      
   	     Calendar alarmTime = Calendar.getInstance();
   	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
@@ -187,13 +193,13 @@ public class addalarm extends Activity {
 	      
 	      if (mCurrHour>mHour) {
 	    	  timeDiff+=86400000; //Set for next day
-	    	  mDayFlag=1;
-	    	  Toast.makeText(addalarm.this, "1 Hour > " + timeDiff, Toast.LENGTH_SHORT).show();		      
+	    	  //mDayFlag=1;
+	    	  //Toast.makeText(addalarm.this, "1 Hour > " + timeDiff, Toast.LENGTH_SHORT).show();		      
 	      };
 	      
 	      if (mCurrHour<mHour) {
 	    	  timeDiff+=((mHour-mCurrHour)*3600000);
-	    	  Toast.makeText(addalarm.this, "2 Hour < " + timeDiff, Toast.LENGTH_SHORT).show();
+	    	  //Toast.makeText(addalarm.this, "2 Hour < " + timeDiff, Toast.LENGTH_SHORT).show();
 
 	      };
 	      
@@ -224,10 +230,11 @@ public class addalarm extends Activity {
 	      if (mEnabled==1){timeDiff=3000;
 	      	alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
 	      timeDiff=20000;
+	      return;
 	      }; // For test purposes
   	      
-	      Toast.makeText(addalarm.this, "Set : " + timeDiff, Toast.LENGTH_SHORT).show();
-	      //alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
+	      //Toast.makeText(addalarm.this, "Set : " + timeDiff, Toast.LENGTH_SHORT).show();
+	      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
     	
     }
     

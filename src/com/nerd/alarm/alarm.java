@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.speech.tts.TextToSpeech;
 //import android.widget.ListView;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
@@ -32,7 +33,8 @@ public class alarm extends ListActivity {
 			 R.layout.alarm_list, data, 
             fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine });*/
 	
-	private static final String fields[] = { "time", "title","repeat",BaseColumns._ID };
+	//"Counter","Stat"
+	private static final String fields[] = { "time", "title","repeat","counter",BaseColumns._ID };
 	
 	/** Called when the activity is first created. */
     @Override
@@ -52,7 +54,10 @@ public class alarm extends ListActivity {
     checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
     startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
     
-    }
+   
+    } 
+    
+   
     
     @Override
     protected void onResume(){
@@ -78,9 +83,7 @@ public class alarm extends ListActivity {
             }
         }
     }
-    
    
-    
     public void loadAlarms(){
     	//---get all Alarms---
         //db.open();
@@ -135,12 +138,13 @@ public class alarm extends ListActivity {
 
 	        alarmManager.set(AlarmManager.ELAPSED_REALTIME, currentTime + 3000, pendingIntent);
 	    }
-    
+       
+	   
 	   public void DisplayAlarm(Cursor data){
 		    
 	    	 setListAdapter(new SimpleCursorAdapter(this, 
 	    			 R.layout.alarm_list, data, 
-                     fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine }));
+                     fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine}));
 	    	 
 		   }
 }

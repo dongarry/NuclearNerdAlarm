@@ -24,6 +24,7 @@
     <string name="mode_select">Please select a mode</string>
     <string name="noalarmset">No Alarms set</string>
     <string name="alarms">Alarms List</string>
+    <string name="alarmtitle">Nerd Alarm is a ninja!</string>
     <string name="alarmtext1">Beep Beep This is your alarm</string>
     <string name="alarmtext2">Nerd Alarm</string>
     <string name="repeatthat">Repeat again</string>
@@ -31,7 +32,17 @@
     <string name="done">Done</string>
     <string name="repeat">Repeating Alarm</string>
     <string name="repeat_2">Default is just weekdays</string>
-
+	<string name="norepeatset">No Repeat Set</string>
+	<string name="monday">Mon</string>
+	<string name="tuesday">Tue</string>
+	<string name="wednesday">Wed</string>
+	<string name="thursday">Thu</string>
+	<string name="friday">Fri</string>
+	<string name="saturday">Sat</string>
+	<string name="sunday">Sun</string>
+	<string name="weekdays">Weekdays</string>
+	<string name="everyday">Every Day - no rest for you!</string>
+	
 <string-array name="modes_array">
 	<item>Slouch</item>
 	<item>Sunrise</item>

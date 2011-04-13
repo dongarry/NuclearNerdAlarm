@@ -37,5 +37,5 @@
         android:layout_above="@id/secondLine"
         android:layout_alignWithParentIfMissing="true"
         android:gravity="center_vertical"
-        android:text="Would contain alarm titles" />    
+        android:text="Would contain alarm titles" />  
 </RelativeLayout>
