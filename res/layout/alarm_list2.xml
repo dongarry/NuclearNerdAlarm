@@ -1,0 +1,30 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:layout_width="fill_parent" android:layout_height="wrap_content" 
+	android:orientation="horizontal" android:gravity="center_vertical">
+     <CheckBox android:id="@+id/bcheck" android:layout_height="wrap_content" 
+	android:layout_width="wrap_content" 
+	android:focusableInTouchMode="false"  
+	android:focusable="false" 
+	android:paddingRight="2dp"/>
+	    <TextView android:id="@+id/txtTitle" android:layout_width="wrap_content" 
+	    android:gravity="left|center_vertical" 
+			android:layout_height="?android:attr/listPreferredItemHeight" 
+			android:layout_alignParentLeft="true" 
+			android:textSize="20sp" 
+			android:text="Test" 
+			android:textStyle="bold" 
+			android:paddingRight="2dp" 
+			android:focusable="false" 
+			android:paddingLeft="5dp" 
+			android:textColor="#FFFFFF" 
+			android:focusableInTouchMode="false">
+		</TextView>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" 
+    android:orientation="horizontal" 
+	android:gravity="right|center_vertical">
+        <ImageButton android:id="@+id/ImageButton01" android:layout_width="wrap_content" android:layout_height="wrap_content" 
+		android:clickable="true" android:background="@drawable/icon">
+		</ImageButton>
+    </LinearLayout>
+</LinearLayout>

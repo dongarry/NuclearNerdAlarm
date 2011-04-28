@@ -1,5 +1,6 @@
 package com.nerd.alarm;
 
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -98,7 +99,15 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
             myText1=a.getString(2); // Title 
             //mCounter=a.getInt(5); 
             mTtitleDisplay.setText(myText1); 
-            db.updateStatistic(mAlarmID,mCounter,101);
+            
+            /* Testing Alarm */
+            int mHour, mMinute;
+            String mTime;
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
+            mTime = myText1 + "-" + mHour + ":" + mMinute;
+            db.updateStatistic(mAlarmID,mCounter,101,mTime);
             db.close();
             
         }

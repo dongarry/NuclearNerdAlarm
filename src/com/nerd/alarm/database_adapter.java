@@ -176,9 +176,10 @@ public class database_adapter{
 	        return mCursor;
 	    }
 	    
-	    public boolean updateStatistic(long rowId,int counter, int statistic) 
+	    public boolean updateStatistic(long rowId,int counter, int statistic, String AlarmTime) 
 	    	    {
 	    	        ContentValues args = new ContentValues();
+	    	        args.put(KEY_TITLE, AlarmTime); //test
 	    	        args.put(KEY_REPEAT, statistic);
 	    	        //args.put(KEY_STAT, statistic);
 	    	        //args.put(KEY_COUNTER, counter);

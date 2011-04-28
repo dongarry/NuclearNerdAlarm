@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 //import android.os.Debug;
 import android.os.SystemClock;
@@ -17,6 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.speech.tts.TextToSpeech;
 //import android.widget.ListView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -24,8 +29,9 @@ import android.widget.Toast;
 public class alarm extends ListActivity {
     
 	private static final int MY_DATA_CHECK_CODE = 1;
-	database_adapter db = new database_adapter(this); 
-		
+	database_adapter db = null; 
+	private CursorAdapter dataSource;
+	
 	//private CursorAdapter dataSource;
 	//ListView lv = (ListView)this.findViewById(android.R.id.list);   
 	
@@ -34,16 +40,20 @@ public class alarm extends ListActivity {
             fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine });*/
 	
 	//"Counter","Stat"
-	private static final String fields[] = { "time", "title","repeat","counter",BaseColumns._ID };
+	private static final String fields[] = { "time", "title","enabled","counter",BaseColumns._ID };
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);        
+   
+        if (this.db == null) {
+        	this.db = new database_adapter(this);
+        }
         
         db.open();
-        //Debug.waitForDebugger();
         
+        //Debug.waitForDebugger();
         setContentView(R.layout.main); 
         setTitle(getString(R.string.app_name));
         
@@ -54,22 +64,46 @@ public class alarm extends ListActivity {
     checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
     startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
     
-   
     } 
     
-   
+    @Override
+        protected void onRestart() {
+            super.onRestart();
+            //new SelectDataTask().execute();
+        }
+
+    @Override
+        protected void onPause() {
+            super.onPause();
+            //this.db.close();
+        }
     
     @Override
     protected void onResume(){
         super.onResume();
-        loadAlarms();
-        
-    }
-   
-    protected void onClose(){
-        db.close();
+        dataSource.getCursor().requery();
     }
     
+    protected void onClose(){
+        //super.onClose();
+    	this.db.close();
+    }
+    
+    // Allow Edit of existing alarms
+    /*
+    @Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		// Get the item that was clicked
+		Object o = this.getListAdapter().getItem(position);
+		String keyword = o.toString();
+		//Object d = dataSource.getItem(position);
+		Object d = dataSource.getCursor().getPosition();
+	
+		//Toast.makeText(this, "You selected: " + keyword + " - " + id, Toast.LENGTH_LONG)
+		//		.show();
+	}*/
+     
     protected void onActivityResult( int requestCode, int resultCode, Intent data) {
         if (requestCode == MY_DATA_CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
@@ -125,7 +159,7 @@ public class alarm extends ListActivity {
 		    	return true;*/
 		    }
 		}
-	 
+		 
 	   public void setalarm(View view) {
 	        Toast.makeText(alarm.this, "set alarm", Toast.LENGTH_SHORT).show();
 	        //Intent intent = new Intent(this, AlarmService.class);
@@ -140,11 +174,13 @@ public class alarm extends ListActivity {
 	    }
        
 	   
-	   public void DisplayAlarm(Cursor data){
-		    
-	    	 setListAdapter(new SimpleCursorAdapter(this, 
+	   public void DisplayAlarm(Cursor data){ 
+		   // with help from : http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/
+		   dataSource = new SimpleCursorAdapter(this, 
 	    			 R.layout.alarm_list, data, 
-                     fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine}));
-	    	 
+                   fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine});
+	    	 setListAdapter(dataSource);
+	   
 		   }
+
 }
