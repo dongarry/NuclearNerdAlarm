@@ -12,6 +12,8 @@ import android.os.SystemClock;
 import java.util.Calendar;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,6 +24,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 
 
 public class addalarm extends Activity {
@@ -29,13 +32,14 @@ public class addalarm extends Activity {
 	private TextView mSelectTime,mRepeatTime;
 	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0;
 	private int mMinute, mCurrMin,selectedDays=0;
+	private long mAlarmID=0;
 	private String mAlarmtime;
 	static final private int GET_REPEAT = 1;
 
 	static final int TIME_DIALOG_ID = 0;
 	
 	database_adapter db = new database_adapter(this); 
-    
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,15 +48,25 @@ public class addalarm extends Activity {
         setTitle(getString(R.string.add));
         setContentView(R.layout.addalarm);
         
+        final EditText edittext = (EditText) findViewById(R.id.edittext);
+    	mRepeatTime = (TextView) findViewById(R.id.repeatLine);
+        mSelectTime = (TextView) findViewById(R.id.secondLine);
+        mSaveAlarm=(Button) findViewById(R.id.saveAlarm);
+        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+	    
         //This will be the main screen to set the characteristics of the alarm.
        // General Mode preferences will be set on a separate screen..(might change this though..)
         		
         // Time widget..
         // capture our View elements
         //TextView mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
-        mRepeatTime = (TextView) findViewById(R.id.repeatLine);
-        mSelectTime = (TextView) findViewById(R.id.secondLine);
-        mSaveAlarm=(Button) findViewById(R.id.saveAlarm);
+        
+        Bundle aBundle = this.getIntent().getExtras();
+        mAlarmID = aBundle.getLong("Alarm");
+        //Toast.makeText(addalarm.this, "Alarm:" + mAlarmID, Toast.LENGTH_SHORT).show();
+        
+        // We don't want the keyboard to pop up automatically..
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         
         /*mPickTime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -84,7 +98,6 @@ public class addalarm extends Activity {
         updateDisplay();
         	
         //Edit Text box handle
-		final EditText edittext = (EditText) findViewById(R.id.edittext);
 		edittext.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				// If the event is a key-down event on the "enter" button
@@ -103,37 +116,70 @@ public class addalarm extends Activity {
 			public void onClick(View v) {
 				if (((CheckBox) v).isChecked()) {
 		                mEnabled=1;
-		        	} else {
+					} else {
 		                	mEnabled=0;
 		                }
 		            }
 		        });
         
 		//Handle Spinner
-	    Spinner spinner = (Spinner) findViewById(R.id.spinner);
 	    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 	    		this, R.array.modes_array, android.R.layout.simple_spinner_item);
 	        	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	        	spinner.setAdapter(adapter);
-	        
-	        
+	   
+	        	
 	    // Handle Save button
 	    mSaveAlarm.setOnClickListener(new View.OnClickListener() {
 	    	public void onClick(View v) {
 	            	db.open();        
+	            	
+	            	int mMode = spinner.getSelectedItemPosition();
+	                if (mMode<0) {mMode=0;}
+	            	
 	                //Save alarm details
-	                long id = db.insertAlarm(
-	                		mAlarmtime,
-	                		edittext.getText().toString(),
-	                		selectedDays,
-	                		mEnabled,
-	                		mCounter);//,mStat);     
-	                db.close();
-	                setTime((int)(id));
+	                if(mAlarmID>0){
+	                		    
+	                boolean bUpdate = db.updateAlarm(mAlarmID,
+	    		                		mAlarmtime,
+	    		                		edittext.getText().toString(),
+	    		                		selectedDays,
+	    		                		mEnabled,
+	    		                		mCounter,
+	    		                		mMode);
+	                
+	                if (bUpdate){Toast.makeText(addalarm.this, "Alarm:" + mAlarmID + " has been updated", Toast.LENGTH_SHORT).show();}
+	                else{Toast.makeText(addalarm.this, "Alarm:" + mAlarmID + " UPDATE FAILED!", Toast.LENGTH_SHORT).show();}
+	                }
+	                else{
+	                	mAlarmID = db.insertAlarm(
+		                		mAlarmtime,
+		                		edittext.getText().toString(),
+		                		selectedDays,
+		                		mEnabled,
+		                		mCounter,
+		                		mMode);//,mStat);     
+	                }
+		            db.close();
+	                setTime((int)(mAlarmID));
 	                finish(); // We're done with this.
 	            	}
 	        });
-    	
+	    /*
+	    spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+	        //@Override
+	        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	            int item = spinner.getSelectedItemPosition();
+	            Toast.makeText(getBaseContext(), 
+	                "You have selected the item: " + item, 
+	                Toast.LENGTH_SHORT).show();
+	        }
+
+
+	       // @Override
+	        public void onNothingSelected(AdapterView<?> arg0) {
+	        }
+	    });*/
     } //OnCreate
     
     
@@ -142,17 +188,22 @@ public class addalarm extends Activity {
     // Take back the days selected for repeat
    	
     	super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-        	//Toast.makeText(addalarm.this, "Repeat :" + data.getIntExtra("SelectedDay", 0), Toast.LENGTH_SHORT).show();
+    	switch (resultCode){
+    	case RESULT_OK: 
+    	{
         	selectedDays=data.getIntExtra("SelectedDay", 0);  
-        	//Refresh the info on the screen
         	mRepeatTime.setText(setDays(selectedDays));
         	} 
-        else {
+    	case 101:
+        	{
+        		mAlarmID=data.getIntExtra("AlarmID", 0);  
+        		//mRepeatTime.setText(setDays(selectedDays));
+        	} 
+        default: {
         	//Toast.makeText(addalarm.this, "Repeat Failed:", Toast.LENGTH_SHORT).show();
-	    	
-        }
-}
+        	}
+    	}
+    }
 
     private String setDays(int repeatSelect){
     	 String days = getString(R.string.enabled);
@@ -178,6 +229,7 @@ public class addalarm extends Activity {
 	      params.putLong("AlarmID",alarmID);   
 	      alarmIntent.putExtras(params); //Pass the Alarm ID
   	      
+	      //Cancel previous alarm (if exists)??
 	      AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
   	      PendingIntent pendingIntent = PendingIntent.getActivity(this, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
   	      
@@ -277,4 +329,4 @@ public class addalarm extends Activity {
         
         }
 }
-	
+

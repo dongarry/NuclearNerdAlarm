@@ -1,5 +1,6 @@
 package com.nerd.alarm;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,6 +12,8 @@ import android.app.KeyguardManager.OnKeyguardExitResult;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 
 
 
+
 public class AlarmActivity extends Activity implements TextToSpeech.OnInitListener {
     private TextToSpeech textToSpeech;
     private long mAlarmID =0;
@@ -35,7 +39,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     private KeyguardLock mKeyguardLock; 
     private int mCounter=0;
     database_adapter db = new database_adapter(this); 
-
+    private MediaPlayer mp = null;
     
     
     public void onCreate(Bundle savedInstanceState) {
@@ -60,8 +64,9 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         final Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                // Perform action on clicks
-                Toast.makeText(AlarmActivity.this, "Snooze on", Toast.LENGTH_SHORT).show();
+                checkMedia();
+            	Toast.makeText(AlarmActivity.this, "Snooze on", Toast.LENGTH_SHORT).show();
+                
             }
         });
         
@@ -73,6 +78,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     protected void onPause(){
         super.onPause();
         cancelWakeLock();
+        checkMedia();
         //exitKeyguard(); 
     }
     
@@ -80,6 +86,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     protected void onStop(){
         super.onStop();
         cancelWakeLock();
+        checkMedia();
         //exitKeyguard(); 
     }
     
@@ -121,8 +128,13 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         saySomething();
     }
     
+    public void checkMedia(){
+    	if (mp!=null){mp.pause();
+        mp.release();}
+    }
     public void handleSpeak(View view) {
         saySomething();
+        playSomething();
     }
 
     private void saySomething() {
@@ -130,7 +142,33 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	textToSpeech.speak(myText1, TextToSpeech.QUEUE_FLUSH, null);
         textToSpeech.speak(myText2, TextToSpeech.QUEUE_ADD, null);
     }
+    
+    private void playSomething(){
+    	 //Based on tutorial
+    	 //http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
+    	// Play different sounds at different levels.. 
+    	MediaPlayer mp = MediaPlayer.create(AlarmActivity.this,R.raw.nerd);
+    	 try {
+			mp.prepare();
+    	 	} 
+		catch (IllegalStateException e) {
+			//textToSpeech.speak("We had problems playing music..", TextToSpeech.QUEUE_FLUSH, null);
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	 mp.start();
+    	 // i.e. react on the end of the music-file:
+    	 	mp.setOnCompletionListener(new OnCompletionListener(){
 
+         // @Override
+         public void onCompletion(MediaPlayer arg0) {
+                 // File -> ended Maybe reset?
+         }
+    	});
+    	 	
+    }
     public void onInit(int i) {
         saySomething();
     }

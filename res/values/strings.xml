@@ -42,6 +42,7 @@
 	<string name="sunday">Sun</string>
 	<string name="weekdays">Weekdays</string>
 	<string name="everyday">Every Day - no rest for you!</string>
+	<string name="splash_screen">Welcome to NERD ALARM!</string>
 	
 <string-array name="modes_array">
 	<item>Slouch</item>

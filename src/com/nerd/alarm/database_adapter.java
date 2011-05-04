@@ -18,6 +18,7 @@ public class database_adapter{
 	    public static final String KEY_REPEAT = "repeat";    
 	    public static final String KEY_ENABLED = "enabled";    
 	    public static final String KEY_COUNTER = "counter";    
+	    public static final String KEY_MODE = "mode";    
 	    public static final String KEY_STAT = "stat";    
 	    private static final String TAG = "DBAdapter";
 	    
@@ -31,7 +32,8 @@ public class database_adapter{
 	    private static final String DATABASE_CREATE =
 	        "CREATE TABLE " + DATABASE_TABLE + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
 	        + "time TEXT NOT NULL, title TEXT NOT NULL, " 
-	        + "repeat INTEGER NOT NULL, enabled INTEGER NOT NULL, counter INTEGER NOT NULL);";
+	        + "repeat INTEGER NOT NULL, enabled INTEGER NOT NULL, counter INTEGER NOT NULL," +
+	        		"mode INTEGER NOT NULL);";
 	        
 	    private final Context context; 
 	    
@@ -77,7 +79,8 @@ public class database_adapter{
 	                		KEY_TIME, 
 	                		KEY_TITLE,
 	                		KEY_REPEAT,
-	                		KEY_ENABLED}, 
+	                		KEY_ENABLED,
+	                		KEY_MODE}, 
 	                		KEY_ROWID + "=" + rowId, 
 	                		null,
 	                		null, 
@@ -111,7 +114,7 @@ public class database_adapter{
 	    }
 	    
 	    //---insert an alarm into the database---
-	    public long insertAlarm(String time, String title, int repeat,int enabled, int counter)//, int stat) 
+	    public long insertAlarm(String time, String title, int repeat,int enabled, int counter, int mode)//, int stat) 
 	    {
 	        ContentValues initialValues = new ContentValues();
 	        initialValues.put(KEY_TIME, time);
@@ -119,7 +122,7 @@ public class database_adapter{
 	        initialValues.put(KEY_REPEAT, repeat);
 	        initialValues.put(KEY_ENABLED, enabled);
 	        initialValues.put(KEY_COUNTER, counter);
-	        //initialValues.put(KEY_STAT, stat);
+	        initialValues.put(KEY_MODE, mode);
 	        
 	        return db.insert(DATABASE_TABLE, null, initialValues);
 	    }
@@ -147,7 +150,8 @@ public class database_adapter{
 	        		KEY_TITLE,
 	                KEY_REPEAT,
 	                KEY_ENABLED,
-	                KEY_COUNTER}, 
+	                KEY_COUNTER,
+	                KEY_MODE}, 
 	                null, 
 	                null, 
 	                null, 
@@ -163,7 +167,8 @@ public class database_adapter{
 	                		KEY_TIME, 
 	                		KEY_TITLE,
 	                		KEY_REPEAT,
-	                		KEY_ENABLED},
+	                		KEY_ENABLED,
+	                		KEY_MODE},
 	                		KEY_ROWID + "=" + rowId, 
 	                		null,
 	                		null, 
@@ -191,13 +196,16 @@ public class database_adapter{
 	    
 	    //---updates an alarm---
 	    public boolean updateAlarm(long rowId, String time, 
-	    String title, Integer repeat, int enabled) 
+	    String title, Integer repeat, int enabled, int counter, int mode) 
 	    {
 	        ContentValues args = new ContentValues();
 	        args.put(KEY_TIME, time);
 	        args.put(KEY_TITLE, title);
 	        args.put(KEY_REPEAT, repeat);
 	        args.put(KEY_ENABLED, enabled);
+	        args.put(KEY_COUNTER, counter);
+	        args.put(KEY_MODE, mode);
+	        
 	        return db.update(DATABASE_TABLE, args, 
 	                         KEY_ROWID + "=" + rowId, null) > 0;
 	    }

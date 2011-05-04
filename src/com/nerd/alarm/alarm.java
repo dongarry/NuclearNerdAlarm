@@ -27,10 +27,10 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class alarm extends ListActivity {
-    
+    private long m_alarmID;
 	private static final int MY_DATA_CHECK_CODE = 1;
 	database_adapter db = null; 
-	private CursorAdapter dataSource;
+	private CustomSqlCursorAdapter dataSource;
 	
 	//private CursorAdapter dataSource;
 	//ListView lv = (ListView)this.findViewById(android.R.id.list);   
@@ -40,7 +40,7 @@ public class alarm extends ListActivity {
             fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine });*/
 	
 	//"Counter","Stat"
-	private static final String fields[] = { "time", "title","enabled","counter",BaseColumns._ID };
+	private static final String fields[] = { "time", "title","enabled","counter","mode",BaseColumns._ID };
 	
 	/** Called when the activity is first created. */
     @Override
@@ -89,24 +89,66 @@ public class alarm extends ListActivity {
     	this.db.close();
     }
     
-    // Allow Edit of existing alarms
     /*
+    public void disablealarm(View view) {
+    	CheckBox cbx = (CheckBox)view.findViewById(R.id.enable_cbx);
+	    String mPosition = cbx.getTag(1).toString();
+    	//Toast.makeText(alarm.this, "Disable Alarm:" + mPosition, Toast.LENGTH_SHORT).show();
+	    
+    	Toast.makeText(alarm.this, "Disable Alarm:", Toast.LENGTH_SHORT).show();
+    }
+    */
+    
+    @Override
+    protected void onListItemClick(ListView listView, View view, int position, long id) {
+        super.onListItemClick(listView, view, position, id);
+ 
+        //Intent intent = new Intent(Intent.ACTION_CALL);
+        Cursor cursor = (Cursor) dataSource.getItem(position);
+        m_alarmID = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+    	
+        if(m_alarmID>0){
+        	Bundle aBundle = new Bundle();
+        	aBundle.putLong("Alarm",m_alarmID);
+        	Intent editIntent = new Intent(this,addalarm.class); 
+        	editIntent.putExtras(aBundle);       
+		    startActivityForResult(editIntent,0);
+        }
+        
+    	//Toast.makeText(alarm.this, "Touch alarm:" + title, Toast.LENGTH_SHORT).show();
+    	
+        //intent.setData(ContentUris.withAppendedId(Phones.CONTENT_URI, phoneId));
+        //startActivity(intent);
+    }
+    
+    
+    
+    // Allow Edit of existing alarms
+    
+    /*
+     * Use custom adapter instead..
+     * 
     @Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
-		Object o = this.getListAdapter().getItem(position);
+		//TextView tv = (TextView)l.findViewById(android.R.id.alarmTime);   
+		//Object o = this.getListAdapter().getItem(position);
+		Object o = this.getListAdapter().getItemId(position);
 		String keyword = o.toString();
 		//Object d = dataSource.getItem(position);
 		Object d = dataSource.getCursor().getPosition();
 	
-		//Toast.makeText(this, "You selected: " + keyword + " - " + id, Toast.LENGTH_LONG)
-		//		.show();
-	}*/
+		Toast.makeText(this, "You selected: " + keyword + " - " + id, Toast.LENGTH_LONG)
+				.show();
+	}
+   */
+    
      
     protected void onActivityResult( int requestCode, int resultCode, Intent data) {
-        if (requestCode == MY_DATA_CHECK_CODE) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+        switch (requestCode) {
+        case MY_DATA_CHECK_CODE: {
+    	    if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
 
             } else {
@@ -114,7 +156,11 @@ public class alarm extends ListActivity {
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
-            }
+            		}
+        		}
+        default: {
+    	    	
+    	    }
         }
     }
    
@@ -127,9 +173,13 @@ public class alarm extends ListActivity {
     }
     
     public void addalarm(View view) {
+    	Bundle aBundle = new Bundle();
+    	aBundle.putLong("Alarm",0);
 		Intent addIntent = new Intent(this,addalarm.class); 
-		startActivity(addIntent);
-	}
+		addIntent.putExtras(aBundle);       
+	    startActivityForResult(addIntent,0);
+		
+    }
 
 	// Display our own custom menu when menu is selected.
 	 @Override
@@ -176,7 +226,7 @@ public class alarm extends ListActivity {
 	   
 	   public void DisplayAlarm(Cursor data){ 
 		   // with help from : http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/
-		   dataSource = new SimpleCursorAdapter(this, 
+		   dataSource = new CustomSqlCursorAdapter(this, 
 	    			 R.layout.alarm_list, data, 
                    fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine});
 	    	 setListAdapter(dataSource);

@@ -1,60 +1,51 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"    
+    android:layout_height="?android:attr/listPreferredItemHeight"  
     android:padding="6dip">
-        <View android:id="@+id/firstDivider"
-        android:layout_height="1dp"
-        android:layout_width="fill_parent"
-        android:background="#1155CC" />
-    <CheckBox android:id="@+id/enable_cbx"
-        android:focusable="false" 
-		android:focusableInTouchMode="false" 
-		android:paddingRight="2dp"
-		android:layout_width="40dip"
-        android:layout_height="34dip"
-        android:gravity="center_vertical"
-        />
+        <CheckBox android:id="@+id/enable_cbx"
+		android:focusable="false"
+		android:layout_marginRight="6dip"
+		android:layout_width="wrap_content"
+		android:gravity="center_vertical"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"/>
         <TextView
         android:id="@+id/alarmTime"
         android:layout_width="90dip"
-        android:layout_height="24dip"
+        android:layout_height="44dip"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="6dip"
+        android:gravity="top"
         android:textSize="34sp"
         android:text="13:55"
         android:layout_toRightOf="@+id/enable_cbx"
+        android:focusable="false"
         />
     <TextView  
         android:id="@+id/secondLine"
         android:layout_width="fill_parent"
         android:layout_toRightOf="@+id/alarmTime"
-        android:layout_height="26dip" 
+        android:layout_below="@+id/firstLine"
+        android:layout_height="22dip" 
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:singleLine="true"
         android:ellipsize="marquee"
-        android:text="Alarm details - time days repeat etc" />
-
+        android:text="Alarm details - time days repeat etc" 
+        android:focusable="false"
+        />
     <TextView
     	android:id="@+id/firstLine"
         android:layout_width="fill_parent"
         android:layout_toRightOf="@+id/alarmTime"
-        android:layout_height="wrap_content"
+        android:layout_height="22dip"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_above="@id/secondLine"
+        android:ellipsize="marquee"
         android:layout_alignWithParentIfMissing="true"
-        android:gravity="center_vertical"
-        android:text="Would contain alarm titles" />
-    <TextView
-    	android:id="@+id/alarm_id"
-        android:layout_width="2"
-        android:layout_toRightOf="@+id/alarmTime"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:gravity="center_vertical"
-        android:visibility="invisible" />  
-</RelativeLayout>
+        android:text="alarm titles" 
+        android:focusable="false"
+        />
+    </RelativeLayout>
