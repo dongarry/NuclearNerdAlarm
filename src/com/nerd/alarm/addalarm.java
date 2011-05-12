@@ -30,7 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 public class addalarm extends Activity {
 	private Button mSaveAlarm;
 	private TextView mSelectTime,mRepeatTime;
-	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0;
+	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0,mReset=0;
 	private int mMinute, mCurrMin,selectedDays=0;
 	private long mAlarmID=0;
 	private String mAlarmtime;
@@ -63,7 +63,6 @@ public class addalarm extends Activity {
         
         Bundle aBundle = this.getIntent().getExtras();
         mAlarmID = aBundle.getLong("Alarm");
-        //Toast.makeText(addalarm.this, "Alarm:" + mAlarmID, Toast.LENGTH_SHORT).show();
         
         // We don't want the keyboard to pop up automatically..
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -133,24 +132,27 @@ public class addalarm extends Activity {
 	    mSaveAlarm.setOnClickListener(new View.OnClickListener() {
 	    	public void onClick(View v) {
 	            	db.open();        
-	            	
+	            
 	            	int mMode = spinner.getSelectedItemPosition();
 	                if (mMode<0) {mMode=0;}
 	            	
 	                //Save alarm details
 	                if(mAlarmID>0){
-	                		    
-	                boolean bUpdate = db.updateAlarm(mAlarmID,
-	    		                		mAlarmtime,
-	    		                		edittext.getText().toString(),
-	    		                		selectedDays,
-	    		                		mEnabled,
-	    		                		mCounter,
-	    		                		mMode);
+	                	
+	                	if (db.getEnabledAlarm(mAlarmID,mEnabled)){mReset=1;}
+		            	
+		                boolean bUpdate = db.updateAlarm(mAlarmID,
+		    		                		mAlarmtime,
+		    		                		edittext.getText().toString(),
+		    		                		selectedDays,
+		    		                		mEnabled,
+		    		                		mCounter,
+		    		                		mMode);
+		                
+		                if (bUpdate){Toast.makeText(addalarm.this, "Alarm:" + mAlarmID + " has been updated", Toast.LENGTH_SHORT).show();}
+		                else{Toast.makeText(addalarm.this, "Alarm:" + mAlarmID + " UPDATE FAILED!", Toast.LENGTH_SHORT).show();}
+	                	}
 	                
-	                if (bUpdate){Toast.makeText(addalarm.this, "Alarm:" + mAlarmID + " has been updated", Toast.LENGTH_SHORT).show();}
-	                else{Toast.makeText(addalarm.this, "Alarm:" + mAlarmID + " UPDATE FAILED!", Toast.LENGTH_SHORT).show();}
-	                }
 	                else{
 	                	mAlarmID = db.insertAlarm(
 		                		mAlarmtime,
@@ -160,9 +162,11 @@ public class addalarm extends Activity {
 		                		mCounter,
 		                		mMode);//,mStat);     
 	                }
-		            db.close();
-	                setTime((int)(mAlarmID));
-	                finish(); // We're done with this.
+		            
+	                db.close();
+	                if (mReset==1){Toast.makeText(addalarm.this, "Alarm: is reset!", Toast.LENGTH_SHORT).show();
+	                	setTime((int)(mAlarmID));}
+	                finish(); 
 	            	}
 	        });
 	    /*
@@ -223,72 +227,56 @@ public class addalarm extends Activity {
     }
     
     private void setTime(int alarmID) {
-	      Intent alarmIntent = new Intent(this, AlarmActivity.class);
-	      
-	      Bundle params = new Bundle();
-	      params.putLong("AlarmID",alarmID);   
-	      alarmIntent.putExtras(params); //Pass the Alarm ID
-  	      
-	      //Cancel previous alarm (if exists)??
-	      AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-  	      PendingIntent pendingIntent = PendingIntent.getActivity(this, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-  	      
-  	      long timeDiff =0;
-  	      //int mDayFlag=0;
-  	      
-  	     Calendar alarmTime = Calendar.getInstance();
-  	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
-	      mCurrMin = alarmTime.get(Calendar.MINUTE);
-	      
-	      Toast.makeText(addalarm.this, "Set : " + mCurrHour + ":" + mCurrMin + " - " + mHour + ":" + mMinute, Toast.LENGTH_SHORT).show();
-	      
-	      
-	      if (mCurrHour>mHour) {
-	    	  timeDiff+=86400000; //Set for next day
-	    	  //mDayFlag=1;
-	    	  //Toast.makeText(addalarm.this, "1 Hour > " + timeDiff, Toast.LENGTH_SHORT).show();		      
-	      };
-	      
-	      if (mCurrHour<mHour) {
-	    	  timeDiff+=((mHour-mCurrHour)*3600000);
-	    	  //Toast.makeText(addalarm.this, "2 Hour < " + timeDiff, Toast.LENGTH_SHORT).show();
+    	 //TODO call the display records class ..
+		 Intent alarmIntent = new Intent(this, AlarmActivity.class);
+		      
+		 Bundle params = new Bundle();
+		 params.putLong("AlarmID",alarmID);   
+		 alarmIntent.putExtras(params); //Pass the Alarm ID
+	  	      
+		 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+	  	 PendingIntent pendingIntent = PendingIntent.getActivity(this, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	  	 
+	  	if (mEnabled==1){
+		  	 long timeDiff =0; 
+	  	     Calendar alarmTime = Calendar.getInstance();
+	  	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
+		     mCurrMin = alarmTime.get(Calendar.MINUTE);
+		        
+		     if (mCurrHour>mHour) {mHour+=24;}
+		      
+		     if (mCurrHour<mHour) {timeDiff+=((mHour-mCurrHour)*3600000);}
+		      
+		     if (mCurrMin>mMinute) {mMinute+=60;}
+		    	  
+		     if (mCurrMin<mMinute) {
+		    	  if (mMinute>60) {timeDiff-=3600000;} // take off an hour
+		    	  timeDiff+=(((mMinute-mCurrMin)*60000));} // Add minutes
+		       
+		     timeDiff-=10000; //Let's start up 10 Seconds before we're due.
+		      
+		     alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
+		     
+		     String alarmDetails =  getString(R.string.alarm_enabled) + " ";
+		     timeDiff=timeDiff/1000;
+		     if (timeDiff>(24 * 3600)){
+		    	  alarmDetails =  alarmDetails + (timeDiff / (24 * 3600)) + " " + getString(R.string.alarm_days) + (timeDiff/(3600)) + " " + getString(R.string.alarm_hours) + (timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}
+		     else if (timeDiff>(3600)){
+		    	  alarmDetails =  alarmDetails + (timeDiff/(3600)) + " " + getString(R.string.alarm_hours) + (timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}	    	  
+			 else
+				alarmDetails =  alarmDetails + (timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";
+	  		
+		     Toast.makeText(addalarm.this, alarmDetails, Toast.LENGTH_SHORT).show();	
 
-	      };
-	      
-	      if (mCurrMin>mMinute) {
-	    	  mMinute+=60;
-	    	 // if (mDayFlag==1){
-	    		//  	timeDiff-=3600000; //Take off an hour
-	  	    	//  Toast.makeText(addalarm.this, "3 Min > " + timeDiff, Toast.LENGTH_SHORT).show();
-
-	    	  //}
-	    	  //else {
-	    	//	  timeDiff+=86400000;  
-	    	  //		}
-	    	  };
-	    	  
-	      if (mCurrMin<mMinute) {
-	    	  if (mMinute>60) {
-	    		  timeDiff-=3600000; // take off an hour
-	    	  }
-	    	  Toast.makeText(addalarm.this, "3 Min <" + timeDiff, Toast.LENGTH_SHORT).show();
-	    	  timeDiff+=(((mMinute-mCurrMin)*60000)); // Add minutes
-	    	  Toast.makeText(addalarm.this, "4 Min <" + timeDiff, Toast.LENGTH_SHORT).show();
-
-	      };
-	      
-	      timeDiff-=10000; //Let's start up 10 Seconds before we're due.
-	      
-	      if (mEnabled==1){timeDiff=3000;
-	      	alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
-	      timeDiff=20000;
-	      return;
-	      }; // For test purposes
-  	      
-	      //Toast.makeText(addalarm.this, "Set : " + timeDiff, Toast.LENGTH_SHORT).show();
-	      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
-    	
-    }
+	  	}
+	  	else
+	  	{
+	  			alarmManager.cancel(pendingIntent);	
+	  			Toast.makeText(addalarm.this, getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();	
+	  	}
+		      return;
+    };
+  	    
     
     private void updateDisplay() {
     	StringBuilder sAlarmTime = new StringBuilder()
@@ -296,7 +284,7 @@ public class addalarm extends Activity {
         .append(pad(mMinute));
         
     	//mSelectTime.append(sAlarmTime);
-    	mSelectTime.setText(getString(R.string.timesetto)+ sAlarmTime);
+    	mSelectTime.setText(getString(R.string.timesetto)+ " " + sAlarmTime);
     	mAlarmtime=sAlarmTime.toString();
     	        
     }
@@ -326,7 +314,6 @@ public class addalarm extends Activity {
                         mTimeSetListener, mHour, mMinute, false);
             }
             return null;
-        
         }
 }
 

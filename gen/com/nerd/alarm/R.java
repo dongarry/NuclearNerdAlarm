@@ -90,6 +90,11 @@ public final class R {
     }
     public static final class string {
         public static final int add=0x7f070002;
+        public static final int alarm_days=0x7f07002d;
+        public static final int alarm_disabled=0x7f07002c;
+        public static final int alarm_enabled=0x7f07002b;
+        public static final int alarm_hours=0x7f07002e;
+        public static final int alarm_minutes=0x7f07002f;
         public static final int alarms=0x7f070017;
         public static final int alarmtext1=0x7f070019;
         public static final int alarmtext2=0x7f07001a;

@@ -7,10 +7,16 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <application android:icon="@drawable/android_pressed" android:label="@string/app_name" 
     		android:theme="@style/NuclearTheme">
-        <activity android:name=".alarm" android:label="@string/app_name">
+        <activity android:name=".splash" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".alarm" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.nerd.alarm" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".addalarm" android:label="@string/app_name">
@@ -31,7 +37,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".display_records" android:label="@string/app_name">
+        <activity android:name=".Display_Records" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="com.nerd.display_records" />
                 <category android:name="android.intent.category.DEFAULT" />

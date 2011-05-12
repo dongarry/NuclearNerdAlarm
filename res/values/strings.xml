@@ -43,6 +43,11 @@
 	<string name="weekdays">Weekdays</string>
 	<string name="everyday">Every Day - no rest for you!</string>
 	<string name="splash_screen">Welcome to NERD ALARM!</string>
+	<string name="alarm_enabled">Alarm will activate in</string>
+	<string name="alarm_disabled">Alarm is now deactivated</string>
+	<string name="alarm_days">days and</string>
+	<string name="alarm_hours">hours and</string>
+	<string name="alarm_minutes">minutes</string>
 	
 <string-array name="modes_array">
 	<item>Slouch</item>

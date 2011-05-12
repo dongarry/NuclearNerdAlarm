@@ -45,7 +45,6 @@
         android:layout_alignParentTop="true"
         android:ellipsize="marquee"
         android:layout_alignWithParentIfMissing="true"
-        android:text="alarm titles" 
         android:focusable="false"
         />
     </RelativeLayout>

@@ -26,9 +26,9 @@ public class database_adapter{
 	    private static final String DATABASE_TABLE = "Alarms";
 	    private static final int DATABASE_VERSION = 1;
 	    
-	    private static final String DROP_TABLE = "DROP TABLE" + DATABASE_TABLE;
+	    //private static final String DROP_TABLE = "DROP TABLE" + DATABASE_TABLE;
 	    private static final String ALL_ALARM_DELETE = "DELETE FROM " + DATABASE_TABLE + ";";
-	    private static final String LATEST_ALARM = "SELECT FROM " + DATABASE_TABLE + "WHERE ";
+	    //private static final String LATEST_ALARM = "SELECT FROM " + DATABASE_TABLE + "WHERE ";
 	    private static final String DATABASE_CREATE =
 	        "CREATE TABLE " + DATABASE_TABLE + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
 	        + "time TEXT NOT NULL, title TEXT NOT NULL, " 
@@ -70,6 +70,29 @@ public class database_adapter{
 	            onCreate(db);
 	        }
 	    }    
+	    
+	    public Boolean getEnabledAlarm(long rowId, int enabled) throws SQLException 
+	    {
+	        Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
+						            		KEY_ROWID,
+						            		KEY_TIME, 
+						            		KEY_TITLE,
+						            		KEY_REPEAT,
+						            		KEY_ENABLED,
+						            		KEY_MODE}, 
+						            		KEY_ROWID + "=" + rowId + " AND " + KEY_ENABLED + "=" + enabled, 
+						            		null,
+						            		null, 
+						            		null, 
+						            		null, 
+						            		null);
+    
+				    if (mCursor != null) {
+				        return true;}
+				    else
+				    return false;
+	       
+	    }
 	    
 	    public Cursor getLatestAlarm(long rowId) throws SQLException 
 	    {
@@ -209,4 +232,13 @@ public class database_adapter{
 	        return db.update(DATABASE_TABLE, args, 
 	                         KEY_ROWID + "=" + rowId, null) > 0;
 	    }
+	    
+	    public boolean enableAlarm(long rowId,int enabled) 
+	    	    {
+	    	        ContentValues args = new ContentValues();
+	    	        args.put(KEY_ENABLED, enabled);
+	    	        
+	    	        return db.update(DATABASE_TABLE, args, 
+	    	                         KEY_ROWID + "=" + rowId, null) > 0;
+	    	    }
 	}

@@ -107,6 +107,9 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
             //mCounter=a.getInt(5); 
             mTtitleDisplay.setText(myText1); 
             
+            //TODO If non repeating - reset enabled 
+            // else re-schedule alarm.
+            
             /* Testing Alarm */
             int mHour, mMinute;
             String mTime;

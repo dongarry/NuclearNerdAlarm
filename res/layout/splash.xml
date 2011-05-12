@@ -9,4 +9,8 @@
     android:layout_height="wrap_content" 
     android:text="@string/splash_screen"
     />
+    <ImageView id="@+id/splash_img"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"
+   />
 </LinearLayout>

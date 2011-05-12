@@ -1,16 +1,14 @@
 package com.nerd.alarm;
 
 
+
 import android.app.ListActivity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.os.AsyncTask;
 import android.os.Bundle;
-//import android.os.Debug;
 import android.os.SystemClock;
 import android.provider.BaseColumns;
 import android.view.Menu;
@@ -18,12 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.speech.tts.TextToSpeech;
-//import android.widget.ListView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+
 import android.widget.Toast;
 
 public class alarm extends ListActivity {
@@ -31,15 +25,6 @@ public class alarm extends ListActivity {
 	private static final int MY_DATA_CHECK_CODE = 1;
 	database_adapter db = null; 
 	private CustomSqlCursorAdapter dataSource;
-	
-	//private CursorAdapter dataSource;
-	//ListView lv = (ListView)this.findViewById(android.R.id.list);   
-	
-	/*listAdapter = new SimpleCursorAdapter(this, 
-			 R.layout.alarm_list, data, 
-            fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine });*/
-	
-	//"Counter","Stat"
 	private static final String fields[] = { "time", "title","enabled","counter","mode",BaseColumns._ID };
 	
 	/** Called when the activity is first created. */
@@ -89,16 +74,8 @@ public class alarm extends ListActivity {
     	this.db.close();
     }
     
-    /*
-    public void disablealarm(View view) {
-    	CheckBox cbx = (CheckBox)view.findViewById(R.id.enable_cbx);
-	    String mPosition = cbx.getTag(1).toString();
-    	//Toast.makeText(alarm.this, "Disable Alarm:" + mPosition, Toast.LENGTH_SHORT).show();
-	    
-    	Toast.makeText(alarm.this, "Disable Alarm:", Toast.LENGTH_SHORT).show();
-    }
-    */
     
+    // Edit existing alarms
     @Override
     protected void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
@@ -114,37 +91,9 @@ public class alarm extends ListActivity {
         	editIntent.putExtras(aBundle);       
 		    startActivityForResult(editIntent,0);
         }
-        
-    	//Toast.makeText(alarm.this, "Touch alarm:" + title, Toast.LENGTH_SHORT).show();
-    	
-        //intent.setData(ContentUris.withAppendedId(Phones.CONTENT_URI, phoneId));
-        //startActivity(intent);
     }
     
-    
-    
-    // Allow Edit of existing alarms
-    
-    /*
-     * Use custom adapter instead..
-     * 
-    @Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		// Get the item that was clicked
-		//TextView tv = (TextView)l.findViewById(android.R.id.alarmTime);   
-		//Object o = this.getListAdapter().getItem(position);
-		Object o = this.getListAdapter().getItemId(position);
-		String keyword = o.toString();
-		//Object d = dataSource.getItem(position);
-		Object d = dataSource.getCursor().getPosition();
-	
-		Toast.makeText(this, "You selected: " + keyword + " - " + id, Toast.LENGTH_LONG)
-				.show();
-	}
-   */
-    
-     
+    //Check Text to Speech..
     protected void onActivityResult( int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
         case MY_DATA_CHECK_CODE: {
@@ -200,8 +149,10 @@ public class alarm extends ListActivity {
 		      	return true;
 		    default:
 		    	Toast.makeText(alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
-		    	/* Ensure we cancel all enabled alarms when doing this */
-		    	return (db.deleteAllAlarms());
+		    	/* TODO Ensure we cancel all enabled alarms when doing this */
+		    	boolean mDel = db.deleteAllAlarms();
+		    	dataSource.getCursor().requery();
+		    	return (mDel);
 		    	
 		    	/*
 		    	Intent displayIntent = new Intent(this,display_records.class); 
@@ -211,7 +162,7 @@ public class alarm extends ListActivity {
 		}
 		 
 	   public void setalarm(View view) {
-	        Toast.makeText(alarm.this, "set alarm", Toast.LENGTH_SHORT).show();
+	        //Toast.makeText(alarm.this, "set alarm", Toast.LENGTH_SHORT).show();
 	        //Intent intent = new Intent(this, AlarmService.class);
 	        //startService(intent);
 
@@ -228,7 +179,7 @@ public class alarm extends ListActivity {
 		   // with help from : http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/
 		   dataSource = new CustomSqlCursorAdapter(this, 
 	    			 R.layout.alarm_list, data, 
-                   fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine});
+                   fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine},db);
 	    	 setListAdapter(dataSource);
 	   
 		   }
