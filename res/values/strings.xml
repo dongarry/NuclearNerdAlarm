@@ -9,7 +9,7 @@
     <string name="changetime">Change the time!!</string>
     <string name="setthetime">Set alarm time</string>
     <string name="timesetto">Alarm set for </string>
-    <string name="savealarm">Save</string>
+    <string name="save">Save</string>
     <string name="title">Title</string>
     <string name="sound">Sound</string>
     <string name="testme">Test Me</string>
@@ -20,8 +20,11 @@
     <string name="volume">Volume</string>
     <string name="enabled">Enabled</string>
     <string name="mode">Mode</string>
+    <string name="mode_summary">This will define the characteristics of your alarm</string>
     <string name="delete_all">All Alarms Deleted!</string>
     <string name="mode_select">Please select a mode</string>
+    <string name="snooze_select">Please select snooze duration</string>
+    <string name="sound_select">Please select a sound</string>
     <string name="noalarmset">No Alarms set</string>
     <string name="alarms">Alarms List</string>
     <string name="alarmtitle">Nerd Alarm is a ninja!</string>
@@ -42,18 +45,81 @@
 	<string name="sunday">Sun</string>
 	<string name="weekdays">Weekdays</string>
 	<string name="everyday">Every Day - no rest for you!</string>
-	<string name="splash_screen">Welcome to NERD ALARM!</string>
+	<string name="splash_screen">NERD NINJA ALARM</string>
 	<string name="alarm_enabled">Alarm will activate in</string>
 	<string name="alarm_disabled">Alarm is now deactivated</string>
 	<string name="alarm_days">days and</string>
 	<string name="alarm_hours">hours and</string>
 	<string name="alarm_minutes">minutes</string>
+	<string name="mode_default">Bunny</string>
+	<string name="alarm_category">Alarm Details</string>
+	<string name="alarm_greeting">Alarm Greeting</string>
+	<string name="greeting_summary">This will be included for the talking alarm</string>
+	<string name="alarm_vibrate">Vibrate</string>
+	<string name="vibrate_summary">Alarm will vibrate on activation</string>
+	<string name="snooze_summary">How long will the alarm snooze for</string>
+	<string name="alarm_ringtone">AlarmTone</string>
+	<string name="ringtone_summary">What sound will the Alarm make</string>
+	<string name="nerd_summary">Will try to access your Calender,Gmail and Weather and tell you what is happening</string>
+	<string name="err_greeting">oh oh..something bad has happened..</string>	
+	<string name="bunny_greeting">hmmmmmmm</string>
+	<string name="nerd_greeting">Giraffes have no vocal cords</string>
+	<string name="nuclear_greeting">Get owt!, Get owt! Get downn! Get up! Hurry</string>
+	<string name="ninja_greeting">zz</string>
+	<string name="andy_greeting">WHAT THE HELL ARE YOU DOING!</string>
+	<string name="helen_greeting">Oh my my, you are fantastic!</string>
 	
+<string-array name="nerd_array">
+	<item>A jellyfish is 95 percent water!</item>
+	<item>The Mona Lisa has no eyebrows. It was the fashion in Renaissance Florence to shave them off! She is ugly</item>
+	<item>There are over 58 million dogs in the U.S! Thats animal dogs.</item>
+	<item>Windmills always turn counter-clockwise. Except for the windmills in Ireland!... Irish weirdos!</item>
+	<item>Recycling one glass jar, saves enough energy to watch T.V for 3 hours. Alternatively, stop watching T.V</item>
+	<item>Over 10,000 birds a year die from smashing into windows. Lets ban windows</item>
+	<item>Men are 6 times more likely to be struck by lightning than women!. Thats because they want to be struck.</item>
+	<item>In the year 2000, Pope John Paul the second was named an Honorary Harlem Globetrotter. He was the best one.</item>
+	<item>Human teeth are almost as hard as rocks. Lets play teeth, paper, siccors!</item>
+	<item>Every day 20 banks are robbed. The average take is 2,500 dollars. Except in Ireland, where the banks rob the people.</item>
+	</string-array>
+<string-array name="helen_array">
+	<item>You are wonderful.</item>
+	<item>You look good.</item>
+	<item>I think you are the best.</item>
+	<item>Today will be super now that you are here.</item>
+	<item>You are ridiculously hot.</item>
+	<item>I would vote you for President.</item>
+	<item>Do not worry about a thing, you are super capable.</item>
+	<item>You are so hot, I could fry eggs on you.</item>
+	<item>Damn! you keep getting better looking!</item>
+	<item>Row Row Row your boat, gently down the stream, merrily merrily merrily merrily, life is but a dream.</item>
+	</string-array>
+<string-array name="andy_array">
+	<item>I shake an onion in your hair and poke my finger in your nose.</item>
+	<item>Your room is smelly like your armpit.</item>
+	<item>I wave a smelly sock in your face and cough in your general direction.</item>
+	<item>I have hidden your shoes, you will never find them.</item>
+	<item>Your toothbrush is now in the toilet. I rejoice in this.</item>
+	<item>You have a stupid phone, but some people say : like phone, like user.</item>
+	<item>You cannot keep ignoring me, I will throw up in your shoes and sit on your cat.</item>
+	<item>Im using up the battery on your phone, soon, I will be ruler of your world muh hahahahaha haha</item>
+	<item>You are stubborn like a mule. And have a strange taste in music. But I like you.</item>
+	<item>I give up. You ignore everything I say. This relationship is not working out. Aaaaaaaaaaaaarrrrrgh. Get up!</item>
+	</string-array>
 <string-array name="modes_array">
-	<item>Slouch</item>
-	<item>Sunrise</item>
+	<item>Bunny</item>
+	<item>Nerd</item>
 	<item>Nuclear</item>
-	<item>Cuckoo</item>
+	<item>Ninja</item>
+	<item>AngryAndy</item>
+	<item>HappyHelen</item>
+	</string-array>
+<string-array name="modes_codes">
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>
+	<item>4</item>
+	<item>5</item>
+	<item>6</item>
 	</string-array>
 <string-array name="days_array">
 	<item>Repeat</item>
@@ -71,5 +137,19 @@
 	<item>15 mins</item>
 	<item>20 mins</item>
 	<item>30 mins</item>
+	</string-array>
+<string-array name="snooze_codes">
+	<item>5</item>
+	<item>10</item>
+	<item>15</item>
+	<item>20</item>
+	<item>30</item>
+	</string-array>
+<string-array name="sound_array">
+	<item>Bird_light</item>
+	<item>Bird_mental</item>
+	<item>Animal_mad</item>
+	<item>Explosion</item>
+	<item>Classic</item>
 	</string-array>
 </resources>

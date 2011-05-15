@@ -1,33 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+>
         <PreferenceCategory
-                android:title="First Category">
-                <CheckBoxPreference
-                        android:title="Checkbox Preference"
-                        android:defaultValue="false"
-                        android:summary="This preference can be true or false"
-                        android:key="checkboxPref" />
+                android:title="@string/mode_select">
                 <ListPreference
-                        android:title="List Preference"
-                        android:summary="This preference allows to select an item in a array"
-                        android:key="listPref"
-                        android:defaultValue="digiGreen"
+                        android:title="@string/mode"
+                        android:summary="@string/mode_summary"
+                        android:key="modePref"
                         android:entries="@array/modes_array"
                         android:entryValues="@array/modes_array" />
         </PreferenceCategory>
         <PreferenceCategory
-                android:title="Second Category">
+                android:title="@string/alarm_category">
         <EditTextPreference
-                android:name="EditText Preference"
-                android:summary="This allows you to enter a string"
-                android:defaultValue="Nothing"
-                android:title="Edit This Text"
-                android:key="editTextPref" />
+                android:name="Greeting Preference"
+                android:summary="@string/greeting_summary"
+                android:title="@string/alarm_greeting"
+                android:key="greetingPref"/>
+        <CheckBoxPreference
+                        android:title="@string/alarm_vibrate"
+                        android:summary="@string/vibrate_summary"
+                        android:key="vibratePref" />
+         <ListPreference
+                        android:title="@string/snooze"
+                        android:summary="@string/snooze_summary"
+                        android:key="snoozePref"
+                        android:entries="@array/snooze_array"
+                        android:entryValues="@array/snooze_codes"/>
+        <CheckBoxPreference
+                        android:title="@string/nerd"
+                        android:summary="@string/nerd_summary"
+                        android:key="nerdPref" />
         <RingtonePreference
                 android:name="Ringtone Preference"
-                android:summary="Select a ringtone"
-                android:title="Ringtones"
-                android:key="ringtonePref" />
+                android:summary="@string/ringtone_summary"
+                android:title="@string/alarm_ringtone"
+                android:key="soundPref" />
         <PreferenceScreen
                 android:key="SecondPrefScreen"
                 android:title="Second PreferenceScreen"
@@ -39,7 +47,8 @@
                         android:key="SecondEditTextPref" />
         </PreferenceScreen>
         <Preference
-                android:title="Custom Preference"
+                android:title="@string/save"
+                android:gravity="center"
                 android:summary="This works almost like a button"
                 android:key="customPref" />
         </PreferenceCategory>

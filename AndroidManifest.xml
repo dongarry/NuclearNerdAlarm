@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".alarm_pref" android:label="@string/app_name">
+        <activity android:name=".alarm_pref" android:label="@string/app_name" android:theme="@style/PreferencesTheme">
             <intent-filter>
                 <action android:name="com.nerd.alarm_pref" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -81,8 +81,8 @@ public class alarm extends ListActivity {
         super.onListItemClick(listView, view, position, id);
  
         //Intent intent = new Intent(Intent.ACTION_CALL);
-        Cursor cursor = (Cursor) dataSource.getItem(position);
-        m_alarmID = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+        Cursor _cursor = (Cursor) dataSource.getItem(position);
+        m_alarmID = _cursor.getLong(_cursor.getColumnIndex(BaseColumns._ID));
     	
         if(m_alarmID>0){
         	Bundle aBundle = new Bundle();
@@ -116,8 +116,8 @@ public class alarm extends ListActivity {
     public void loadAlarms(){
     	//---get all Alarms---
         //db.open();
-    	Cursor a = db.getAlarms();
-        DisplayAlarm(a);
+    	Cursor _a = db.getAlarms();
+        DisplayAlarm(_a);
         //db.close();
     }
     
@@ -147,20 +147,24 @@ public class alarm extends ListActivity {
 		      	Intent prefIntent = new Intent(this,alarm_pref.class); 
 				startActivity(prefIntent);
 		      	return true;
-		    default:
+		    case R.id.clear_all:
 		    	Toast.makeText(alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
 		    	/* TODO Ensure we cancel all enabled alarms when doing this */
-		    	boolean mDel = db.deleteAllAlarms();
+		    	boolean _del = db.deleteAllAlarms();
 		    	dataSource.getCursor().requery();
-		    	return (mDel);
+		    	return (_del);
 		    	
+			 default:
+		    	Toast.makeText(alarm.this,getString(R.string.err_greeting) + item.getItemId(), Toast.LENGTH_SHORT).show();
+		    	return true;
 		    	/*
 		    	Intent displayIntent = new Intent(this,display_records.class); 
 				startActivity(displayIntent);
 		    	return true;*/
 		    }
 		}
-		 
+
+	 /*
 	   public void setalarm(View view) {
 	        //Toast.makeText(alarm.this, "set alarm", Toast.LENGTH_SHORT).show();
 	        //Intent intent = new Intent(this, AlarmService.class);
@@ -173,12 +177,12 @@ public class alarm extends ListActivity {
 
 	        alarmManager.set(AlarmManager.ELAPSED_REALTIME, currentTime + 3000, pendingIntent);
 	    }
-       
+      */ 
 	   
-	   public void DisplayAlarm(Cursor data){ 
+	   public void DisplayAlarm(Cursor _data){ 
 		   // with help from : http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/
 		   dataSource = new CustomSqlCursorAdapter(this, 
-	    			 R.layout.alarm_list, data, 
+	    			 R.layout.alarm_list, _data, 
                    fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine},db);
 	    	 setListAdapter(dataSource);
 	   

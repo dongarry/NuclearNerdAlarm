@@ -20,6 +20,7 @@
         android:gravity="top"
         android:textSize="34sp"
         android:text="13:55"
+        android:textColor="#000f00"
         android:layout_toRightOf="@+id/enable_cbx"
         android:focusable="false"
         />
@@ -34,6 +35,7 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:text="Alarm details - time days repeat etc" 
+        android:textColor="#000f00"
         android:focusable="false"
         />
     <TextView
@@ -43,6 +45,7 @@
         android:layout_height="22dip"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:textColor="#000f00"
         android:ellipsize="marquee"
         android:layout_alignWithParentIfMissing="true"
         android:focusable="false"

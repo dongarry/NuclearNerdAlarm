@@ -38,9 +38,10 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     private Timer mPowerTimer;
     private KeyguardLock mKeyguardLock; 
     private int mCounter=0;
-    database_adapter db = new database_adapter(this); 
-    private MediaPlayer mp = null;
     
+    database_adapter _db = new database_adapter(this); 
+    private MediaPlayer _mp = null;
+    private PowerManager _pm = null;
     
     public void onCreate(Bundle savedInstanceState) {
     	// Debug.waitForDebugger();
@@ -101,8 +102,8 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         if (mAlarmID!=0) {
         	//Load the alarm settings
         	TextView mTtitleDisplay = (TextView) findViewById(R.id.wakeup);
-        	db.open();
-            Cursor a = db.getAlarm(mAlarmID);	
+        	_db.open();
+            Cursor a = _db.getAlarm(mAlarmID);	
             myText1=a.getString(2); // Title 
             //mCounter=a.getInt(5); 
             mTtitleDisplay.setText(myText1); 
@@ -117,8 +118,8 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
             mHour = c.get(Calendar.HOUR_OF_DAY);
             mMinute = c.get(Calendar.MINUTE);
             mTime = myText1 + "-" + mHour + ":" + mMinute;
-            db.updateStatistic(mAlarmID,mCounter,101,mTime);
-            db.close();
+            _db.updateStatistic(mAlarmID,mCounter,101,mTime);
+            _db.close();
             
         }
         else
@@ -129,11 +130,12 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         PowerUp();
         //UnlockKeyguard();
         saySomething();
+        playSomething();
     }
     
     public void checkMedia(){
-    	if (mp!=null){mp.pause();
-        mp.release();}
+    	if (_mp!=null){_mp.pause();
+        _mp.release();}
     }
     public void handleSpeak(View view) {
         saySomething();
@@ -150,9 +152,9 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	 //Based on tutorial
     	 //http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
     	// Play different sounds at different levels.. 
-    	MediaPlayer mp = MediaPlayer.create(AlarmActivity.this,R.raw.nerd);
+    	_mp = MediaPlayer.create(AlarmActivity.this,R.raw.nerd);
     	 try {
-			mp.prepare();
+			_mp.prepare();
     	 	} 
 		catch (IllegalStateException e) {
 			//textToSpeech.speak("We had problems playing music..", TextToSpeech.QUEUE_FLUSH, null);
@@ -161,9 +163,10 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	 mp.start();
+    	 _mp.start();
+    	 
     	 // i.e. react on the end of the music-file:
-    	 	mp.setOnCompletionListener(new OnCompletionListener(){
+    	 _mp.setOnCompletionListener(new OnCompletionListener(){
 
          // @Override
          public void onCompletion(MediaPlayer arg0) {
@@ -179,13 +182,13 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     private void PowerUp() 
     { 
     	//http://groups.google.com/group/android-developers/browse_thread/thread/cc8d7ab760946ee4
-    	PowerManager pm = (PowerManager) getSystemService (Context.POWER_SERVICE); 
+    	_pm = (PowerManager) getSystemService (Context.POWER_SERVICE); 
         cancelWakeLock(); 
            
          //PowerManager.ON_AFTER_RELEASE          
            // and we keep it on for a bit after release - seem to actualy stop the device powering up when 
            // not on charge 
-            mWakeLock = pm.newWakeLock( 
+            mWakeLock = _pm.newWakeLock( 
                          PowerManager.FULL_WAKE_LOCK |  // could use bright instead 
                          PowerManager.ACQUIRE_CAUSES_WAKEUP  // so we actually wake the device  
                          , "Nerd Alarm"); 
