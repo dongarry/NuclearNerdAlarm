@@ -10,10 +10,13 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
 import android.app.KeyguardManager.OnKeyguardExitResult;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -27,29 +30,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
-
 public class AlarmActivity extends Activity implements TextToSpeech.OnInitListener {
     private TextToSpeech textToSpeech;
     private long mAlarmID =0;
-    private String myText1;
-    private String myText2;
+    private String mySpeak1,mySpeak2,mySpeak3, mNextAlarm;
+    
     private PowerManager.WakeLock mWakeLock;
     private Timer mPowerTimer;
     private KeyguardLock mKeyguardLock; 
-    private int mCounter=0;
     
-    database_adapter _db = new database_adapter(this); 
+    private int mCounter=0,mRepeat=0, mMode=0,mEnabled=0, mHour,mMinute;
+    private int mTest=0,mSnooze=0, mDefaultVolume=0,mPlay,mStatus=0;
+    private boolean mVibrate,mNerd,mSpeak;
     private MediaPlayer _mp = null;
     private PowerManager _pm = null;
     
+    private String _modes [];
+    private int mode = Activity.MODE_PRIVATE;
+    
+    SharedPreferences mySharedPreferences; 
+    database_adapter _db = new database_adapter(this); 
+    AudioManager mAudioManager = null;
+    Display_Records my_records = null;
+    
     public void onCreate(Bundle savedInstanceState) {
-    	// Debug.waitForDebugger();
+    	
     	setVolumeControlStream(AudioManager.STREAM_MUSIC); // We want the user to be able to turn us down..
     	super.onCreate(savedInstanceState);
     	setTitle(getString(R.string.alarmtitle));
-        
-    	myText2=getString(R.string.alarmtext2);
+    	mySpeak2=getString(R.string.alarmtext2);
     	
     	//http://stackoverflow.com/questions/628659/how-can-i-manage-audio-volumes-sanely-in-my-android-app/674207#674207
         // see http://getablogger.blogspot.com/2008/01/android-pass-data-to-activity.html
@@ -61,7 +70,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         
         loadDetails();
         
-      //icon snooze handle
         final Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -71,7 +79,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
             }
         });
         
-        //wl.release();
         
    }
     
@@ -79,7 +86,8 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     protected void onPause(){
         super.onPause();
         cancelWakeLock();
-        checkMedia();
+        rescheduleAlarm(2);
+        //checkMedia();
         //exitKeyguard(); 
     }
     
@@ -88,95 +96,134 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         super.onStop();
         cancelWakeLock();
         checkMedia();
+        rescheduleAlarm(3);
         //exitKeyguard(); 
     }
     
     public void loadDetails (){
+    	
     	Bundle extras = getIntent().getExtras(); 
         if(extras !=null)
-        {
-        	mAlarmID = extras.getLong("AlarmID");
-        }
-        
+          {mAlarmID = extras.getLong("AlarmID");}
         
         if (mAlarmID!=0) {
-        	//Load the alarm settings
         	TextView mTtitleDisplay = (TextView) findViewById(R.id.wakeup);
+        	
         	_db.open();
             Cursor a = _db.getAlarm(mAlarmID);	
-            myText1=a.getString(2); // Title 
-            //mCounter=a.getInt(5); 
-            mTtitleDisplay.setText(myText1); 
-            
-            //TODO If non repeating - reset enabled 
-            // else re-schedule alarm.
-            
-            /* Testing Alarm */
-            int mHour, mMinute;
-            String mTime;
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
-            mTime = myText1 + "-" + mHour + ":" + mMinute;
-            _db.updateStatistic(mAlarmID,mCounter,101,mTime);
-            _db.close();
-            
+            	
+            	mySpeak1=a.getString(2); // Title 
+	            mMode=a.getInt(5); 
+	            mEnabled=a.getInt(4); 
+	            mRepeat=a.getInt(3); 
+	            mCounter=a.getInt(6);
+	            mTest=a.getInt(7);
+	            
+	            if(mEnabled==0){finish();}
+	            
+	            String[] parts = a.getString(1).split(":",2);
+	        	mHour = Integer.valueOf(parts[0]);
+	        	mMinute = Integer.valueOf(parts[1]);
+	        	
+            mTtitleDisplay.setText(mySpeak1); 
+                        
         }
         else
         {
         	finish();
-        	//myText1=getString(R.string.alarmtext1);
         }
-        PowerUp();
-        //UnlockKeyguard();
-        saySomething();
-        playSomething();
+       
+        //Let's get mode details..
+        
+        _modes=getResources().getStringArray(R.array.modes_array); 
+        mySharedPreferences = getSharedPreferences(_modes[mMode],mode);
+    	
+        mySpeak3=mySharedPreferences.getString("greetingPref","");
+    	mVibrate=mySharedPreferences.getBoolean("vibratePref",false);
+    	mNerd=mySharedPreferences.getBoolean("nerdPref",false);
+    	mSnooze=Integer.parseInt(mySharedPreferences.getString("snoozePref","5"));
+    	
+    	mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+   		mDefaultVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+   		
+        setCharacteristics();
     }
     
     public void checkMedia(){
-    	if (_mp!=null){_mp.pause();
-        _mp.release();}
+    	//if (_mp!=null){_mp.pause();
+        //_mp.release();}
+    	
+    	 // DEALLOCATE ALL MEMORY
+    	    if (_mp != null) {
+    	        if (_mp.isPlaying()) {
+    	            _mp.stop();
+    	        }
+    	        _mp.release();
+    	        _mp= null;
+    	    }
+
+    	
     }
     public void handleSpeak(View view) {
         saySomething();
-        playSomething();
-    }
-
-    private void saySomething() {
-    	
-    	textToSpeech.speak(myText1, TextToSpeech.QUEUE_FLUSH, null);
-        textToSpeech.speak(myText2, TextToSpeech.QUEUE_ADD, null);
+        //playSomething();
     }
     
-    private void playSomething(){
-    	 //Based on tutorial
-    	 //http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
-    	// Play different sounds at different levels.. 
-    	_mp = MediaPlayer.create(AlarmActivity.this,R.raw.nerd);
-    	 try {
-			_mp.prepare();
-    	 	} 
-		catch (IllegalStateException e) {
-			//textToSpeech.speak("We had problems playing music..", TextToSpeech.QUEUE_FLUSH, null);
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	 _mp.start();
+    public void stopAlarm(View view) {
+    	rescheduleAlarm(3);
+    }
+    private void saySomething() {
+    	mySpeak3 = mySharedPreferences.getString("greetingPref", "");
+    	textToSpeech.speak(mySpeak1, TextToSpeech.QUEUE_FLUSH, null);
+        textToSpeech.speak(mySpeak3, TextToSpeech.QUEUE_ADD, null);
+        textToSpeech.speak(mySpeak2, TextToSpeech.QUEUE_ADD, null);
+    }
+    
+    private void playSomething(int _play){
+    
+    //Useful : http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
+    	_mp = new MediaPlayer();
+    	
+    	if(_play>0) {
+			
+						_mp = MediaPlayer.create(AlarmActivity.this,_play);
+						try {_mp.prepare();} 
+								catch (IllegalStateException e) {e.printStackTrace();} 
+								catch (IOException e) {e.printStackTrace();}
+		
+					}
+    	
+    	else 		{
+		    	 		try {_mp.setDataSource(this,Uri.parse(mySharedPreferences.getString("soundPref", "alarm_alert")));} 		    	 	
+			    	 		catch (IllegalArgumentException e1) {e1.printStackTrace();} 
+			    	 		catch (SecurityException e1) {e1.printStackTrace();} 
+			    	 		catch (IllegalStateException e1) {e1.printStackTrace();} 
+			    	 		catch (IOException e1) {e1.printStackTrace();}
+		    	 
+		    	 		 _mp.setAudioStreamType(AudioManager.STREAM_ALARM);
+			    		 _mp.setLooping(false);
+		    		 
+			    		 try {_mp.prepare();} 
+			    		 	 catch (IllegalStateException e) {e.printStackTrace();} 
+				    		 catch (IOException e) {e.printStackTrace();}
+    				}
+		   
+    	_mp.start();
+	
     	 
-    	 // i.e. react on the end of the music-file:
-    	 _mp.setOnCompletionListener(new OnCompletionListener(){
-
+    	_mp.setOnCompletionListener(new OnCompletionListener(){
          // @Override
          public void onCompletion(MediaPlayer arg0) {
-                 // File -> ended Maybe reset?
+        	 Toast.makeText(AlarmActivity.this,getString(R.string.sound_over), Toast.LENGTH_SHORT).show(); 
+        	 rescheduleAlarm(mStatus);
          }
     	});
     	 	
     }
-    public void onInit(int i) {
-        saySomething();
+    
+
+	public void onInit(int i) {
+        //saySomething();
     }
     
     private void PowerUp() 
@@ -186,7 +233,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         cancelWakeLock(); 
            
          //PowerManager.ON_AFTER_RELEASE          
-           // and we keep it on for a bit after release - seem to actualy stop the device powering up when 
+           // and we keep it on for a bit after release - seem to actually stop the device powering up when 
            // not on charge 
             mWakeLock = _pm.newWakeLock( 
                          PowerManager.FULL_WAKE_LOCK |  // could use bright instead 
@@ -266,13 +313,13 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
                    else 
                    { 
                            mKeyguardLock = null; 
-                           saySomething(); 
+                           //saySomething(); 
                            // do the actions we wanted to do but had to defer till the user unlocked us 
                    } 
            } 
            else 
            { 
-        	   saySomething(); 
+        	   //saySomething(); 
            } 
    } 
 
@@ -282,7 +329,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
            { 	
         	   	   //mKeyguardLock.reenableKeyguard(); 
                    mKeyguardLock = null; // don't want this any more 
-                   saySomething(); 
+                   //saySomething(); 
            } 
            else 
            { 
@@ -292,5 +339,95 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
            } 
    } 
   
+   private void setCharacteristics(){
+	   	int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+	   	mPlay=0;
+	   	mSpeak=true;
+	   	mStatus=0;
+	   	
+   	//Set characteristics..
+       if (mMode==0){ 						//Bunny
+	       	if (mCounter==0){
+	       		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume / 3), AudioManager.FLAG_VIBRATE);
+	       		mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	       		mPlay=R.raw.b_birds;			
+	       		mSpeak=false;
+	       		mStatus=1;
+	       		}
+	       	else if (mCounter==1){
+	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume / 2), AudioManager.FLAG_VIBRATE);
+	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	   			mPlay=R.raw.b_b_birds;
+	   			mSpeak=false;
+	   			mStatus=1;
+	       		}
+	       	else if (mCounter==3){
+	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-2), AudioManager.FLAG_VIBRATE);
+	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	       		}
+	       	else if (mCounter==4){
+	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-1), AudioManager.FLAG_VIBRATE);
+	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	       		}
+	       	else if (mCounter>4){
+	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume), AudioManager.FLAG_VIBRATE);
+	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	       		}
+	       
+	       }
+       else if (mMode==1){}
+       else if (mMode==2){}
+       else if (mMode==3){}
+       else if (mMode==4){}
+       else if (mMode==5){}
+   	
+       PowerUp();
+   		//UnlockKeyguard();
+       if(mSpeak){saySomething();}
+       playSomething(mPlay);
+  	
+   }
+   
+   private void rescheduleAlarm(int _status){	   
+	   my_records = new Display_Records();
+       my_records.SetMe(AlarmActivity.this); 
+       
+       int mHour, mMinute;
+       String mTime;
+       final Calendar c = Calendar.getInstance();
+       mHour = c.get(Calendar.HOUR_OF_DAY);
+       mMinute = c.get(Calendar.MINUTE);
+       
+       Toast.makeText(AlarmActivity.this,"status :" + _status, Toast.LENGTH_SHORT).show();
+   	     
+       if (_status==1) {
+    	   // Just reload the alarm again in 15 mins.
+    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mHour,mMinute+2,0);//should be 15
+       	   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
+       	   mCounter+=1;
+       }
+       else if (_status==2) {
+    	   // Snooze
+    	   mNextAlarm = my_records.setTime((int)(mAlarmID),0,mSnooze,0);//should be 15
+       	   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
+       	   mCounter+=1;
+       	}
+       else if (_status==3) {
+    	   // Reschedule
+    	   if (mRepeat>0) {
+		    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mHour,mMinute,mRepeat);
+		       	   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();}
+    	   else
+    		   mCounter=0;
+    	   	   mEnabled=0;
+    	   }
+       
+       /* Testing Alarm */
+       mTime = mySpeak1 + "-" + mHour + ":" + mMinute;
+        
+       _db.updateStatistic(mAlarmID,mCounter,mEnabled,mTime + ":" + mMode);
+       _db.close();
+       //finish();
+   }
    
 }

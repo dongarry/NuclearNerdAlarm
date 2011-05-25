@@ -3,13 +3,9 @@ package com.nerd.alarm;
 
 
 import android.app.ListActivity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.BaseColumns;
 import android.view.Menu;
 import android.view.MenuInflater;

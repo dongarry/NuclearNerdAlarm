@@ -26,6 +26,6 @@
            <item name="android:windowTitleBackgroundStyle">@style/NuclearWindowTitleBackground</item>
       </style>
       <style name="PreferencesTheme">
-    	<item name="android:windowBackground">@drawable/att7_p</item>
+    	<item name="android:windowBackground">@drawable/ic_background_pref</item>
 	</style>
 </resources>

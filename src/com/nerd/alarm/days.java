@@ -13,10 +13,7 @@ public class days extends Activity {
 	private ListView lView;
 	private int selectRepeat;
 	private long[] selectedRepeat;
-	public final static int MONDAY = 1;
-	public final static int TUESDAY = 2;
-	public final static int WEDNESDAY = 3;
-	public final static int THURSDAY = 4;
+	private Long mAlarmID;
 	
 	//http://www.androidpeople.com/android-listview-multiple-choice-example
 	
@@ -25,6 +22,9 @@ public class days extends Activity {
 		super.onCreate(icicle);
 		setContentView(R.layout.days);
 		String[] days = getResources().getStringArray(R.array.days_array);
+		
+		Bundle aBundle = this.getIntent().getExtras();
+        mAlarmID = aBundle.getLong("Alarm");
 		
 		lView = (ListView) findViewById(R.id.daylist);
 		//Set option as Multiple Choice. So that user can able to select more the one option from list
@@ -41,7 +41,9 @@ public class days extends Activity {
 	    	int selected = getSelected();
 			Intent returnIntent = new Intent();
 			returnIntent.putExtra("SelectedDay",selected);
-			setResult(RESULT_OK,returnIntent);        
+			returnIntent.putExtra("Alarm",mAlarmID);
+			//Toast.makeText(this, " days :" + mAlarmID, Toast.LENGTH_SHORT).show();
+	        setResult(RESULT_OK,returnIntent);        
 		    finish();
 	        //return true;
 	    }
@@ -73,13 +75,13 @@ public class days extends Activity {
 	    	}
 	    	
 	    	switch ((int)(selectedRepeat[i])){
-	    	case 1: selectRepeat+=2;break;		    
-	    	case 2: selectRepeat+=4;break; 
-	    	case 3: selectRepeat+=8;break; 
-	    	case 4: selectRepeat+=16;break; 
-	    	case 5: selectRepeat+=32;break; 
-	    	case 6: selectRepeat+=64;break; 
-	    	case 7: selectRepeat+=128;break; 
+	    	case 1: selectRepeat+=4;break;		    
+	    	case 2: selectRepeat+=8;break; 
+	    	case 3: selectRepeat+=16;break; 
+	    	case 4: selectRepeat+=32;break; 
+	    	case 5: selectRepeat+=64;break; 
+	    	case 6: selectRepeat+=128;break; 
+	    	case 7: selectRepeat+=2;break; 
 	    		}  	
 	    	
 	    }

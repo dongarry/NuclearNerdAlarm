@@ -1,7 +1,7 @@
  <LinearLayout android:id="@+id/AddAlarm_LL"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
-android:background="@drawable/att7"
+android:background="@drawable/ic_background"
 xmlns:android="http://schemas.android.com/apk/res/android">
 	<ScrollView android:id="@+id/ScrollView"
 	android:layout_width="fill_parent"
@@ -32,7 +32,8 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 				        android:singleLine="true"
 				        android:ellipsize="marquee"
 				        android:textColor="#000f00"
-				        android:text="@string/timesetto" />		
+						android:textSize="21sp"
+        				android:text="@string/timesetto" />		
 		    		<TextView
 				        android:layout_width="fill_parent"
 				        android:layout_height="wrap_content"
@@ -60,8 +61,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 				        android:layout_width="fill_parent"
 				        android:layout_height="wrap_content"
 				        android:layout_marginLeft="3px"
-				        android:prompt="@string/mode_select"
-				        	/>   
+				        android:prompt="@string/mode_select"/>   
 		<View   android:id="@+id/firstDivider"
 		        android:layout_height="2dp"
 		        android:layout_width="fill_parent"
@@ -116,21 +116,35 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 				        android:singleLine="true"
 				        android:ellipsize="marquee"
 				        android:textColor="#000f00"
+				        android:textSize="21sp"
 		        		android:text="@string/repeat_2"/>	
 				</RelativeLayout>
 		<View   android:id="@+id/firstDivider"
-		        android:layout_height="4dp"
+		        android:layout_height="2dp"
 		        android:layout_width="fill_parent"
-		        android:background="#000f00" />
-		        
-	<Button android:id="@+id/saveAlarm"
-				 	android:padding="10dip"
+		        android:background="#000f00"/>
+				<CheckBox android:id="@+id/testme_checkbox"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_marginLeft="1px"
+				        android:textColor="#000f00"
+		        		android:text="@string/testme"/>
+		        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				    android:layout_width="fill_parent"
+				    android:layout_height="?android:attr/listPreferredItemHeight"    
+				    android:layout_alignParentBottom="true">
+					<View   android:id="@+id/firstDivider"
+			        android:layout_height="4dp"
+			        android:layout_width="fill_parent"
+			        android:background="#000f00" />
+					<Button android:id="@+id/saveAlarm"
+					android:layout_width="fill_parent"
 				    android:layout_height="wrap_content"
 				    android:layout_alignParentBottom="true"
 				    android:gravity="center_vertical|center_horizontal"
 				    android:textColor="#000f00"
 		        	android:text="@string/save"/>    
+		        </RelativeLayout>
 		</LinearLayout>
 	</ScrollView>
 </LinearLayout>

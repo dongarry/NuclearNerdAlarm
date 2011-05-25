@@ -1,24 +1,24 @@
 package com.nerd.alarm;
 
-import java.io.IOException;
+//import java.io.IOException;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.ContentValues;
+//import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.os.SystemClock;
+//import android.graphics.Color;
+//import android.os.SystemClock;
 import android.provider.BaseColumns;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+//import android.widget.CompoundButton;
+//import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	private Context context; 
-    private int layout;
+    //private int layout;
     private long m_alarmID;
 	private Cursor myCursor;
     //private Display_Records my_records = new Display_Records();
@@ -38,7 +38,7 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	public CustomSqlCursorAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to,database_adapter db) {
         super(context, layout, cursor, from, to);  
         this.context = context; 
-        this.layout = layout; 
+        //this.layout = layout; 
         this.myCursor=cursor;
         this.c_db= db;
 		}
@@ -58,18 +58,19 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	       aTime.setText(mTime);
 	       
 	       String mTitle = this.myCursor.getString(this.myCursor.getColumnIndex("title"));
-	       String mMode = this.myCursor.getString(this.myCursor.getColumnIndex("mode"));
+	       //String mMode = this.myCursor.getString(this.myCursor.getColumnIndex("mode"));
 	       TextView aTitle = (TextView) v.findViewById(R.id.firstLine);
-	       aTitle.setText(mTitle + ":" + mMode);
+	       aTitle.setText(mTitle);
 	       
 	       int mCounter = this.myCursor.getInt(this.myCursor.getColumnIndex("enabled"));
+	       int mRepeat = this.myCursor.getInt(this.myCursor.getColumnIndex("repeat"));
 	       
 	       Display_Records my_records = new Display_Records();
 	       my_records.SetMe(context); 
-	       String mCounterDesc=my_records.setDays(mCounter);
-	     
+	       String mRepeatDesc=my_records.setDays(mRepeat);
+	       
 	       TextView aCounter = (TextView) v.findViewById(R.id.secondLine);
-	       aCounter.setText(mCounterDesc);
+	       aCounter.setText(mRepeatDesc);
 	       
 	       CheckBox cb=(CheckBox)v.findViewById(R.id.enable_cbx);
 	       cb.setTag(new Integer(pos)); // useful locator : Thanks: http://automateddeveloper.blogspot.com/2010/09/everything-you-need-to-know-about.html
@@ -121,7 +122,7 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	        	 
 	        	Display_Records my_a_records = new Display_Records();
 	        	my_a_records.SetMe(context); 
-	        	m_AlarmTime = my_a_records.setTime(a_id,hours,minutes);
+	        	m_AlarmTime = my_a_records.setTime(a_id,hours,minutes,0);
 	        	Toast.makeText(context, m_AlarmTime, Toast.LENGTH_SHORT).show();
        			//a_enabled = my_a_records.testMe();
 	        	

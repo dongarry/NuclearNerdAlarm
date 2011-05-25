@@ -25,6 +25,7 @@
     <string name="mode_select">Please select a mode</string>
     <string name="snooze_select">Please select snooze duration</string>
     <string name="sound_select">Please select a sound</string>
+    <string name="sound_over">uggggghhhhh</string>
     <string name="noalarmset">No Alarms set</string>
     <string name="alarms">Alarms List</string>
     <string name="alarmtitle">Nerd Alarm is a ninja!</string>
@@ -33,8 +34,9 @@
     <string name="repeatthat">Repeat again</string>
     <string name="selectdays">Select days</string>
     <string name="done">Done</string>
+    <string name="stop">Stop</string>
     <string name="repeat">Repeating Alarm</string>
-    <string name="repeat_2">Default is just weekdays</string>
+    <string name="repeat_2">No Repeat Set</string>
 	<string name="norepeatset">No Repeat Set</string>
 	<string name="monday">Mon</string>
 	<string name="tuesday">Tue</string>
@@ -48,6 +50,8 @@
 	<string name="splash_screen">NERD NINJA ALARM</string>
 	<string name="alarm_enabled">Alarm will activate in</string>
 	<string name="alarm_disabled">Alarm is now deactivated</string>
+	<string name="alarm_updated">Alarm is now updated</string>
+	<string name="alarm_update_failed">Alarm failed to update</string>
 	<string name="alarm_days">days and</string>
 	<string name="alarm_hours">hours and</string>
 	<string name="alarm_minutes">minutes</string>
@@ -66,7 +70,7 @@
 	<string name="nerd_greeting">Giraffes have no vocal cords</string>
 	<string name="nuclear_greeting">Get owt!, Get owt! Get downn! Get up! Hurry</string>
 	<string name="ninja_greeting">zz</string>
-	<string name="andy_greeting">WHAT THE HELL ARE YOU DOING!</string>
+	<string name="andy_greeting">What the hell are you doing!</string>
 	<string name="helen_greeting">Oh my my, you are fantastic!</string>
 	
 <string-array name="nerd_array">
@@ -114,12 +118,12 @@
 	<item>HappyHelen</item>
 	</string-array>
 <string-array name="modes_codes">
+	<item>0</item>
 	<item>1</item>
 	<item>2</item>
 	<item>3</item>
 	<item>4</item>
 	<item>5</item>
-	<item>6</item>
 	</string-array>
 <string-array name="days_array">
 	<item>Repeat</item>
@@ -132,6 +136,7 @@
 	<item>Sunday</item>
 	</string-array>
 <string-array name="snooze_array">
+	<item>0 mins - just stop!</item>
 	<item>5 mins</item>
 	<item>10 mins</item>
 	<item>15 mins</item>
@@ -139,6 +144,7 @@
 	<item>30 mins</item>
 	</string-array>
 <string-array name="snooze_codes">
+	<item>0</item>
 	<item>5</item>
 	<item>10</item>
 	<item>15</item>

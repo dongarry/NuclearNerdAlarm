@@ -2,11 +2,11 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/att1">
+    android:background="@drawable/splash">
 <View   android:id="@+id/firstDivider"
         android:layout_height="1dp"
         android:layout_width="fill_parent"
-        android:background="#1155CC" />
+        android:background="#000f00" />
        <TextView android:id="@+id/wakeup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,24 +16,48 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="34sp"/> 
-   	    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:background="@drawable/android_button" />
-		<TextView android:id="@+id/details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="@string/snooze"/> 
-   	
-     <Button
+         <Button
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/repeatthat"
             android:onClick="handleSpeak"
             />
-      
-   	    
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				    android:layout_width="fill_parent"
+				    android:layout_height="fill_parent"    
+				    android:layout_alignParentBottom="true">
+				
+   	   <Button
+        android:id="@+id/button_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/stop"
+        android:background="@drawable/stop" 
+        android:onClick="stopAlarm"
+         />
+		<TextView android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/stop"/> 
+        <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/details"
+        android:background="@drawable/snooze" />
+		<TextView android:id="@+id/details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/snooze"/> 
+       </RelativeLayout> 
 </LinearLayout>

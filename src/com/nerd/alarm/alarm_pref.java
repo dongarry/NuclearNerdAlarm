@@ -2,7 +2,13 @@ package com.nerd.alarm;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -10,17 +16,20 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.text.TextUtils;
 import android.view.WindowManager;
 import android.widget.Toast;
+//import com.nerd.alarm.RingtonePref;
 
-public class alarm_pref extends PreferenceActivity  {
+public class alarm_pref extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	private EditTextPreference greetingPref;
 	private CheckBoxPreference vibratePref,nerdPref;
 	private ListPreference snoozePref,modePref;
 	private RingtonePreference soundPref;
-
+	private SharedPreferences.Editor editor;
+	
 	SharedPreferences mySharedPreferences; 
-    private String _modes [];
+    private String _sound;
 	
 	private int mode = Activity.MODE_PRIVATE;
 	/** Called when the activity is first created. */
@@ -42,87 +51,70 @@ public class alarm_pref extends PreferenceActivity  {
         // We don't want the keyboard to pop up automatically..
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Toast.makeText(getBaseContext(),"Default : " + getString(R.string.mode_default),Toast.LENGTH_LONG).show();  	
-		 	
+		
+        modePref.setValue(getString(R.string.mode_default));
         getPrefs(getString(R.string.mode_default)); //start on the default..
         
-        modePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-        		 public boolean onPreferenceChange(Preference preference, Object newValue) {
-        			 		
-        			 		getPrefs(newValue.toString());
-        			 		
-        			 		return true;
-        		           }
-        });
-        
-        snoozePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-   		 public boolean onPreferenceChange(Preference preference, Object newValue) {
-   			 	Toast.makeText(getBaseContext(),"selected: " + snoozePref.getEntry() + " and " + snoozePref.getValue() + " : " + newValue,Toast.LENGTH_LONG).show();  	
-   			 		return true;
-   		           }
-        });
-        
         soundPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-      		 public boolean onPreferenceChange(Preference preference, Object newValue) {
-      			 	Toast.makeText(getBaseContext(),"selected: " + newValue,Toast.LENGTH_LONG).show();  	
-      			 		return true;
-      		           }
-           });
-        /*
-        modePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-		     public boolean onPreferenceChange(Preference preference, Object newValue) {
-		    	 //Toast.makeText(getBaseContext(),"The mode preference has been selected : " + newValue,Toast.LENGTH_LONG).show();
-		    	 //modePref.setTitle(newValue.toString());
-		    	 //getPrefs(newValue.toString());
-		    	 return true;}
-		      });
-		*/
-        
-        //notifyChanged()
-        
-        /*
-        mySharedPreferences = getSharedPreferences(_modes[position],mode);
-	    modePref.setTitle(getString(R.string.mode) + " : " + _modes[position]);
-	    greetPref.setDefaultValue(mySharedPreferences.getString("greetingPref", ""));
-	    */
-        
-	    /*
-	    	       float lastFloat = mySharedPreferences.getFloat("lastFloat", 0f);
-	    	       int wholeNumber = mySharedPreferences.getInt("wholeNumber", 1);
-	    	       long aNumber = mySharedPreferences.getLong("aNumber", 0);
-	    	       String stringPreference = mySharedPreferences.getString("textEntryValue", "");
-	    			*/
-	    	//DG }
-
-	    	//TODO Provide reset feature..
-	    	// getDefaultSharedPreferences(Context)
-
-        /*	    
-	    mSaveMode.setOnClickListener(new View.OnClickListener() {
-	    	public void onClick(View v) {
-	    		Toast.makeText(alarm_pref.this, "let's update!", Toast.LENGTH_SHORT).show();
-	    	*/    		    	
-	    	     	    		//assign m_mode;
-	    	     	    	   /*
-	    	     	    		SharedPreferences mySharedPreferences = getSharedPreferences(m_mode, mode);
-	    	     	    	     
-	    	     	    		  // Retrieve an editor to modify the shared preferences.
-	    	     	    	     SharedPreferences.Editor editor = mySharedPreferences.edit();
-	    	     	    	     // Store new primitive types in the shared preferences object.
-	    	     	    	     editor.putBoolean("isTrue", true);
-	    	     	    	     editor.putFloat("lastFloat", 1f);
-	    	     	    	     editor.putInt("wholeNumber", 2);
-	    	     	    	     editor.putLong("aNumber", 3l);
-	    	     	    	     editor.putString("textEntryValue", "Not Empty");
-	    	     	    	     // Commit the changes.
-	    	     	    	     editor.commit();
-								*/
-	    	     	    		
-	    	  /*   	    		
-	    	     	  }
-	    	   });*/
-
+    		 public boolean onPreferenceChange(Preference preference, Object newValue) {
+    			 Toast.makeText(getBaseContext(),"sound :" + newValue.toString(),Toast.LENGTH_LONG).show();
+    			 		 	
+    			 	mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
+    	    		editor = mySharedPreferences.edit();
+    	    		_sound=newValue.toString();
+    	    		editor.putString("soundPref", _sound);
+    	    		editor.commit();
+    	    		
+    	    		setSoundPref(_sound); 
+    	    		return true;
+    		           }
+         });  
     } 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes            
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes            
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);    
+    }
+    
+    
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Let's do something a preference value changes
+    	//Toast.makeText(getBaseContext(),"sound :" + soundPref.getRingtone(),Toast.LENGTH_LONG).show();
+	   
+      	 if (!key.equals("modePref")){ 
+    		mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
+    		// Retrieve an editor to modify the shared preferences.
+    		editor = mySharedPreferences.edit();
+    	}
+
+    	if (key.equals("modePref")) {
+			getPrefs(modePref.getValue());}
+		else if (key.equals("greetingPref")) {
+			editor.putString("greetingPref", greetingPref.getText());		     
+			greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  greetingPref.getText());}
+        else if (key.equals("snoozePref")) {
+        	editor.putString("snoozePref", snoozePref.getValue());		     
+			snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + snoozePref.getValue());}
+        //else if (key.equals("soundPref")) {
+    		//editor.putString("soundPref", soundPref.getRingtone());}		     
+    		//soundPref.setSummary(getString(R.string.ringtone_summary) + " : " + soundPref.getKey()); }
+        else if (key.equals("vibratePref")) {
+    		editor.putBoolean("vibratePref",vibratePref.isChecked());}
+        else if (key.equals("nerdPref")) {
+        	editor.putBoolean("nerdPref",nerdPref.isChecked());} 
+    	
+    	if (!key.equals("modePref")){ editor.commit();}
+
+    	}
 
     private void getPrefs(String _pref){
     	//We set new default values depending on the mode selected.
@@ -137,6 +129,27 @@ public class alarm_pref extends PreferenceActivity  {
     	nerdPref.setChecked(mySharedPreferences.getBoolean("nerdPref",false));
     	snoozePref.setValue(mySharedPreferences.getString("snoozePref","5"));
     	
+    	Toast.makeText(getBaseContext(),"setting sound :" + mySharedPreferences.getString("soundPref",""),Toast.LENGTH_LONG).show();
+    	soundPref.setPersistent(true); 
+    	soundPref.setDefaultValue((Object)(mySharedPreferences.getString("soundPref","alarm_alert")));
+    	setSoundPref(mySharedPreferences.getString("soundPref","alarm_alert"));
+    	
+    	Toast.makeText(getBaseContext(),"sound Key :" + soundPref.getKey(),Toast.LENGTH_LONG).show();
+    	
+    	//Toast.makeText(getBaseContext(),"sound" + mySharedPreferences.getString("soundPref","alarm_alert"),Toast.LENGTH_LONG).show();
+    	greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  mySharedPreferences.getString("greetingPref",""));
+		snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + mySharedPreferences.getString("snoozePref","5"));        
+		
     }
-        
+    
+    private void setSoundPref(String _sound){
+    	//A super help!
+    	//http://stackoverflow.com/questions/2834079/setting-ringtone-for-a-specific-application-only
+    	
+    	RingtoneManager rm = new RingtoneManager(this);
+    	rm.setType(RingtoneManager.TYPE_ALARM);
+    	Ringtone ringtone = rm.getRingtone(this, Uri.parse(mySharedPreferences.getString("soundPref","alarm_alert")));
+    	soundPref.setSummary(getString(R.string.ringtone_summary) + " : " + ringtone.getTitle(this));        
+
+    }
 }

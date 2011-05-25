@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
         <PreferenceCategory
                 android:title="@string/mode_select">
                 <ListPreference
@@ -35,6 +34,9 @@
                 android:name="Ringtone Preference"
                 android:summary="@string/ringtone_summary"
                 android:title="@string/alarm_ringtone"
+                android:ringtoneType="alarm"
+                android:showSilent="true"
+                android:showDefault="true"
                 android:key="soundPref" />
         <PreferenceScreen
                 android:key="SecondPrefScreen"

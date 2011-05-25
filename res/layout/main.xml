@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:background="@drawable/att7"
+    android:background="@drawable/ic_background"
     android:layout_height="fill_parent">
     <View android:id="@+id/firstDivider"
         android:layout_height="1dp"

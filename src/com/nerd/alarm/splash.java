@@ -1,10 +1,16 @@
 package com.nerd.alarm;
 
+import java.io.File;
+
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.MotionEvent;
+import android.content.Context;
 
 // See Splash tutorial ; http://www.droidnova.com/how-to-create-a-splash-screen,561.html
 
@@ -55,7 +61,37 @@ SharedPreferences mySharedPreferences = null;
 	    }
 	    return true;
 	}
-	public void SetDefaultPrefs(){
+	
+	private void AddCustomRingtones(){
+		// useful!
+		// http://coderzheaven.com/index.php/2010/10/how-to-set-ringtone-in-android/
+		
+		Uri path = Uri.parse("android.resource://com.nerd.alarm/" + R.raw.nerd);
+		//String filepath ="/sdcard/myring.mp3";
+		File ringtoneFile = new File(path.toString());
+		ContentValues content = new ContentValues();
+		content.put(MediaStore.MediaColumns.DATA,ringtoneFile.getAbsolutePath());
+		content.put(MediaStore.MediaColumns.TITLE, "nerd_1");
+		content.put(MediaStore.MediaColumns.SIZE, 999);
+		content.put(MediaStore.MediaColumns.MIME_TYPE, "audio/*");
+		content.put(MediaStore.Audio.Media.ARTIST, "artist");
+		content.put(MediaStore.Audio.Media.DURATION, 50);
+		content.put(MediaStore.Audio.Media.IS_RINGTONE, false);
+		content.put(MediaStore.Audio.Media.IS_NOTIFICATION, false);
+		content.put(MediaStore.Audio.Media.IS_ALARM, true);
+		content.put(MediaStore.Audio.Media.IS_MUSIC, false);
+
+		//Log.i(TAG, "the absolute path of the file is :"+ringtoneFile.getAbsolutePath());
+		Uri uri = MediaStore.Audio.Media.getContentUriForPath(ringtoneFile.getAbsolutePath());
+		Uri newUri = (getBaseContext()).getContentResolver().insert(uri, content);
+		
+		//ringtoneUri = newUri;
+		//Log.i(TAG,"the ringtone uri is :"+ringtoneUri);
+//			RingtoneManager.setActualDefaultRingtoneUri(context,RingtoneManager.TYPE_RINGTONE,newUri);
+		
+	}
+	
+	private void SetDefaultPrefs(){
 		String modeArr [];
 		boolean _vibrate=false,_nerd=false,h_vibrate,h_nerd;
 		String _greeting=null,_sound=null,h_greeting=null,h_sound=null,_snooze="5",h_snooze;
@@ -73,30 +109,36 @@ SharedPreferences mySharedPreferences = null;
 		    	case 0: 	
 		    				_snooze="15";
 		    				_greeting=getString(R.string.bunny_greeting);
+		    				_sound="alarm_alert";
 		    				break;		    
 		    	case 1: 
 		    				_snooze="10";
 		    				_nerd=true;
 		    				_greeting=getString(R.string.nerd_greeting);
+		    				_sound="alarm_alert";
 		    				break; 
 		    	case 2: 
 				    		_snooze="5";
 		    				_nerd=false;
 		    				_vibrate=true;
 		    				_greeting=getString(R.string.nuclear_greeting);
+		    				_sound="alarm_alert";
 		    				break; 
 		    	case 3: 
 				    		_snooze="10";
 		    				_greeting=getString(R.string.ninja_greeting);
+		    				_sound="alarm_alert";
 		    				break; 
 		    	case 4: 
 				    		_snooze="5";
 				    		_greeting=getString(R.string.andy_greeting);
+		    				_sound="alarm_alert";
 		    				break; 
 		    	case 5: 
 				    		_snooze="10";
 				    		_vibrate=false;
 		    				_greeting=getString(R.string.helen_greeting);
+		    				_sound="alarm_alert";
 		    				break; 
  		    		}  	
 				

@@ -9,10 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.widget.Toast;
  
 public class Display_Records extends Activity{
 	private Context context;
-	private int mCurrMin, mCurrHour;
+	private int mCurrMin, mCurrHour,mDay;
 	
 	
 	public void SetMe(Context context) {
@@ -23,23 +24,24 @@ public class Display_Records extends Activity{
 	String days = context.getString(R.string.enabled);
 	
    	 if (repeatSelect==0) {days = context.getString(R.string.norepeatset);}
-	 if ((repeatSelect & 2) == 2) {days += " " + getString(R.string.monday);}
-   	 if ((repeatSelect & 4) == 4) {days += " " + getString(R.string.tuesday);}
-   	 if ((repeatSelect & 8) == 8) {days += " " + getString(R.string.wednesday);}
-   	 if ((repeatSelect & 16) == 16) {days += " " + getString(R.string.thursday);}
-   	 if ((repeatSelect & 32) == 32) {days += " " + getString(R.string.friday);}
-   	 if ((repeatSelect & 64) == 64) {days += " " + getString(R.string.saturday);}
-   	 if ((repeatSelect & 128) == 128) {days += " " + getString(R.string.sunday);}
-   	 if (repeatSelect ==254){days = getString(R.string.enabled) + " " + getString(R.string.everyday);}
-    	if (repeatSelect ==62){days = getString(R.string.enabled) + " " + getString(R.string.weekdays);}
+	 if ((repeatSelect & 4) == 2) {days += " " + context.getString(R.string.monday);}
+   	 if ((repeatSelect & 8) == 4) {days += " " + context.getString(R.string.tuesday);}
+   	 if ((repeatSelect & 16) == 8) {days += " " + context.getString(R.string.wednesday);}
+   	 if ((repeatSelect & 32) == 16) {days += " " + context.getString(R.string.thursday);}
+   	 if ((repeatSelect & 64) == 32) {days += " " + context.getString(R.string.friday);}
+   	 if ((repeatSelect & 128) == 64) {days += " " + context.getString(R.string.saturday);}
+   	 if ((repeatSelect & 2) == 128) {days += " " + context.getString(R.string.sunday);}
+   	 if (repeatSelect ==254){days = context.getString(R.string.enabled) + " " + context.getString(R.string.everyday);}
+     if (repeatSelect ==124){days = context.getString(R.string.enabled) + " " + context.getString(R.string.weekdays);}
    	
    	return days;
    }
-    
+	
 	public boolean testMe(){
 		return true;
 	}
-	public String setTime(int alarmID, int mHour, int mMinute) {
+	
+	public String setTime(int alarmID, int mHour, int mMinute,int repeat) {
 	      Intent alarmIntent = new Intent(context, AlarmActivity.class);
 	            
 	      Bundle params = new Bundle();
@@ -50,13 +52,34 @@ public class Display_Records extends Activity{
 	      PendingIntent pendingIntent = PendingIntent.getActivity(context, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	      
 	      long timeDiff =0;
-	      
+	      Toast.makeText(context,"hours:" + mHour, Toast.LENGTH_SHORT).show();
+	   	  
+	       
 	     Calendar alarmTime = Calendar.getInstance();
 	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
 	     mCurrMin = alarmTime.get(Calendar.MINUTE);
-	      
-	      
-	      if (mCurrHour>mHour) {mHour+=24;}
+	     
+		      if (repeat>0){
+		    	 
+		    	  mDay=alarmTime.get(Calendar.DAY_OF_WEEK); 
+	              int day_power=1;
+	              
+	              while(mDay>0){
+	    			  day_power=day_power*2;
+	    			  mDay-=1;}
+	    		  
+		    	  while (day_power>0){
+		    		  if (day_power==128){day_power=1;} // End of week
+		    		  mHour+=24;
+		    		  day_power=day_power*2;
+		    		  if ((repeat & day_power)== day_power){day_power=0;} 
+		    		  if (mHour>240){day_power=0;} // Just in case ! [I'm tired!]
+		    	  	}
+		    	
+		      	}
+		      Toast.makeText(context,"hours:" + mHour, Toast.LENGTH_SHORT).show();
+		   	  
+	      if (mCurrHour>mHour && repeat==0) {mHour+=24;}
 	      
 	      if (mCurrHour<mHour) {timeDiff+=((mHour-mCurrHour)*3600000);}
 	      
