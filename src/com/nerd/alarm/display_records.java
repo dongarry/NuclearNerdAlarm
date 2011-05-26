@@ -52,8 +52,6 @@ public class Display_Records extends Activity{
 	      PendingIntent pendingIntent = PendingIntent.getActivity(context, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	      
 	      long timeDiff =0;
-	      Toast.makeText(context,"hours:" + mHour, Toast.LENGTH_SHORT).show();
-	   	  
 	       
 	     Calendar alarmTime = Calendar.getInstance();
 	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
@@ -77,7 +75,6 @@ public class Display_Records extends Activity{
 		    	  	}
 		    	
 		      	}
-		      Toast.makeText(context,"hours:" + mHour, Toast.LENGTH_SHORT).show();
 		   	  
 	      if (mCurrHour>mHour && repeat==0) {mHour+=24;}
 	      

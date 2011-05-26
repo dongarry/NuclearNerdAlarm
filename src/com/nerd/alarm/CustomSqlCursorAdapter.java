@@ -12,6 +12,7 @@ import android.database.Cursor;
 //import android.os.SystemClock;
 import android.provider.BaseColumns;
 //import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,6 +131,7 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	        
 	        else {
 	        	//disable alarm
+	        	Log.i("NerdAlarm","Cancelling the intent:" + a_id);
 	        	alarmManager.cancel(pendingIntent);	
 	        }
 	    }

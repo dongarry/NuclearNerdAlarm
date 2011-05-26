@@ -32,7 +32,7 @@ public class addalarm extends Activity {
 	EditText title_edittext; 
 	CheckBox enabled_cb,test_cb;
 	
-	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0;
+	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0,mBuffer=0;
 	private int mMinute, mCurrMin,selectedDays=0,mReset=0,mTest=0;
 	private long mAlarmID=0;
 	private String mAlarmtime;

@@ -57,7 +57,6 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
         
         soundPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
     		 public boolean onPreferenceChange(Preference preference, Object newValue) {
-    			 Toast.makeText(getBaseContext(),"sound :" + newValue.toString(),Toast.LENGTH_LONG).show();
     			 		 	
     			 	mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
     	    		editor = mySharedPreferences.edit();
@@ -88,8 +87,7 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
     
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Let's do something a preference value changes
-    	//Toast.makeText(getBaseContext(),"sound :" + soundPref.getRingtone(),Toast.LENGTH_LONG).show();
-	   
+    	
       	 if (!key.equals("modePref")){ 
     		mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
     		// Retrieve an editor to modify the shared preferences.
@@ -104,9 +102,6 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
         else if (key.equals("snoozePref")) {
         	editor.putString("snoozePref", snoozePref.getValue());		     
 			snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + snoozePref.getValue());}
-        //else if (key.equals("soundPref")) {
-    		//editor.putString("soundPref", soundPref.getRingtone());}		     
-    		//soundPref.setSummary(getString(R.string.ringtone_summary) + " : " + soundPref.getKey()); }
         else if (key.equals("vibratePref")) {
     		editor.putBoolean("vibratePref",vibratePref.isChecked());}
         else if (key.equals("nerdPref")) {
@@ -122,25 +117,28 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
     	mySharedPreferences = getSharedPreferences(_pref,mode);
     	modePref.setTitle(getString(R.string.mode)+ " : " + _pref);
  		
-    	//Toast.makeText(getBaseContext(),"snooze" + mySharedPreferences.getString("snoozePref","5"),Toast.LENGTH_LONG).show();
-   	 
     	greetingPref.setText(mySharedPreferences.getString("greetingPref",""));
     	vibratePref.setChecked(mySharedPreferences.getBoolean("vibratePref",false));
     	nerdPref.setChecked(mySharedPreferences.getBoolean("nerdPref",false));
     	snoozePref.setValue(mySharedPreferences.getString("snoozePref","5"));
     	
-    	Toast.makeText(getBaseContext(),"setting sound :" + mySharedPreferences.getString("soundPref",""),Toast.LENGTH_LONG).show();
     	soundPref.setPersistent(true); 
     	soundPref.setDefaultValue((Object)(mySharedPreferences.getString("soundPref","alarm_alert")));
     	setSoundPref(mySharedPreferences.getString("soundPref","alarm_alert"));
-    	
-    	Toast.makeText(getBaseContext(),"sound Key :" + soundPref.getKey(),Toast.LENGTH_LONG).show();
-    	
-    	//Toast.makeText(getBaseContext(),"sound" + mySharedPreferences.getString("soundPref","alarm_alert"),Toast.LENGTH_LONG).show();
     	greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  mySharedPreferences.getString("greetingPref",""));
 		snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + mySharedPreferences.getString("snoozePref","5"));        
 		
-    }
+		if (mode==3){
+				soundPref.setEnabled(false);
+				vibratePref.setEnabled(false);
+				greetingPref.setEnabled(false);
+				snoozePref.setEnabled(false);}
+		else {
+				soundPref.setEnabled(true);
+				vibratePref.setEnabled(true);
+				greetingPref.setEnabled(true);
+				snoozePref.setEnabled(true);}			
+		}
     
     private void setSoundPref(String _sound){
     	//A super help!

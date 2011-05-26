@@ -106,7 +106,7 @@ public final class R {
     public static final class raw {
         public static final int b_b_birds=0x7f050000;
         public static final int b_birds=0x7f050001;
-        public static final int nerd=0x7f050002;
+        public static final int nuc=0x7f050002;
     }
     public static final class string {
         public static final int add=0x7f070004;
