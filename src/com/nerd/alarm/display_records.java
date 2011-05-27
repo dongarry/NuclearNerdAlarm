@@ -9,7 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.widget.Toast;
+import android.util.Log;
+
+/* 
+ * Nerd Alarm - A class to hold re-used functions
+ * TODO Move setting of the alarm from add_alarm to display_record - currently this is the same code duplicated!.
+ * 
+ */
  
 public class Display_Records extends Activity{
 	private Context context;
@@ -24,13 +30,13 @@ public class Display_Records extends Activity{
 	String days = context.getString(R.string.enabled);
 	
    	 if (repeatSelect==0) {days = context.getString(R.string.norepeatset);}
-	 if ((repeatSelect & 4) == 2) {days += " " + context.getString(R.string.monday);}
-   	 if ((repeatSelect & 8) == 4) {days += " " + context.getString(R.string.tuesday);}
-   	 if ((repeatSelect & 16) == 8) {days += " " + context.getString(R.string.wednesday);}
-   	 if ((repeatSelect & 32) == 16) {days += " " + context.getString(R.string.thursday);}
-   	 if ((repeatSelect & 64) == 32) {days += " " + context.getString(R.string.friday);}
-   	 if ((repeatSelect & 128) == 64) {days += " " + context.getString(R.string.saturday);}
-   	 if ((repeatSelect & 2) == 128) {days += " " + context.getString(R.string.sunday);}
+	 if ((repeatSelect & 4) == 4) {days += " " + context.getString(R.string.monday);}
+   	 if ((repeatSelect & 8) == 8) {days += " " + context.getString(R.string.tuesday);}
+   	 if ((repeatSelect & 16) == 16) {days += " " + context.getString(R.string.wednesday);}
+   	 if ((repeatSelect & 32) == 32) {days += " " + context.getString(R.string.thursday);}
+   	 if ((repeatSelect & 64) == 64) {days += " " + context.getString(R.string.friday);}
+   	 if ((repeatSelect & 128) == 128) {days += " " + context.getString(R.string.saturday);}
+   	 if ((repeatSelect & 2) == 2) {days += " " + context.getString(R.string.sunday);}
    	 if (repeatSelect ==254){days = context.getString(R.string.enabled) + " " + context.getString(R.string.everyday);}
      if (repeatSelect ==124){days = context.getString(R.string.enabled) + " " + context.getString(R.string.weekdays);}
    	
@@ -41,7 +47,7 @@ public class Display_Records extends Activity{
 		return true;
 	}
 	
-	public String setTime(int alarmID, int mHour, int mMinute,int repeat) {
+	public String setTime(int alarmID, int mHour, int mMinute,int repeat, int mode) {
 	      Intent alarmIntent = new Intent(context, AlarmActivity.class);
 	            
 	      Bundle params = new Bundle();
@@ -56,28 +62,44 @@ public class Display_Records extends Activity{
 	     Calendar alarmTime = Calendar.getInstance();
 	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
 	     mCurrMin = alarmTime.get(Calendar.MINUTE);
+	     		
+	     Log.i("NerdAlarm","Repeat set to:" + repeat);
 	     
 		      if (repeat>0){
 		    	 
 		    	  mDay=alarmTime.get(Calendar.DAY_OF_WEEK); 
 	              int day_power=1;
 	              
-	              while(mDay>0){
+	              Log.i("NerdAlarm","Day:" + mDay);
+	     	      
+	              /* See above, all our days have a power associated with them
+	               * Here we locate which power is associated with today
+	               */
+	              while(mDay>0){ 
 	    			  day_power=day_power*2;
 	    			  mDay-=1;}
 	    		  
+	              Log.i("NerdAlarm","Day Power:" + day_power);
+	     	      
+	              /* We now go through each day to see if our
+	               * repeat day is the next one
+	               */
 		    	  while (day_power>0){
 		    		  if (day_power==128){day_power=1;} // End of week
-		    		  mHour+=24;
 		    		  day_power=day_power*2;
-		    		  if ((repeat & day_power)== day_power){day_power=0;} 
-		    		  if (mHour>240){day_power=0;} // Just in case ! [I'm tired!]
+		    		  Log.i("NerdAlarm","Check:" + day_power + " has " + repeat);
+		     	      
+		    		  if ((repeat & day_power)== day_power){day_power=0;}
+		    		  else{mHour+=24;}
+		    		  
 		    	  	}
-		    	
 		      	}
-		   	  
+		  
+		  Log.i("NerdAlarm","Days added:" + mHour);
+			      	  
 	      if (mCurrHour>mHour && repeat==0) {mHour+=24;}
-	      
+	      if ((mCurrMin>mMinute) && (mCurrHour==mHour && repeat==0)) {mHour+=24;}
+			 
 	      if (mCurrHour<mHour) {timeDiff+=((mHour-mCurrHour)*3600000);}
 	      
 	      if (mCurrMin>mMinute) {mMinute+=60;}
@@ -86,7 +108,10 @@ public class Display_Records extends Activity{
 	    	  if (mMinute>60) {timeDiff-=3600000;} // take off an hour
 	    	  timeDiff+=(((mMinute-mCurrMin)*60000));} // Add minutes
 	      
-	      timeDiff-=10000; //Let's start up 10 Seconds before we're due.
+	      // For Bunny Mode, we wake 30 mins early, we will only do this for alarms > 5 hours away
+	      if((mode<=0) && (timeDiff>18000000)){timeDiff-=1800000;} 
+		     else{timeDiff-=10000;} 
+		  
 	      
 	      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
 	      
@@ -94,12 +119,14 @@ public class Display_Records extends Activity{
 	      String alarmDetails =  context.getString(R.string.alarm_enabled) + " ";
 	      timeDiff=timeDiff/1000;
 	      if (timeDiff>(24 * 3600)){
-	    	  alarmDetails =  alarmDetails + (timeDiff / (24 * 3600)) + " days and " + (timeDiff/(3600)) + " hours and " + (timeDiff%(3600)/60) + " minutes.";}
+	    	  alarmDetails =  alarmDetails + (timeDiff / (24 * 3600)) + " days and " + (timeDiff%(24)/(3600)) + " hours and " + (timeDiff%(3600)/60) + " minutes.";}
 	      else if (timeDiff>(3600)){
 	    	  alarmDetails =  alarmDetails + (timeDiff/(3600)) + " hours and " + (timeDiff%(3600)/60) + " minutes.";}	    	  
 		else
 			alarmDetails =  alarmDetails + (timeDiff%(3600)/60) + " minutes.";
-
+	      	
+	      Log.i("NerdAlarm","Overall Total:" + timeDiff + " =" + alarmDetails);
+			
 	      return alarmDetails;
   }
 

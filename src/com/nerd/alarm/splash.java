@@ -11,11 +11,14 @@ import android.view.MotionEvent;
 
 /* Credits
 *  http://www.droidnova.com/how-to-create-a-splash-screen,561.html
+*  Nerdy Facts : http://bobado.com/joke/nerdy-facts
+*  
+*  Nerd Alarm - Splash screen 	        
 */
 
 public class splash extends Activity { 
 protected boolean mActive = true;
-protected int mSplashTime = 5000; 
+protected int mSplashTime = 3000; 
 private final int mMode = Activity.MODE_PRIVATE;
 SharedPreferences mySharedPreferences = null;
 	
@@ -43,7 +46,7 @@ SharedPreferences mySharedPreferences = null;
                 } finally {
                     finish();
                     startActivity(new Intent("com.nerd.alarm"));
-                    stop();
+         	        stop();
                 }
             }
         };
@@ -51,16 +54,14 @@ SharedPreferences mySharedPreferences = null;
         
 	}
 	
-	// On Touch event, let's move on..
-	@Override
+	@Override // On Touch event, let's move on..
 	public boolean onTouchEvent(MotionEvent event) {
 	    if (event.getAction() == MotionEvent.ACTION_DOWN) {
 	        mActive = false;
 	    }
 	    return true;
 	}
-	
-		
+			
 	private void SetDefaultPrefs(){
 		String modeArr [];
 		boolean _vibrate=false,_nerd=false,h_vibrate,h_nerd;
@@ -72,9 +73,7 @@ SharedPreferences mySharedPreferences = null;
 		for (int i = 0; i < modeArr.length; ++i) {
 				Log.i("NerdAlarm","Set up Preferences for " + modeArr[i]);
 				mySharedPreferences = getSharedPreferences(modeArr[i], mMode);
-				//Toast.makeText(getBaseContext(),modeArr[i],Toast.LENGTH_SHORT).show();
-				//Nerdy Facts : http://bobado.com/joke/nerdy-facts
-		        
+				
 				switch (i){
 			    	case 0: 	
 			    				_snooze="15";

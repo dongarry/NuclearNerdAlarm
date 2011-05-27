@@ -3,11 +3,14 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/* Credits
+ *  http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
+ * 
+ * Nerd Alarm - To access weather info, we download from the google api but we handle the
+ *  xml file ourselves, this is where we parse it
+ */
 public class xmlHandler extends DefaultHandler{
 	
-	/* Credit: 
-	*  http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
-	*/
 	
 	// We just open the XML file and get the Condition, Wind and temp (in Celcius)
 	private boolean in_outertag = false;
@@ -24,8 +27,7 @@ public class xmlHandler extends DefaultHandler{
 	@Override
 	public void endDocument() throws SAXException {}
 	 
-	// Gets be called on opening tags 
-	
+	// Gets be called on opening tags 	
 	@Override
 	public void startElement(String namespaceURI, String localName,
 	                        String qName, Attributes atts) throws SAXException {
@@ -64,6 +66,5 @@ public class xmlHandler extends DefaultHandler{
 	         else if (localName.equals("current_conditions")) {this.in_current = false;}
 	         else if (localName.equals("condition")) {}
 	        }
-	       
 }
 

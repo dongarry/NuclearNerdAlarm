@@ -36,6 +36,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/* Some Credits:
+ * http://stuffthathappens.com/blog/2007/09/10/urlopenstream-might-leave-you-hanging/
+ * http://stackoverflow.com/questions/628659/how-can-i-manage-audio-volumes-sanely-in-my-android-app/674207#674207
+ * http://getablogger.blogspot.com/2008/01/android-pass-data-to-activity.html
+ * http://www.androidcompetencycenter.com/2009/03/tutorial-how-to-start-a-new-activity/
+ * http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
+ * http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/app/TextToSpeechActivity.html
+ * http://groups.google.com/group/android-developers/browse_thread/thread/cc8d7ab760946ee4
+ * http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
+ * 
+ * Nerd Alarm - This is the activity called when the alarm wakes up
+ *  This Class is like spaghetti junction at the moment and needs serious refactoring,
+ *  This is on my TODO list..
+ * 
+ */
 
 public class AlarmActivity extends Activity implements TextToSpeech.OnInitListener {
     private TextToSpeech textToSpeech;
@@ -62,23 +77,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     Display_Records my_records = null;
     
     public void onCreate(Bundle savedInstanceState) {
-    	
-    	/* Some Credits:
-    	 * http://stuffthathappens.com/blog/2007/09/10/urlopenstream-might-leave-you-hanging/
-    	 * http://stackoverflow.com/questions/628659/how-can-i-manage-audio-volumes-sanely-in-my-android-app/674207#674207
-         * http://getablogger.blogspot.com/2008/01/android-pass-data-to-activity.html
-         * http://www.androidcompetencycenter.com/2009/03/tutorial-how-to-start-a-new-activity/
-		 * http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
-    	 * http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/app/TextToSpeechActivity.html
-    	 * http://groups.google.com/group/android-developers/browse_thread/thread/cc8d7ab760946ee4
-    	 * http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
-    	 * 
-    	 * This Class is like spaghetti junction at the moment and needs serious refactoring,
-    	 * This is on my TODO list..
-    	 * 
-    	 */
-    	
-    	
+   	
     	setVolumeControlStream(AudioManager.STREAM_MUSIC); // We want the user to be able to turn us down..
     	super.onCreate(savedInstanceState);
     	setTitle(getString(R.string.alarmtitle));
@@ -358,7 +357,9 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
        
        else if (mMode==1){
     	   											//NERD
-    	   int _nerdFact = (int)(Math.random() * (9 - 0));	
+    	   mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume - 2), AudioManager.FLAG_VIBRATE);
+      	   mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+      	   int _nerdFact = (int)(Math.random() * (9 - 0));	
     	   String[] _facts=getResources().getStringArray(R.array.nerd_array); 
     	   mySpeak3 = _facts[_nerdFact];
     	   if (mCounter==1){mySpeak1 = " cough ";}
@@ -433,15 +434,15 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         
        if (_status==1) {
     	   // Just reload the alarm again in 15 mins.
-    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+15,0);
+    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+15,0,mMode);
     	   Log.i("NerdAlarm","Setting reload alarm again");
 		   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
        	   mCounter+=1;
        }
        else if (_status==2) {
     	   // Snooze
-    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+mSnooze,0); 
-    	   Log.i("NerdAlarm","Setting reload alarm again in snooze time");
+    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+mSnooze,0,mMode); 
+    	   Log.i("NerdAlarm","Setting reload alarm again in snooze time:"+ mCurrMinute + "+" + mSnooze);
 		   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
        	   mCounter+=1;
        	}
@@ -450,7 +451,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	   mCounter=0; 
     	   if (mRepeat>0) {
     		   		Log.i("NerdAlarm","Set alarm to repeat whenever");
-				 	mNextAlarm = my_records.setTime((int)(mAlarmID),mHour,mMinute,mRepeat);
+				 	mNextAlarm = my_records.setTime((int)(mAlarmID),mHour,mMinute,mRepeat,mMode);
 		       	   Toast.makeText(AlarmActivity.this,"Next time:" + mNextAlarm, Toast.LENGTH_SHORT).show();}
     	   else
     		   mCounter=0;

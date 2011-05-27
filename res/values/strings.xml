@@ -34,6 +34,7 @@
     <string name="repeatthat">Repeat again</string>
     <string name="selectdays">Select days</string>
     <string name="done">Done</string>
+    <string name="info">Info</string>
     <string name="stop">Stop</string>
     <string name="repeat">Repeating Alarm</string>
     <string name="repeat_2">No Repeat Set</string>
@@ -65,7 +66,7 @@
 	<string name="alarm_ringtone">AlarmTone</string>
 	<string name="ringtone_summary">What sound will the Alarm make</string>
 	<string name="nerd_summary">Will access your local Weather Info and include this information</string>
-	<string name="err_greeting">oh oh..something bad has happened..</string>	
+	<string name="err_greeting">eek! Error has occurred!</string>	
 	<string name="temp">degrees(c)</string>
 	<string name="bunny_greeting">hmmmmmmm</string>
 	<string name="nerd_greeting">Giraffes have no vocal cords</string>
@@ -73,6 +74,15 @@
 	<string name="ninja_greeting">I am silent but deadly</string>
 	<string name="andy_greeting">What the hell are you doing!</string>
 	<string name="helen_greeting">Oh my my, you are fantastic!</string>
+	<string name="info_header">Preferences Information</string>
+	<string name="mode_info_bunny">Bunny Mode is an easy start to the alarm. Starts early but gentle.</string>
+	<string name="mode_info_nerd">Nerd provides some interesting facts and opinions.</string>
+	<string name="mode_info_nuclear">Nuclear is the loudest, when you absolutely need to hear an alarm.</string>
+	<string name="mode_info_ninja">Ninja. Ultra discrete. No sound, No talk, No unlock. Quick vibrate.</string>
+	<string name="mode_info_angry">Angry mode does not like alarms.</string>
+	<string name="mode_info_happy">Happy mode provides some more positivity to your life.</string>
+	<string name="pref_warning">WARNING : Note the nerd checkbox will access the internet. This is switched on for Nerd Mode by default.</string>
+	<string name="pref_warning_two">Volume is reset to previous levels after the alarm completes. Nearly all modes rely on speaking for full effect.</string>
 	
 <string-array name="nerd_array">
 	<item>A jellyfish is 95 percent water!</item>

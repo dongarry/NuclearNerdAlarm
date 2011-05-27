@@ -14,6 +14,13 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
+
+/* Credits:
+ * http://www.devx.com/wireless/Article/40842
+ * 
+ * Nerd Alarm - Handles database setup, upgrade
+ */
+
 public class SqlHelper extends SQLiteOpenHelper {
     public static final String DATABASE_PATH = "/data/data/com.nerd.alarm/databases/";
     public static final String DATABASE_NAME = "NuclearAlarms";
@@ -27,31 +34,30 @@ public class SqlHelper extends SQLiteOpenHelper {
     public static final String KEY_COUNTER = "counter";    
     public SQLiteDatabase dbSqlite;
     private final Context myContext;
+    
     public SqlHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
-        this.myContext = context;
-    }
+        this.myContext = context;}
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         // check if exists and copy database from resource
-        createDB();
-    }
+        createDB();}
+    
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w("SqlHelper", "Upgrading database from version " + oldVersion
                 + " to " + newVersion + ", which will destroy all old data");
-        onCreate(db);
-    }
-    public void createDatabase() {
-        createDB();
-    }
+        onCreate(db);}
+    
+    public void createDatabase() {createDB();}
+    
     private void createDB() {
         boolean dbExist = DBExists();
         if (!dbExist) {
-            copyDBFromResource();
- 
-        }
+            copyDBFromResource(); }
     }
+    
     private boolean DBExists() {
         SQLiteDatabase db = null;
  
@@ -61,14 +67,13 @@ public class SqlHelper extends SQLiteOpenHelper {
                     SQLiteDatabase.OPEN_READWRITE);
             db.setLocale(Locale.getDefault());
             db.setLockingEnabled(true);
-            db.setVersion(1);
-
-        } catch (SQLiteException e) {
-            Log.e("SqlHelper", "database not found"); 
-        }
-        if (db != null) {
-            db.close();
-        }
+            db.setVersion(1);	} 
+        
+        catch (SQLiteException e) {
+            Log.i("NerdAlarm", "Database not found");}
+        
+        if (db != null) {db.close();}
+        
         return db != null ? true : false;
     }
     
@@ -76,32 +81,34 @@ public class SqlHelper extends SQLiteOpenHelper {
         InputStream inputStream = null;
         OutputStream outStream = null;
         String dbFilePath = DATABASE_PATH + DATABASE_NAME;
+        
         try {
             inputStream = myContext.getAssets().open(DATABASE_NAME);
             outStream = new FileOutputStream(dbFilePath);
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {
-                outStream.write(buffer, 0, length);
-            }
+                outStream.write(buffer, 0, length);}
             outStream.flush();
             outStream.close();
-            inputStream.close();
-        } catch (IOException e) {
+            inputStream.close();	} 
+        catch (IOException e) {
+            Log.i("NerdAlarm", "Error copying Database from Resource file");
             throw new Error("Problem copying database from resource file.");
         }
     }
+    
     public void openDataBase() throws SQLException {
         String myPath = DATABASE_PATH + DATABASE_NAME;
         dbSqlite = SQLiteDatabase.openDatabase(myPath, null,
-                SQLiteDatabase.OPEN_READWRITE);
-    }
+                SQLiteDatabase.OPEN_READWRITE);	}
+    
     @Override
     public synchronized void close() {
         if (dbSqlite != null)
             dbSqlite.close();
-        super.close();
-    }
+        super.close();	}
+    
     public Cursor getCursor() {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(TABLE_NAME);
@@ -109,11 +116,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         		KEY_TIME, KEY_REPEAT };
         Cursor mCursor = queryBuilder.query(dbSqlite, asColumnsToReturn, null,
                 null, null, null, "time desc");
-        return mCursor;
-    }
+        return mCursor;	}
+    
     public void clearSelections() {
         ContentValues values = new ContentValues();
         values.put(" selected", 0);
-        this.dbSqlite.update(SqlHelper.TABLE_NAME, values, null, null);
-    }
+        this.dbSqlite.update(SqlHelper.TABLE_NAME, values, null, null);	}
+
 }

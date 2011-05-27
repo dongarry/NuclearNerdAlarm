@@ -1,25 +1,41 @@
 package com.nerd.alarm;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-//import com.nerd.alarm.RingtonePref;
+
+/*
+ * Credits
+ * http://stackoverflow.com/questions/2834079/setting-ringtone-for-a-specific-application-only
+ * http://stackoverflow.com/questions/4593552/android-get-set-media-volumenot-ringone-volume   	
+ * http://androidideasblog.blogspot.com/2010/02/creating-custom-dialog-in-android.html
+ * 
+ * Nerd Alarm - Preferences screen - set characteristics for each mode
+ * TODO Create a reset to defaults option (probably on a sub menu)
+ *  Disable preferences for Ninja as this mode doesn't use them (Preference.setEnabled does not do this)
+ */
 
 public class alarm_pref extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	private EditTextPreference greetingPref;
@@ -27,15 +43,14 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
 	private ListPreference snoozePref,modePref;
 	private RingtonePreference soundPref;
 	private SharedPreferences.Editor editor;
-	
-	SharedPreferences mySharedPreferences; 
-    private String _sound;
-	
+	private String _sound;
 	private int mode = Activity.MODE_PRIVATE;
-	/** Called when the activity is first created. */
-	//http://stackoverflow.com/questions/4593552/android-get-set-media-volumenot-ringone-volume
-		
-    @Override
+	
+	static final private int ALARM_DETAIL = 1;
+
+	SharedPreferences mySharedPreferences; 
+    
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
@@ -47,11 +62,9 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
         vibratePref=(CheckBoxPreference)findPreference("vibratePref");
         nerdPref=(CheckBoxPreference)findPreference("nerdPref");
         
-        
         // We don't want the keyboard to pop up automatically..
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        Toast.makeText(getBaseContext(),"Default : " + getString(R.string.mode_default),Toast.LENGTH_LONG).show();  	
-		
+        
         modePref.setValue(getString(R.string.mode_default));
         getPrefs(getString(R.string.mode_default)); //start on the default..
         
@@ -65,35 +78,55 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
     	    		editor.commit();
     	    		
     	    		setSoundPref(_sound); 
-    	    		return true;
-    		           }
+    	    		return true;	}
          });  
     } 
 
+	
+	@Override // This is our information box..
+	protected Dialog onCreateDialog(int id) {
+	    switch (id) {
+	        case ALARM_DETAIL:
+	            LayoutInflater li = LayoutInflater.from(this);
+	            View alarmDetailView = li.inflate(R.layout.info, null);
+	            
+	            AlertDialog.Builder alarmDetailBuilder = new AlertDialog.Builder(this);
+	            alarmDetailBuilder.setView(alarmDetailView);
+	            AlertDialog categoryDetail = alarmDetailBuilder.create();
+	           
+	            categoryDetail.setButton("Ok", new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int which) {
+	                return;
+	            }}); 
+	            
+	            return categoryDetail;
+	        default:
+	            break;
+	    }
+	    return null;
+	}
+	
+	
     @Override
     protected void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes            
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);}
     
     @Override
     protected void onPause() {
         super.onPause();
         // Unregister the listener whenever a key changes            
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);    
-    }
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);}
     
     
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        // Let's do something a preference value changes
-    	
+        
       	 if (!key.equals("modePref")){ 
     		mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
-    		// Retrieve an editor to modify the shared preferences.
-    		editor = mySharedPreferences.edit();
-    	}
+    		editor = mySharedPreferences.edit();}
 
+      	 
     	if (key.equals("modePref")) {
 			getPrefs(modePref.getValue());}
 		else if (key.equals("greetingPref")) {
@@ -107,12 +140,11 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
         else if (key.equals("nerdPref")) {
         	editor.putBoolean("nerdPref",nerdPref.isChecked());} 
     	
+    	
     	if (!key.equals("modePref")){ editor.commit();}
-
     	}
 
     private void getPrefs(String _pref){
-    	//We set new default values depending on the mode selected.
     	
     	mySharedPreferences = getSharedPreferences(_pref,mode);
     	modePref.setTitle(getString(R.string.mode)+ " : " + _pref);
@@ -127,27 +159,34 @@ public class alarm_pref extends PreferenceActivity implements OnSharedPreference
     	setSoundPref(mySharedPreferences.getString("soundPref","alarm_alert"));
     	greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  mySharedPreferences.getString("greetingPref",""));
 		snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + mySharedPreferences.getString("snoozePref","5"));        
-		
-		if (mode==3){
-				soundPref.setEnabled(false);
-				vibratePref.setEnabled(false);
-				greetingPref.setEnabled(false);
-				snoozePref.setEnabled(false);}
-		else {
-				soundPref.setEnabled(true);
-				vibratePref.setEnabled(true);
-				greetingPref.setEnabled(true);
-				snoozePref.setEnabled(true);}			
 		}
     
     private void setSoundPref(String _sound){
-    	//A super help!
-    	//http://stackoverflow.com/questions/2834079/setting-ringtone-for-a-specific-application-only
-    	
     	RingtoneManager rm = new RingtoneManager(this);
     	rm.setType(RingtoneManager.TYPE_ALARM);
     	Ringtone ringtone = rm.getRingtone(this, Uri.parse(mySharedPreferences.getString("soundPref","alarm_alert")));
     	soundPref.setSummary(getString(R.string.ringtone_summary) + " : " + ringtone.getTitle(this));        
-
     }
+    
+	// Display our own custom menu when menu is selected.
+	 @Override
+	
+	public boolean onCreateOptionsMenu(Menu mymenu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.pref_menu, mymenu);
+		return true;
+		}
+	 
+	 public boolean onOptionsItemSelected(MenuItem item) {
+		    // Handle item selection
+		    switch (item.getItemId()) {
+		    case R.id.info:
+		    	showDialog(ALARM_DETAIL);
+		      	return true;
+		     default:
+		    	Toast.makeText(alarm_pref.this,getString(R.string.err_greeting) + item.getItemId(), Toast.LENGTH_SHORT).show();
+		    	return true;
+		     }
+		}
+	 
 }

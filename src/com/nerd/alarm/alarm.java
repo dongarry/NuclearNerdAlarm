@@ -1,7 +1,5 @@
 package com.nerd.alarm;
 
-
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,6 +15,16 @@ import android.widget.ListView;
 
 import android.widget.Toast;
 
+/* Credits
+ * Android Tutorial on TextToSpeech
+ * http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/	   
+ * 
+ * Nerd Alarm - Main screen to display current alarms and allow each switching on/off
+ * custom menu to access preferences and delete
+ * TODO Facility to delete just one alarm - maybe play on long click
+ *  Cancel all enabled alarms when Delete all is selected, currently these are just dismissed when fired
+ * 
+ */
 public class alarm extends ListActivity {
     private long m_alarmID;
 	private static final int MY_DATA_CHECK_CODE = 1;
@@ -24,41 +32,32 @@ public class alarm extends ListActivity {
 	private CustomSqlCursorAdapter dataSource;
 	private static final String fields[] = { "time", "title","enabled","counter","mode",BaseColumns._ID };
 	
-	/** Called when the activity is first created. */
-    @Override
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
    
-        if (this.db == null) {
-        	this.db = new database_adapter(this);
-        }
+        if (this.db == null) {this.db = new database_adapter(this);}
         
         db.open();
         
-        //Debug.waitForDebugger();
         setContentView(R.layout.main); 
         setTitle(getString(R.string.app_name));
-        
+	    
         loadAlarms();
         
-	//Taken from Tutorial on TexttoSpeech
-    Intent checkIntent = new Intent();
-    checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-    startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+		Intent checkIntent = new Intent();
+	    checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+	    startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
     
     } 
     
     @Override
         protected void onRestart() {
-            super.onRestart();
-            //new SelectDataTask().execute();
-        }
+            super.onRestart();}
 
     @Override
         protected void onPause() {
-            super.onPause();
-            //this.db.close();
-        }
+            super.onPause();}
     
     @Override
     protected void onResume(){
@@ -96,35 +95,28 @@ public class alarm extends ListActivity {
         case MY_DATA_CHECK_CODE: {
     	    if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
-    	    	Log.i("NerdAlarm","TTS passed check!");
-    	    } else {
+    	    	Log.i("NerdAlarm","TTS passed check!");} 
+    	    else {
                 // missing data, install it
                 Intent installIntent = new Intent();
                 installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);
-            		}
+                startActivity(installIntent);	}
         		}
-        default: {
-    	    	
-    	    }
+        default: {}
         }
     }
    
     public void loadAlarms(){
-    	//---get all Alarms---
-        //db.open();
     	Cursor _a = db.getAlarms();
         DisplayAlarm(_a);
-        //db.close();
-    }
+        }
     
     public void addalarm(View view) {
     	Bundle aBundle = new Bundle();
     	aBundle.putLong("Alarm",0);
 		Intent addIntent = new Intent(this,addalarm.class); 
 		addIntent.putExtras(aBundle);       
-	    startActivityForResult(addIntent,0);
-		
+	    startActivityForResult(addIntent,0);		
     }
 
 	// Display our own custom menu when menu is selected.
@@ -154,30 +146,10 @@ public class alarm extends ListActivity {
 			 default:
 		    	Toast.makeText(alarm.this,getString(R.string.err_greeting) + item.getItemId(), Toast.LENGTH_SHORT).show();
 		    	return true;
-		    	/*
-		    	Intent displayIntent = new Intent(this,display_records.class); 
-				startActivity(displayIntent);
-		    	return true;*/
-		    }
+		     }
 		}
-
-	 /*
-	   public void setalarm(View view) {
-	        //Toast.makeText(alarm.this, "set alarm", Toast.LENGTH_SHORT).show();
-	        //Intent intent = new Intent(this, AlarmService.class);
-	        //startService(intent);
-
-	      Intent alarmIntent = new Intent(this, AlarmActivity.class);
-	        long currentTime = SystemClock.elapsedRealtime();
-	        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-	        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-
-	        alarmManager.set(AlarmManager.ELAPSED_REALTIME, currentTime + 3000, pendingIntent);
-	    }
-      */ 
 	   
 	   public void DisplayAlarm(Cursor _data){ 
-		   // with help from : http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/
 		   dataSource = new CustomSqlCursorAdapter(this, 
 	    			 R.layout.alarm_list, _data, 
                    fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine},db);
@@ -185,4 +157,5 @@ public class alarm extends ListActivity {
 	   
 		   }
 
+	   
 }

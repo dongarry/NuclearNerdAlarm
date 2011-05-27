@@ -50,6 +50,8 @@
         android:textSize="14sp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
+        android:paddingLeft="30dp"
+        android:textColor="#a52a2a"
         android:text="@string/stop"/> 
         <Button
         android:id="@+id/button"
@@ -65,6 +67,8 @@
         android:textSize="14sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
+        android:textColor="#a52a2a"
+        android:paddingRight="20dp"
         android:text="@string/snooze"/> 
        </RelativeLayout> 
 </LinearLayout>

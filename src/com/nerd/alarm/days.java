@@ -3,11 +3,17 @@ package com.nerd.alarm;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
+/* Credits
+ * http://www.androidpeople.com/android-listview-multiple-choice-example	
+ * NerdAlarm - Allow users set days for repeat
+ * TODO Repeat Days screen - remove the need to repeat checkbox
+ * TODO Repeat Days screen - load selected details when user goes back in
+ */
 
 public class days extends Activity {
 	private ListView lView;
@@ -15,7 +21,6 @@ public class days extends Activity {
 	private long[] selectedRepeat;
 	private Long mAlarmID;
 	
-	//http://www.androidpeople.com/android-listview-multiple-choice-example
 	
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -31,7 +36,6 @@ public class days extends Activity {
 		lView.setAdapter(new ArrayAdapter<String>(this,
 		android.R.layout.simple_list_item_multiple_choice, days));
 		lView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-	
 	}
 	
 	// Lets forget about using a button, let user select and go back
@@ -42,24 +46,14 @@ public class days extends Activity {
 			Intent returnIntent = new Intent();
 			returnIntent.putExtra("SelectedDay",selected);
 			returnIntent.putExtra("Alarm",mAlarmID);
-			//Toast.makeText(this, " days :" + mAlarmID, Toast.LENGTH_SHORT).show();
+	 	    Log.i("NerdAlarm","Repeat screen, sending back:" + mAlarmID + " - " + selected);
+
 	        setResult(RESULT_OK,returnIntent);        
 		    finish();
 	        //return true;
 	    }
 	    return super.onKeyDown(keyCode, event);
 	}
-	
-	/*
-	@Override
-	protected void onPause(){
-        super.onPause();
-        String book = "212";
-		Intent returnIntent = new Intent();
-		returnIntent.putExtra("SelectedBook",book);
-		setResult(RESULT_OK,returnIntent);        
-	    finish();
-	}*/
 	
 	public int getSelected(){
 		lView = (ListView) findViewById(R.id.daylist);
@@ -69,10 +63,7 @@ public class days extends Activity {
 		int size = selectedRepeat.length;
 	    for (int i=0; i<size; i++)
 	    {
-	  	  //Toast.makeText(days.this, "size " + size, Toast.LENGTH_SHORT).show();
-	    	if (selectedRepeat[0]!=0) {
-	    		break;
-	    	}
+	  	  if (selectedRepeat[0]!=0) {break;}
 	    	
 	    	switch ((int)(selectedRepeat[i])){
 	    	case 1: selectRepeat+=4;break;		    
@@ -88,12 +79,4 @@ public class days extends Activity {
 	    
 		return selectRepeat;
 	}
-	/*
-	public void daySave(View view){
-		String book = "12";
-		Intent returnIntent = new Intent();
-		returnIntent.putExtra("SelectedBook",book);
-		setResult(RESULT_OK,returnIntent);        
-	    finish(); 
-		}*/
 }	
