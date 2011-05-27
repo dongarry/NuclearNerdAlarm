@@ -1,33 +1,37 @@
 package com.nerd.alarm;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import android.app.Activity;
+
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
-import android.app.KeyguardManager.OnKeyguardExitResult;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
+import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioManager;
+
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
+
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,26 +40,44 @@ import android.widget.Toast;
 public class AlarmActivity extends Activity implements TextToSpeech.OnInitListener {
     private TextToSpeech textToSpeech;
     private long mAlarmID =0;
-    private String mySpeak1,mySpeak2,mySpeak3, mNextAlarm, mSound;
+    private String mySpeak1="_",mySpeak2="_",mySpeak3="_"; 
+    private String mNextAlarm, mSound;
     
     private PowerManager.WakeLock mWakeLock;
-    private Timer mPowerTimer;
-    private KeyguardLock mKeyguardLock; 
+    private KeyguardManager mKeyguardMan; 
+    private KeyguardLock mKeyguardLock=null; 
     
     private int mCounter=0,mRepeat=0, mMode=0,mEnabled=0, mHour,mMinute;
     private int mTest=0,mSnooze=0, mDefaultVolume=0,mStatus=0;
-    private boolean mVibrate,mNerd,mMovingMode;
+    private boolean mVibrate,mNerd,mMovingMode,mSpeak=true;
     private MediaPlayer _mp = null;
     private PowerManager _pm = null;
     
     private String _modes [];
     private int mode = Activity.MODE_PRIVATE;
+    TextView mNerdDetails;
     SharedPreferences mySharedPreferences; 
     database_adapter _db = new database_adapter(this); 
     AudioManager mAudioManager = null;
     Display_Records my_records = null;
     
     public void onCreate(Bundle savedInstanceState) {
+    	
+    	/* Some Credits:
+    	 * http://stuffthathappens.com/blog/2007/09/10/urlopenstream-might-leave-you-hanging/
+    	 * http://stackoverflow.com/questions/628659/how-can-i-manage-audio-volumes-sanely-in-my-android-app/674207#674207
+         * http://getablogger.blogspot.com/2008/01/android-pass-data-to-activity.html
+         * http://www.androidcompetencycenter.com/2009/03/tutorial-how-to-start-a-new-activity/
+		 * http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
+    	 * http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/app/TextToSpeechActivity.html
+    	 * http://groups.google.com/group/android-developers/browse_thread/thread/cc8d7ab760946ee4
+    	 * http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
+    	 * 
+    	 * This Class is like spaghetti junction at the moment and needs serious refactoring,
+    	 * This is on my TODO list..
+    	 * 
+    	 */
+    	
     	
     	setVolumeControlStream(AudioManager.STREAM_MUSIC); // We want the user to be able to turn us down..
     	super.onCreate(savedInstanceState);
@@ -65,17 +87,13 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	mMovingMode = false;
     	setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  
     	
-    	// TODO
-    	/* Do we need to consider language locales: mTts.isLanguageAvailable(Locale.UK))
-			mTts.isLanguageAvailable(Locale.FRANCE))
-    	*/
-    	
-    	//http://stackoverflow.com/questions/628659/how-can-i-manage-audio-volumes-sanely-in-my-android-app/674207#674207
-        // see http://getablogger.blogspot.com/2008/01/android-pass-data-to-activity.html
-        // http://www.androidcompetencycenter.com/2009/03/tutorial-how-to-start-a-new-activity/
-        
+    	mKeyguardMan = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);     	
+    	PowerUp();
+  
     	setContentView(R.layout.alarm_wake);
-        
+    	
+    	mNerdDetails = (TextView) findViewById(R.id.nerd_info);
+    	
         textToSpeech = new TextToSpeech(this, this);
         
         loadDetails();
@@ -95,21 +113,18 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     
     @Override
     protected void onPause(){
-        super.onPause();
-        cancelWakeLock();
-        if (!mMovingMode) {rescheduleAlarm(3);}
-        //checkMedia();
-        //exitKeyguard(); 
-    }
+        super.onPause();}
     
     @Override
     protected void onStop(){
         super.onStop();
-        cancelWakeLock();
         checkMedia();
         
         if (!mMovingMode){rescheduleAlarm(3);}
-        //exitKeyguard(); 
+        			
+        exitKeyguard(); 
+        cancelWakeLock();
+
     }
     
     public void loadDetails (){
@@ -166,9 +181,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     }
     
     public void checkMedia(){
-    	//if (_mp!=null){_mp.pause();
-        //_mp.release();}
-    	
     	 // DEALLOCATE ALL MEMORY
     	    if (_mp != null) {
     	        if (_mp.isPlaying()) {
@@ -179,300 +191,231 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	        _mp.release();
     	        _mp= null;
     	    }
-    	    textToSpeech.shutdown();
-    }
-    public void handleSpeak(View view) {
-        saySomething();
-        //playSomething();
-    }
+    	    
+    	    if (textToSpeech != null) {
+    	    	textToSpeech.stop();
+    	    	textToSpeech.shutdown();}
+
+    	}
+    
+    public void handleSpeak(View view) {saySomething();}
     
     public void stopAlarm(View view) {
     	mMovingMode=true;
     	rescheduleAlarm(3);
-    }
+    	}
+    
     private void saySomething() {
-    	Log.i("NerdAlarm","Speaking..:" + mySpeak3);
-    	//Lets keep everything on the AudioManager.STREAM_ALARM 
-    	/*
-    	HashMap<String, String> myHashAlarm = new HashMap();
-    	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_STREAM,
-    	        String.valueOf(AudioManager.STREAM_ALARM));
-    	textToSpeech.speak(mySpeak1, TextToSpeech.QUEUE_FLUSH, myHashAlarm);
-        textToSpeech.speak(mySpeak3, TextToSpeech.QUEUE_ADD, myHashAlarm);
-        textToSpeech.speak(mySpeak2, TextToSpeech.QUEUE_ADD, myHashAlarm);*/
-        
         textToSpeech.speak(mySpeak1, TextToSpeech.QUEUE_FLUSH, null);
         textToSpeech.speak(mySpeak3, TextToSpeech.QUEUE_ADD, null);
-        textToSpeech.speak(mySpeak2, TextToSpeech.QUEUE_ADD, null);
-        
-    }
+        textToSpeech.speak(mySpeak2, TextToSpeech.QUEUE_ADD, null);        
+    	}
     
-    private void playSomething(int _play){
-    
-    //Useful : http://www.anddev.org/video-tut_-_playing_mediamp3_on_the_emulator-t156.html
+    private void playSomething(int _play)
+    {	
     	_mp = new MediaPlayer();
     	
-    	if(_play>0) {
-			
-						_mp = MediaPlayer.create(AlarmActivity.this,_play);
-						Log.i("NerdAlarm","setting this stream might not work!");
-						//_mp.setAudioStreamType(AudioManager.STREAM_ALARM);
-						try {_mp.prepare();} 
-								catch (IllegalStateException e) {e.printStackTrace();} 
-								catch (IOException e) {e.printStackTrace();}
-		
-					}
+    	_mp.setOnErrorListener(
+				new MediaPlayer.OnErrorListener() {
+			        public boolean onError(MediaPlayer mp, int something, int extra) {
+			        	Log.e("NerdAlarm", "Error in MediaPlayer: (" + something +") with extra (" +extra +")" );
+			    		return false;
+			        }
+			    });
     	
-    	else 		{
-    					Log.i("NerdAlarm","MSound set to :" + mSound);
-    					try {_mp.setDataSource(this,Uri.parse(mySharedPreferences.getString("soundPref", "alarm_alert")));} 		    	 	
-			    	 		catch (IllegalArgumentException e1) {e1.printStackTrace();} 
-			    	 		catch (SecurityException e1) {e1.printStackTrace();} 
-			    	 		catch (IllegalStateException e1) {e1.printStackTrace();} 
-			    	 		catch (IOException e1) {e1.printStackTrace();}
-		    	 
-		    	 		 _mp.setAudioStreamType(AudioManager.STREAM_ALARM);
-			    		 _mp.setLooping(true);
-		    		 
-			    		 try {_mp.prepare();} 
-			    		 	 catch (IllegalStateException e) {e.printStackTrace();} 
-				    		 catch (IOException e) {e.printStackTrace();}
-    				}
-		   
-    	_mp.start();
-	
-    	 
+    	if(_play>0) 	{
+	    				try {
+			    				_mp = MediaPlayer.create(AlarmActivity.this,_play);
+			    				_mp.prepare();
+		    				}
+						catch (IOException e) {e.printStackTrace();}
+						}
+
+    	else 			{
+    					try {
+	    						_mp.setDataSource(this,Uri.parse(mySharedPreferences.getString("soundPref", "alarm_alert"))); 		    	 		    	 	
+			    	 		 	_mp.setAudioStreamType(AudioManager.STREAM_ALARM);
+			    	 		 	_mp.setLooping(true);
+			    	 		 	_mp.prepare();
+    						}
+				    	catch (IOException e) {
+				    			 Log.i("NerdAlarm","Preparing sound prefernces :" + e.getMessage());
+				    			 e.printStackTrace();}
+				    	 	 
+    	}
+    	
+    	try {_mp.start();}
+    	catch (IllegalStateException e) {
+			Log.i("NerdAlarm","Starting MediaPlayer:" + (e.getMessage()));}
+		 
     	_mp.setOnCompletionListener(new OnCompletionListener(){
          // @Override
          public void onCompletion(MediaPlayer arg0) {
-        	 Toast.makeText(AlarmActivity.this,getString(R.string.sound_over), Toast.LENGTH_SHORT).show(); 
-        	 rescheduleAlarm(mStatus);
-         }
+        	rescheduleAlarm(mStatus);}
     	});
     	 	
     }
     
 
-	public void onInit(int i) {
-        //saySomething();
-    }
+    public void onInit(int i) {
+		  if (i == TextToSpeech.SUCCESS) {
+	            //TODO Consider doing something with locales?
+			  	 if(mSpeak){saySomething();}
+	        } 
+		  else {Log.i("NerdAlarm", "Could not initialise TextToSpeech.");}
+	}
     
-    private void PowerUp() 
-    { 
-    	//http://groups.google.com/group/android-developers/browse_thread/thread/cc8d7ab760946ee4
+    private void PowerUp() { 
     	_pm = (PowerManager) getSystemService (Context.POWER_SERVICE); 
-        cancelWakeLock(); 
-           
-         //PowerManager.ON_AFTER_RELEASE          
-           // and we keep it on for a bit after release - seem to actually stop the device powering up when 
-           // not on charge 
-            mWakeLock = _pm.newWakeLock( 
+         
+    	mWakeLock = _pm.newWakeLock( 
                          PowerManager.FULL_WAKE_LOCK |  // could use bright instead 
                          PowerManager.ACQUIRE_CAUSES_WAKEUP  // so we actually wake the device  
                          , "Nerd Alarm"); 
              
             mWakeLock.acquire(); 
-            
-         mPowerTimer = new Timer(); 
+    } 
 
-            
-            mPowerTimer.schedule( 
-                             new TimerTask() 
-                             { 
-                            	 @Override 
-                            	 	public void run() 
-                            	 	{ 
-                            		 Log.i("NerdAlarm","Calling canel wake alert");
-                 					cancelWakeLock(); 
-                            	 	} 
-                            } , 10000); 
-                            
-
-   } 
-
-   private void cancelWakeLock() 
-    { 
+   private void cancelWakeLock() { 
             if( mWakeLock != null ) 
             { 
                     mWakeLock.release(); 
                     mWakeLock = null; 
             } 
-    }
+    	}
 
    
-   private void UnlockKeyguard() 
-   { 
-           if( mKeyguardLock != null ) 
-           { 
-                   return; // already unlocked 
-           } 
-           /*
-           KeyguardManager kgm = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-           KeyguardLock kgl = kgm.newKeyguardLock("NerdAlarm");
-
-           if (kgm.inKeyguardRestrictedInputMode())
-               kgl.disableKeyguard();
+   private void UnlockKeyguard() {   	   
+	   		if( mKeyguardLock != null ) 
+           		{return;} 
            
-           kgm.exitKeyguardSecurely(null);
-           */
-           
-           KeyguardManager  kg = (KeyguardManager ) getSystemService (Context.KEYGUARD_SERVICE); 
-           
-           if( kg.inKeyguardRestrictedInputMode()) 
-           { 
-                   mKeyguardLock = kg.newKeyguardLock( "Nerd Alarm" ); 
-                   mKeyguardLock.disableKeyguard(); 
-           } 
+	   		if( mKeyguardMan.inKeyguardRestrictedInputMode()) 
+           		{ 
+	   				mKeyguardLock = mKeyguardMan.newKeyguardLock("NerdAlarm");
+	   				Log.i("NerdAlarm","Disabling KeyGuard");
+	   				mKeyguardLock.disableKeyguard(); 
+           		} 
            else 
-           { 
-                   mKeyguardLock = null; // make sure we are tidy 
-           } 
+           		{ mKeyguardLock = null; } 
    } 
    
    
-   private void exitKeyguard() 
-   { 
-           if( mKeyguardLock != null ) // we disabled keyguard 
-           { 
-                   KeyguardManager  kg = (KeyguardManager ) getSystemService (Context.KEYGUARD_SERVICE); 
-                   if( kg.inKeyguardRestrictedInputMode()) 
-                   { 
-                           kg.exitKeyguardSecurely((OnKeyguardExitResult) this); 
-                           // show the user the keyguard, so they can dismiss it - response happens via the callback 
-                           //onKeyguardExitResult 
-                   } 
-                   else 
-                   { 
-                           mKeyguardLock = null; 
-                           //saySomething(); 
-                           // do the actions we wanted to do but had to defer till the user unlocked us 
-                   } 
+   private void exitKeyguard() { 
+           if( mKeyguardLock != null ){ 
+        	       if( mKeyguardMan.inKeyguardRestrictedInputMode()) 
+                   	{
+                	   mKeyguardMan.exitKeyguardSecurely(null);
+            	   	   mKeyguardLock.reenableKeyguard(); 
+            	   	   mKeyguardLock = null;
+                   	} 
+                   else  
+                   	{mKeyguardLock = null;} 
            } 
-           else 
-           { 
-        	   //saySomething(); 
-           } 
-   } 
-
-   public void onKeyguardExitResult(boolean success) 
-   { 
-           if( success ) 
-           { 	
-        	   	   //mKeyguardLock.reenableKeyguard(); 
-                   mKeyguardLock = null; // don't want this any more 
-                   //saySomething(); 
-           } 
-           else 
-           { 
-                   // user didn't dismiss keyguard, doing nothing 
-                   if( mKeyguardLock != null ) // should never be null 
-                           mKeyguardLock.reenableKeyguard(); 
-           } 
-   } 
-  
+           else {} 
+   	} 
+   
    private void setCharacteristics(){
 	   	int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-	   	boolean _Speak=true,_Lock=true,_Wake=true,_Play=true;
+	   	boolean _Lock=true,_Play=true;
 	   	int _playThis=0;
 	   	mStatus=0;
 	   	
 	   	Log.i("NerdAlarm","Mode!" + mMode);
  	   
-   	//Set characteristics..
-       if (mMode==0){ 						//Bunny
-	       	if (mCounter==0){
-	       		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume - 5), AudioManager.FLAG_VIBRATE);
-	       		mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-	       		_playThis=R.raw.b_birds;			
-	       		_Speak=false;
-	       		_Lock=false;
-	       		mStatus=1;
-	       		}
-	       	else if (mCounter==1){
-	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume - 3), AudioManager.FLAG_VIBRATE);
-	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-	   			_playThis=R.raw.b_b_birds;
-	   			_Speak=false;
-	   			_Lock=false;
-	       		mStatus=2;
-	       		}
-	       	else if (mCounter==2){
-	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-2), AudioManager.FLAG_VIBRATE);
-	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-	   			mStatus=2;
-	       		}
-	       	else if (mCounter==3){
-	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-1), AudioManager.FLAG_VIBRATE);
-	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-	   			mStatus=2;
-	       		}
-	       	else if (mCounter>4){
-	   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume), AudioManager.FLAG_VIBRATE);
-	   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-	   			mStatus=3;
-	       		}
-	       
+   	   if (mMode==0){ 						//Bunny
+		       	if (mCounter==0){
+		       		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume - 5), AudioManager.FLAG_VIBRATE);
+		       		mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+		       		_playThis=R.raw.b_birds;			
+		       		mSpeak=false;
+		       		_Lock=false;
+		       		mStatus=1;
+		       		}
+		       	else if (mCounter==1){
+		   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume - 3), AudioManager.FLAG_VIBRATE);
+		   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+		   			_playThis=R.raw.b_b_birds;
+		   			mSpeak=false;
+		   			_Lock=false;
+		       		mStatus=2;
+		       		}
+		       	else if (mCounter==2){
+		   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-2), AudioManager.FLAG_VIBRATE);
+		   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+		   			mStatus=2;
+		       		}
+		       	else if (mCounter==3){
+		   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-1), AudioManager.FLAG_VIBRATE);
+		   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+		   			mStatus=2;
+		       		}
+		       	else if (mCounter>4){
+		   			mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume), AudioManager.FLAG_VIBRATE);
+		   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+		   			mStatus=3;
+		       		}
 	       }
+       
        else if (mMode==1){
     	   											//NERD
-    	   Log.i("NerdAlarm","Nerd!");
     	   int _nerdFact = (int)(Math.random() * (9 - 0));	
     	   String[] _facts=getResources().getStringArray(R.array.nerd_array); 
     	   mySpeak3 = _facts[_nerdFact];
-    	   Log.i("NerdAlarm","Fact!:" + mySpeak3);
     	   if (mCounter==1){mySpeak1 = " cough ";}
     	   mStatus=2;	
+    	   if (mCounter>6){mStatus=3;} 
        		}
+       
        else if (mMode==2){
 													//Nuclear
     	    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume), AudioManager.FLAG_VIBRATE);
   			mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-  		 	_Speak=true;
-  		 	if (mCounter>1) {_playThis=R.raw.nuc;} 			
+  		 	if (mCounter>0) {_playThis=R.raw.nuc;} 			
   		 	mStatus=2;
        		}
+       
        else if (mMode==3){
     	   											//Ninja
 	   	   	Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-	   	   	v.vibrate(300);
-	   	   	_Speak=false;
+	   	   	v.vibrate(700);
+	   	   	mSpeak=false;
 	   	   	_Lock=false;
-	   	   	_Wake=false;
 	   	   	_Play=false;
 	   	   	mStatus=3;
        		}
 	   	
        else if (mMode==4){
+    	   											//Angry
     	   mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume), AudioManager.FLAG_VIBRATE);
  		   mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
  		   int _angryStuff = (int)(Math.random() * (9 - 0));	
     	   String[] _andy=getResources().getStringArray(R.array.andy_array); 
     	   mySpeak3 = _andy[_angryStuff];
     	   Log.i("NerdAlarm","Andy!:" + mySpeak3);
-    	   if (mCounter==1){mySpeak1 = "ah ah ah ah";}
+    	   if (mCounter==1){mySpeak1 = " aha ";}
     	   mStatus=2;	
        		}
+       
        else if (mMode==5){
-		   mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-1), AudioManager.FLAG_VIBRATE);
+    	   											//Happy
+    	   mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume-1), AudioManager.FLAG_VIBRATE);
 		   mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
 		   int _happyStuff = (int)(Math.random() * (9 - 0));	
 		   String[] _happy=getResources().getStringArray(R.array.helen_array); 
 		   mySpeak3 = _happy[_happyStuff];
-		   Log.i("NerdAlarm","Helen!:" + mySpeak3);
-		   if (mCounter==1){mySpeak1 = "la la la";}
+		   Log.i("NerdAlarm","Happy!:" + mySpeak3);
+		   if (mCounter==1){mySpeak1 = " oh la la ";}
 		   mStatus=2;	
        		}
        
-       if(_Wake){PowerUp();}
-   	   if(_Lock){UnlockKeyguard();}
+       if(_Lock){UnlockKeyguard();}
    	   
-   	   if(mVibrate){
+       if(mVibrate){
    		   		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-   		   		v.vibrate(100);}
+   		   		v.vibrate(200);}
 	   
    	   if(mNerd){mySpeak1=getNerdDetails();}
-   	   if(_Speak){saySomething();}
-       if(_Play){playSomething(_playThis);}
+   	   if(_Play){playSomething(_playThis);}
        	
    }
    
@@ -490,14 +433,14 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         
        if (_status==1) {
     	   // Just reload the alarm again in 15 mins.
-    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+1,0);//should be 15
+    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+15,0);
     	   Log.i("NerdAlarm","Setting reload alarm again");
 		   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
        	   mCounter+=1;
        }
        else if (_status==2) {
     	   // Snooze
-    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+1,0); //Todo Snooze
+    	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+mSnooze,0); 
     	   Log.i("NerdAlarm","Setting reload alarm again in snooze time");
 		   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
        	   mCounter+=1;
@@ -517,8 +460,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
        
        /* Testing Alarm */
        mTime = mySpeak1 + "-" + mHour + ":" + mMinute;
-   	   
-       Log.i("NerdAlarm","Set alarm " + mAlarmID + " to Counter: " + mCounter + " and Enabled :" + mEnabled);
+       //Log.i("NerdAlarm","Set alarm " + mAlarmID + " to Counter: " + mCounter + " and Enabled :" + mEnabled);
 	 	 
        _db.updateStatistic(mAlarmID,mCounter,mEnabled,mTime + ":" + mMode);
        _db.close();
@@ -527,8 +469,72 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
        finish();
    }
    
-   private String getNerdDetails(){
-	   return "Get something";
-   }
+   private String getNerdDetails()
+   { 
+	  	
+	try {   
+			LocationManager locationManager;
+		  	String context = Context.LOCATION_SERVICE;
+		 	locationManager = (LocationManager)getSystemService(context);
+		 	String provider = LocationManager.NETWORK_PROVIDER;
+		 	Location location = locationManager.getLastKnownLocation(provider);
+		 	Log.i("NerdAlarm","Location: " + location.getLongitude()  + ":" + location.getLatitude());
+
+		 	//We now have coordinates - let's get the weather
+		 	//http://www.google.com/ig/api?weather=,,,4550000,-7358300
+		 	//These coordinates need to be formatted
+		 	String weatherString = "http://www.google.com/ig/api?weather=,,,";
+		 	String _lat= location.getLatitude() + ""; 
+		 	String _lon = "" + location.getLongitude();
+		 	_lat=f_Coordinates(_lat) + "," + f_Coordinates(_lon); 	
+		 	weatherString = weatherString + _lat;
+		 	URL url;	 	
+			url = new URL(weatherString); 
+		 	
+			//Return should be XML so deal with it:
+	 		SAXParserFactory spf = SAXParserFactory.newInstance();
+	 		SAXParser sp;
+        	sp = spf.newSAXParser(); 
+        	xmlHandler _xmlHandler = new xmlHandler();
+        	XMLReader xr = null;
+        	xr = sp.getXMLReader();
+        	xr.setContentHandler(_xmlHandler);
+		
+        	// We cannot be waiting long for this..
+        	URLConnection conn = url.openConnection();
+        	conn.setConnectTimeout(3000);
+        	conn.setReadTimeout(2000);
+        	xr.parse(new InputSource(conn.getInputStream())); 
+	
+			// xmlHandler provides the parsed data
+			Log.i("NerdAlarm","URL:" + url);
+	        parsedXmlSet _parsedXmlSet = _xmlHandler.getParsedData();
+	        Log.i("NerdAlarm",_parsedXmlSet.toString());
+	        
+	        String _nerdDetails = "No";
+	        
+	        if (_parsedXmlSet.getWind().length()>4){
+	        		mNerdDetails.setText(_parsedXmlSet.toString() + getString(R.string.temp));
+	        		mNerdDetails.setTypeface(null,Typeface.BOLD);
+	        		_nerdDetails = _parsedXmlSet.getCondition();
+	        		}
+	        
+	        return _nerdDetails;
+	}
+
+	catch (Exception e) {
+			Log.e("NerdAlarm", "Error getting Weather info:" + e.getMessage());
+        	return "No"; }
+	  }
    
+   private String f_Coordinates(String _c) 
+   {	// Ensure Coordinates are in the correct format..
+	   _c=_c.replace(".", "");   
+	   if(_c.length()>8){_c=_c.substring(0, 8);}
+	   else if(_c.length()<8){_c=_c.format("%-" + 8 + "s", _c).replace(' ', '0');}
+	   
+	   return _c;
+	    
+   }
+      
 }

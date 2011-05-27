@@ -22,6 +22,13 @@
             android:text="@string/repeatthat"
             android:onClick="handleSpeak"
             />
+        <TextView android:id="@+id/nerd_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="27sp"
+        android:textColor="#a52a2a"
+        android:layout_alignParentLeft="true"
+        android:text=""/> 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				    android:layout_width="fill_parent"
 				    android:layout_height="fill_parent"    

@@ -64,8 +64,9 @@
 	<string name="snooze_summary">How long will the alarm snooze for</string>
 	<string name="alarm_ringtone">AlarmTone</string>
 	<string name="ringtone_summary">What sound will the Alarm make</string>
-	<string name="nerd_summary">Will try to access your Calender,Gmail and Weather and tell you what is happening</string>
+	<string name="nerd_summary">Will access your local Weather Info and include this information</string>
 	<string name="err_greeting">oh oh..something bad has happened..</string>	
+	<string name="temp">degrees(c)</string>
 	<string name="bunny_greeting">hmmmmmmm</string>
 	<string name="nerd_greeting">Giraffes have no vocal cords</string>
 	<string name="nuclear_greeting">Get owt!, Get owt! Get downn! Get up! Hurry</string>
@@ -82,7 +83,7 @@
 	<item>Over 10,000 birds a year die from smashing into windows. Lets ban windows</item>
 	<item>Men are 6 times more likely to be struck by lightning than women!. Thats because they want to be struck.</item>
 	<item>In the year 2000, Pope John Paul the second was named an Honorary Harlem Globetrotter. He was the best one.</item>
-	<item>Human teeth are almost as hard as rocks. Lets play teeth, paper, siccors!</item>
+	<item>Human teeth are almost as hard as rocks. Lets play teeth, paper, scissors!</item>
 	<item>Every day 20 banks are robbed. The average take is 2,500 dollars. Except in Ireland, where the banks rob the people.</item>
 	</string-array>
 <string-array name="helen_array">
@@ -91,14 +92,14 @@
 	<item>I think you are the best.</item>
 	<item>Today will be super now that you are here.</item>
 	<item>You are ridiculously hot.</item>
-	<item>I would vote you for President.</item>
+	<item>I would vote for you for President.</item>
 	<item>Do not worry about a thing, you are super capable.</item>
 	<item>You are so hot, I could fry eggs on you.</item>
 	<item>Damn! you keep getting better looking!</item>
 	<item>Row Row Row your boat, gently down the stream, merrily merrily merrily merrily, life is but a dream.</item>
 	</string-array>
 <string-array name="andy_array">
-	<item>I shake an onion in your hair and poke my finger in your nose.</item>
+	<item>I shake an onion in your hair ... and poke my finger in your nose.</item>
 	<item>Your room is smelly like your armpit.</item>
 	<item>I wave a smelly sock in your face and cough in your general direction.</item>
 	<item>I have hidden your shoes, you will never find them.</item>
@@ -114,7 +115,7 @@
 	<item>Nerd</item>
 	<item>Nuclear</item>
 	<item>Ninja</item>
-	<item>AngryAndroid</item>
+	<item>AngryAlarm</item>
 	<item>HappyHappy</item>
 	</string-array>
 <string-array name="modes_codes">

@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
 import java.util.Calendar;
+
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -69,6 +71,11 @@ public class addalarm extends Activity {
         mHour = c.get(Calendar.HOUR_OF_DAY);
         mMinute = c.get(Calendar.MINUTE);
         
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+	    		this, R.array.modes_array, android.R.layout.simple_spinner_item);
+	        	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	        	mode_spinner.setAdapter(adapter);
+	   
         
         if(mAlarmID>0){
         	_db.open();
@@ -126,11 +133,6 @@ public class addalarm extends Activity {
 		            }
 		        });
 		
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-	    		this, R.array.modes_array, android.R.layout.simple_spinner_item);
-	        	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	        	mode_spinner.setAdapter(adapter);
-	   
 	        	
 	    mSaveAlarm.setOnClickListener(new View.OnClickListener() {
 	    	public void onClick(View v) {
@@ -151,12 +153,9 @@ public class addalarm extends Activity {
 		    		                		_mode,
 		    		                		mTest);
 		                
-		                if (bUpdate){
-		                	//Toast.makeText(addalarm.this, getString(R.string.alarm_updated), Toast.LENGTH_SHORT).show();
-		                		}
-		                else{
-		                	Toast.makeText(addalarm.this, getString(R.string.alarm_update_failed), Toast.LENGTH_SHORT).show();
-		                	}
+		                if (bUpdate){Log.i("NerdAlarm","Added Alarm " + mAlarmID + " to DB");}
+		                else{Log.i("NerdAlarm","FAILED adding Alarm " + mAlarmID + " to DB");
+		                	Toast.makeText(addalarm.this, "ERROR! : Alarm was not saved!", Toast.LENGTH_SHORT).show();}
 	                	}
 	                
 	                else{
@@ -289,8 +288,9 @@ public class addalarm extends Activity {
 	       
 	       int _mode = alarmDetails.getInt(alarmDetails.getColumnIndex("mode"));
 	       //Spinner mSpinner = (Spinner) findViewById(R.id.mode_spinner);
+	       Log.i("NerdAlarm","Mode returned:"+_mode);
 	       mode_spinner.setSelection(_mode);
-	       
+	       //mode_spinner.
 	       selectedDays = alarmDetails.getInt(alarmDetails.getColumnIndex("repeat"));
 	       mRepeatTime.setText(setDays(selectedDays));
 	       

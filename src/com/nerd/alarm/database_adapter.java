@@ -208,7 +208,7 @@ public class database_adapter{
 	    	    {
 	    			//TODO Change this to Counter and Stat
 	    	        ContentValues args = new ContentValues();
-	    	        args.put(KEY_TITLE, AlarmTime); //test
+	    	        //args.put(KEY_TITLE, AlarmTime); //test
 	    	        args.put(KEY_COUNTER, counter);
 	    	        args.put(KEY_ENABLED, enabled);
 	    	        //args.put(KEY_COUNTER, counter);

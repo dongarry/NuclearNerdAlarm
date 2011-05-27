@@ -6,9 +6,12 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 
-// See Splash tutorial ; http://www.droidnova.com/how-to-create-a-splash-screen,561.html
+/* Credits
+*  http://www.droidnova.com/how-to-create-a-splash-screen,561.html
+*/
 
 public class splash extends Activity { 
 protected boolean mActive = true;
@@ -24,7 +27,6 @@ SharedPreferences mySharedPreferences = null;
         //Let's load default Preferences here..
         SetDefaultPrefs();
         
-        // thread for displaying the SplashScreen
         Thread splashTread = new Thread() {
             @Override
             public void run() {
@@ -63,53 +65,52 @@ SharedPreferences mySharedPreferences = null;
 		String modeArr [];
 		boolean _vibrate=false,_nerd=false,h_vibrate,h_nerd;
 		String _greeting=null,_sound=null,h_greeting=null,h_sound=null,_snooze="5",h_snooze;
-
-		
+        
 		modeArr=getResources().getStringArray(R.array.modes_array);
 		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); 
-
+		 
 		for (int i = 0; i < modeArr.length; ++i) {
-			
+				Log.i("NerdAlarm","Set up Preferences for " + modeArr[i]);
 				mySharedPreferences = getSharedPreferences(modeArr[i], mMode);
 				//Toast.makeText(getBaseContext(),modeArr[i],Toast.LENGTH_SHORT).show();
 				//Nerdy Facts : http://bobado.com/joke/nerdy-facts
-			    
+		        
 				switch (i){
-		    	case 0: 	
-		    				_snooze="15";
-		    				_greeting=getString(R.string.bunny_greeting);
-		    				_sound=alert.toString();
-		    				break;		    
-		    	case 1: 
-		    				_snooze="10";
-		    				_nerd=true;
-		    				_greeting=getString(R.string.nerd_greeting);
-		    				_sound=alert.toString();
-		    				break; 
-		    	case 2: 
-				    		_snooze="5";
-		    				_nerd=false;
-		    				_vibrate=true;
-		    				_greeting=getString(R.string.nuclear_greeting);
-		    				_sound=alert.toString();
-		    				break; 
-		    	case 3: 
-				    		_snooze="10";
-		    				_greeting=getString(R.string.ninja_greeting);
-		    				_sound=alert.toString();
-		    				break; 
-		    	case 4: 
-				    		_snooze="5";
-				    		_greeting=getString(R.string.andy_greeting);
-		    				_sound=alert.toString();
-		    				break; 
-		    	case 5: 
-				    		_snooze="10";
-				    		_vibrate=false;
-		    				_greeting=getString(R.string.helen_greeting);
-		    				_sound=alert.toString();
-		    				break; 
- 		    		}  	
+			    	case 0: 	
+			    				_snooze="15";
+			    				_greeting=getString(R.string.bunny_greeting);
+			    				_sound=alert.toString();
+			    				break;		    
+			    	case 1: 
+			    				_snooze="10";
+			    				_sound=alert.toString();
+			    				_nerd=true;
+			    				_greeting=getString(R.string.nerd_greeting);
+			    				break; 
+			    	case 2: 
+					    		_snooze="5";
+			    				_nerd=false;
+			    				_vibrate=true;
+			    				_greeting=getString(R.string.nuclear_greeting);
+			    				_sound=alert.toString();
+			    				break; 
+			    	case 3: 
+					    		_snooze="10";
+			    				_greeting=getString(R.string.ninja_greeting);
+			    				_sound=alert.toString();
+			    				break; 
+			    	case 4: 
+					    		_snooze="5";
+					    		_greeting=getString(R.string.andy_greeting);
+			    				_sound=alert.toString();
+			    				break; 
+			    	case 5: 
+			    	    		_snooze="10";
+					    		_vibrate=false;
+			    				_greeting=getString(R.string.helen_greeting);
+			    				_sound=alert.toString();
+			    				break; 
+ 		    			  }  	
 				
 				// Retrieve an editor to modify the shared preferences.
 				SharedPreferences.Editor editor = mySharedPreferences.edit();
@@ -129,8 +130,8 @@ SharedPreferences mySharedPreferences = null;
 				editor.putString("snoozePref", h_snooze);
 				editor.putBoolean("nerdPref", h_nerd);
 				editor.putString("soundPref", h_sound);
-				
 				editor.commit();
+				
 		}
 	}
 }
