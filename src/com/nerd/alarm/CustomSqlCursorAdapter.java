@@ -33,9 +33,9 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	private Cursor myCursor;
     private String m_AlarmTime;
     private int mMode=0; 
-    database_adapter c_db = null; 
+    DatabaseAdapter c_db = null; 
 	
-	public CustomSqlCursorAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to,database_adapter db) {
+	public CustomSqlCursorAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to,DatabaseAdapter db) {
         super(context, layout, cursor, from, to);  
         this.context = context; 
         this.myCursor=cursor;
@@ -61,16 +61,18 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	       aTitle.setText(_title);
 	       
 	       /* TODO Incorporate colours into Preferences*/
-	       if(mMode==0){aTime.setTextColor(context.getResources().getColor(R.color.forest_green));} 		// Bunny
+	       if(mMode==0){aTime.setTextColor(context.getResources().getColor(R.color.forest_green));} 		//Bunny
 	       else if(mMode==1){aTime.setTextColor(context.getResources().getColor(R.color.medium_orchid));}	//Nerd
-	       else if(mMode==2){aTime.setTextColor(context.getResources().getColor(R.color.dark_orange));}	//Nuclear
+	       else if(mMode==2){aTime.setTextColor(context.getResources().getColor(R.color.dark_orange));}		//Nuclear
 	       else if(mMode==3){aTime.setTextColor(context.getResources().getColor(R.color.black));}			//Ninja
 	       else if(mMode==4){aTime.setTextColor(context.getResources().getColor(R.color.firebrick));}		//Angry
-	       else if(mMode==5){aTime.setTextColor(context.getResources().getColor(R.color.royal_blue));;}	//Happy
+	       else if(mMode==5){aTime.setTextColor(context.getResources().getColor(R.color.royal_blue));;}		//Happy
+	       
+	       
 	       int _counter = this.myCursor.getInt(this.myCursor.getColumnIndex("enabled"));
 	       int _repeat = this.myCursor.getInt(this.myCursor.getColumnIndex("repeat"));
 	       
-	       Display_Records my_records = new Display_Records();
+	       DisplayRecords my_records = new DisplayRecords();
 	       my_records.SetMe(context); 
 	       String mRepeatDesc=my_records.setDays(_repeat);
 	       
@@ -101,7 +103,7 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 					} 
 					else if (!cBox.isChecked()) {
 						if (c_db.enableAlarm(m_alarmID,0)){Log.i("NerdAlarm","Disabled Alarm :" + m_alarmID);}
-		       			Toast.makeText(context, context.getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, context.getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();
 		       			setalarm((int)(m_alarmID),false,"00:00");
 					}
 				}
@@ -120,7 +122,7 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	        	int hours = Integer.valueOf(parts[0]);
 	        	int minutes = Integer.valueOf(parts[1]);
 	        	 
-	        	Display_Records my_a_records = new Display_Records();
+	        	DisplayRecords my_a_records = new DisplayRecords();
 	        	my_a_records.SetMe(context); 
 	        	_alarmTime = my_a_records.setTime(_id,hours,minutes,0,mMode);
 	        	Toast.makeText(context, m_AlarmTime, Toast.LENGTH_SHORT).show();

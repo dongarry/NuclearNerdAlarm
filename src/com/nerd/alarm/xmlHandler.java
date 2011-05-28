@@ -9,7 +9,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * Nerd Alarm - To access weather info, we download from the google api but we handle the
  *  xml file ourselves, this is where we parse it
  */
-public class xmlHandler extends DefaultHandler{
+public class XmlHandler extends DefaultHandler{
 	
 	
 	// We just open the XML file and get the Condition, Wind and temp (in Celcius)
@@ -17,12 +17,12 @@ public class xmlHandler extends DefaultHandler{
 	private boolean in_innertag = false;
 	private boolean in_current = false;
 	       
-	private parsedXmlSet _xmlDataSet = new parsedXmlSet();
+	private ParsedXmlSet _xmlDataSet = new ParsedXmlSet();
 	 
-	public parsedXmlSet getParsedData() {return this._xmlDataSet;}
+	public ParsedXmlSet getParsedData() {return this._xmlDataSet;}
 	 	
 	@Override
-	public void startDocument() throws SAXException {this._xmlDataSet = new parsedXmlSet();}
+	public void startDocument() throws SAXException {this._xmlDataSet = new ParsedXmlSet();}
 	
 	@Override
 	public void endDocument() throws SAXException {}

@@ -4,7 +4,7 @@ package com.nerd.alarm;
 *  http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
 */
 
-public class parsedXmlSet {
+public class ParsedXmlSet {
 	 
 	        private String wind = null;
 	        private String condition = null;

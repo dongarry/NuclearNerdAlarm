@@ -25,10 +25,10 @@ import android.widget.Toast;
  *  Cancel all enabled alarms when Delete all is selected, currently these are just dismissed when fired
  * 
  */
-public class alarm extends ListActivity {
+public class Alarm extends ListActivity {
     private long m_alarmID;
 	private static final int MY_DATA_CHECK_CODE = 1;
-	database_adapter db = null; 
+	DatabaseAdapter db = null; 
 	private CustomSqlCursorAdapter dataSource;
 	private static final String fields[] = { "time", "title","enabled","counter","mode",BaseColumns._ID };
 	
@@ -36,7 +36,7 @@ public class alarm extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
    
-        if (this.db == null) {this.db = new database_adapter(this);}
+        if (this.db == null) {this.db = new DatabaseAdapter(this);}
         
         db.open();
         
@@ -69,8 +69,7 @@ public class alarm extends ListActivity {
         //super.onClose();
     	this.db.close();
     }
-    
-    
+     
     // Edit existing alarms
     @Override
     protected void onListItemClick(ListView listView, View view, int position, long id) {
@@ -83,7 +82,7 @@ public class alarm extends ListActivity {
         if(m_alarmID>0){
         	Bundle aBundle = new Bundle();
         	aBundle.putLong("Alarm",m_alarmID);
-        	Intent editIntent = new Intent(this,addalarm.class); 
+        	Intent editIntent = new Intent(this,AddAlarm.class); 
         	editIntent.putExtras(aBundle);       
 		    startActivityForResult(editIntent,0);
         }
@@ -114,7 +113,7 @@ public class alarm extends ListActivity {
     public void addalarm(View view) {
     	Bundle aBundle = new Bundle();
     	aBundle.putLong("Alarm",0);
-		Intent addIntent = new Intent(this,addalarm.class); 
+		Intent addIntent = new Intent(this,AddAlarm.class); 
 		addIntent.putExtras(aBundle);       
 	    startActivityForResult(addIntent,0);		
     }
@@ -133,18 +132,18 @@ public class alarm extends ListActivity {
 		    // Handle item selection
 		    switch (item.getItemId()) {
 		    case R.id.preferences:
-		      	Intent prefIntent = new Intent(this,alarm_pref.class); 
+		      	Intent prefIntent = new Intent(this,AlarmPref.class); 
 				startActivity(prefIntent);
 		      	return true;
 		    case R.id.clear_all:
-		    	Toast.makeText(alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(Alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
 		    	/* TODO Ensure we cancel all enabled alarms when doing this */
 		    	boolean _del = db.deleteAllAlarms();
 		    	dataSource.getCursor().requery();
 		    	return (_del);
 		    	
 			 default:
-		    	Toast.makeText(alarm.this,getString(R.string.err_greeting) + item.getItemId(), Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(Alarm.this,getString(R.string.err_greeting) + item.getItemId(), Toast.LENGTH_SHORT).show();
 		    	return true;
 		     }
 		}

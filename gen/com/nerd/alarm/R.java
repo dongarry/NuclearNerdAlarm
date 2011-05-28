@@ -31,28 +31,17 @@ public final class R {
         public static final int royal_blue=0x7f070004;
     }
     public static final class drawable {
-        public static final int android_button=0x7f020000;
-        public static final int android_focused=0x7f020001;
-        public static final int android_normal=0x7f020002;
-        public static final int android_pressed=0x7f020003;
-        public static final int androidbutton=0x7f020004;
-        public static final int att1=0x7f020005;
-        public static final int att6=0x7f020006;
-        public static final int att9=0x7f020007;
-        public static final int green=0x7f020008;
-        public static final int ic_att6=0x7f020009;
-        public static final int ic_att6_2=0x7f02000a;
-        public static final int ic_background=0x7f02000b;
-        public static final int ic_background_pref=0x7f02000c;
-        public static final int ic_launcher=0x7f02000d;
-        public static final int ic_menu_del=0x7f02000e;
-        public static final int ic_menu_pref=0x7f02000f;
-        public static final int ic_stat_nna=0x7f020010;
-        public static final int icon=0x7f020011;
-        public static final int nuclear=0x7f020012;
-        public static final int snooze=0x7f020013;
-        public static final int splash=0x7f020014;
-        public static final int stop=0x7f020015;
+        public static final int ic_att6=0x7f020000;
+        public static final int ic_att6_2=0x7f020001;
+        public static final int ic_background=0x7f020002;
+        public static final int ic_background_pref=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int ic_menu_del=0x7f020005;
+        public static final int ic_menu_pref=0x7f020006;
+        public static final int ic_stat_nna=0x7f020007;
+        public static final int snooze=0x7f020008;
+        public static final int splash=0x7f020009;
+        public static final int stop=0x7f02000a;
     }
     public static final class id {
         public static final int AddAlarm_LL=0x7f0b0000;
@@ -61,7 +50,7 @@ public final class R {
         public static final int alarmTime=0x7f0b000d;
         public static final int button=0x7f0b001b;
         public static final int button_stop=0x7f0b0019;
-        public static final int clear_all=0x7f0b0031;
+        public static final int clear_all=0x7f0b0030;
         public static final int daylist=0x7f0b001d;
         public static final int details=0x7f0b0017;
         public static final int display_alarms=0x7f0b002d;
@@ -70,9 +59,8 @@ public final class R {
         public static final int enabled_checkbox=0x7f0b0007;
         public static final int firstDivider=0x7f0b0002;
         public static final int firstLine=0x7f0b000e;
-        public static final int header=0x7f0b0030;
         public static final int image=0x7f0b0021;
-        public static final int info=0x7f0b0033;
+        public static final int info=0x7f0b0032;
         public static final int label=0x7f0b001c;
         public static final int layout_header_top=0x7f0b0020;
         public static final int layout_top=0x7f0b001e;
@@ -91,7 +79,7 @@ public final class R {
         public static final int nerd_info=0x7f0b0018;
         public static final int pref_warning=0x7f0b0023;
         public static final int pref_warning_two=0x7f0b0024;
-        public static final int preferences=0x7f0b0032;
+        public static final int preferences=0x7f0b0031;
         public static final int repeatLine=0x7f0b0009;
         public static final int repeatTime=0x7f0b0008;
         public static final int saveAlarm=0x7f0b000b;
@@ -118,7 +106,6 @@ public final class R {
         public static final int main=0x7f030006;
         public static final int show_records=0x7f030007;
         public static final int splash=0x7f030008;
-        public static final int window_title=0x7f030009;
     }
     public static final class menu {
         public static final int alarm_menu=0x7f0a0000;

@@ -11,16 +11,16 @@ import android.view.MotionEvent;
 
 /* Credits
 *  http://www.droidnova.com/how-to-create-a-splash-screen,561.html
+*  http://www.anddev.org/error_while_writing_on_sdcard-t2997.html   [testing on emulator]
 *  Nerdy Facts : http://bobado.com/joke/nerdy-facts
 *  
 *  Nerd Alarm - Splash screen 	        
 */
 
-public class splash extends Activity { 
+public class Splash extends Activity { 
 protected boolean mActive = true;
 protected int mSplashTime = 3000; 
 private final int mMode = Activity.MODE_PRIVATE;
-SharedPreferences mySharedPreferences = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ SharedPreferences mySharedPreferences = null;
                     // do nothing
                 } finally {
                     finish();
-                    startActivity(new Intent("com.nerd.alarm"));
+                    startActivity(new Intent("com.nerd.Alarm"));
          	        stop();
                 }
             }
@@ -62,14 +62,24 @@ SharedPreferences mySharedPreferences = null;
 	    return true;
 	}
 			
-	private void SetDefaultPrefs(){
+	private void SetDefaultPrefs()	{
+		
 		String modeArr [];
 		boolean _vibrate=false,_nerd=false,h_vibrate,h_nerd;
 		String _greeting=null,_sound=null,h_greeting=null,h_sound=null,_snooze="5",h_snooze;
         
 		modeArr=getResources().getStringArray(R.array.modes_array);
 		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); 
-		 
+        
+		if(alert == null){  
+			// Emulator is teaching me there is no such thing as a default alarm tone 
+            // use default ringtone instead..
+            alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);               
+            Log.i("NerdAlarm","No default Alarm sounds");
+		} 
+		
+		SharedPreferences mySharedPreferences = null;
+
 		for (int i = 0; i < modeArr.length; ++i) {
 				Log.i("NerdAlarm","Set up Preferences for " + modeArr[i]);
 				mySharedPreferences = getSharedPreferences(modeArr[i], mMode);

@@ -48,7 +48,8 @@ import android.widget.Toast;
  * 
  * Nerd Alarm - This is the activity called when the alarm wakes up
  *  This Class is like spaghetti junction at the moment and needs serious refactoring,
- *  This is on my TODO list..
+ *  This is on my TODO list..(as well as)
+ *   Add more functionality to the Test me option - currently this just keeps the keyguard on
  * 
  */
 
@@ -65,16 +66,17 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     private int mCounter=0,mRepeat=0, mMode=0,mEnabled=0, mHour,mMinute;
     private int mTest=0,mSnooze=0, mDefaultVolume=0,mStatus=0;
     private boolean mVibrate,mNerd,mMovingMode,mSpeak=true;
+   
+    private String _modes [];
+    private int mode = Activity.MODE_PRIVATE;
     private MediaPlayer _mp = null;
     private PowerManager _pm = null;
     
-    private String _modes [];
-    private int mode = Activity.MODE_PRIVATE;
     TextView mNerdDetails;
     SharedPreferences mySharedPreferences; 
-    database_adapter _db = new database_adapter(this); 
+    DatabaseAdapter _db = new DatabaseAdapter(this); 
     AudioManager mAudioManager = null;
-    Display_Records my_records = null;
+    DisplayRecords my_records = null;
     
     public void onCreate(Bundle savedInstanceState) {
    	
@@ -137,21 +139,23 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         	
         	_db.open();
             Cursor a = _db.getAlarm(mAlarmID);	
-            	if (a!=null){ 
+            _db.close();
+            
+            if (a!=null){ 
 		            	mySpeak1=a.getString(2); // Title 
 			            mMode=a.getInt(5); 
 			            mEnabled=a.getInt(4); 
 			            mRepeat=a.getInt(3); 
 			            mCounter=a.getInt(6);
 			            mTest=a.getInt(7);
-			            
+			            //Log.i("NerdAlarm",":"+mySpeak1+":"+mMode+":"+mEnabled+":"+mRepeat+":"+mCounter+":"+mTest);
 			            if(mEnabled==0){finish(); Toast.makeText(AlarmActivity.this, "Finished 1", Toast.LENGTH_SHORT).show();}
 			            
 			            String[] parts = a.getString(1).split(":",2);
 			        	mHour = Integer.valueOf(parts[0]);
 			        	mMinute = Integer.valueOf(parts[1]);
             			}	
-	        _db.close();
+	        
 	            	
             mTtitleDisplay.setText(mySpeak1); 
                         
@@ -160,8 +164,9 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         {
         	finish();
         }
-       
+   
         //Let's get mode details..
+
         _modes=getResources().getStringArray(R.array.modes_array); 
         mySharedPreferences = getSharedPreferences(_modes[mMode],mode);
     	
@@ -175,12 +180,12 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	 	
     	mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
    		mDefaultVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-   		
-        setCharacteristics();
+        
+   		setCharacteristics();
     }
     
     public void checkMedia(){
-    	 // DEALLOCATE ALL MEMORY
+    	 // DEALLOCATE MEMORY
     	    if (_mp != null) {
     	        if (_mp.isPlaying()) {
     	            _mp.stop();
@@ -194,15 +199,11 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	    if (textToSpeech != null) {
     	    	textToSpeech.stop();
     	    	textToSpeech.shutdown();}
-
     	}
     
     public void handleSpeak(View view) {saySomething();}
     
-    public void stopAlarm(View view) {
-    	mMovingMode=true;
-    	rescheduleAlarm(3);
-    	}
+    public void stopAlarm(View view) {rescheduleAlarm(3);}
     
     private void saySomething() {
         textToSpeech.speak(mySpeak1, TextToSpeech.QUEUE_FLUSH, null);
@@ -210,43 +211,30 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         textToSpeech.speak(mySpeak2, TextToSpeech.QUEUE_ADD, null);        
     	}
     
-    private void playSomething(int _play)
+    private void playSomething(int _play) throws IllegalStateException, IOException
     {	
     	_mp = new MediaPlayer();
     	
     	_mp.setOnErrorListener(
 				new MediaPlayer.OnErrorListener() {
-			        public boolean onError(MediaPlayer mp, int something, int extra) {
-			        	Log.e("NerdAlarm", "Error in MediaPlayer: (" + something +") with extra (" +extra +")" );
-			    		return false;
-			        }
+			        public boolean onError(MediaPlayer mp, int arg, int argx) {
+			        	Log.e("NerdAlarm", "Error in MediaPlayer: (" + arg + ") with extra (" + argx +")" );
+			    		return false;}
 			    });
-    	
-    	if(_play>0) 	{
-	    				try {
-			    				_mp = MediaPlayer.create(AlarmActivity.this,_play);
-			    				_mp.prepare();
-		    				}
-						catch (IOException e) {e.printStackTrace();}
-						}
+    
+    	if(_play>0) {
+    					_mp = MediaPlayer.create(AlarmActivity.this,_play);}
+			    		//_mp.prepare(); Tut tut!
 
-    	else 			{
-    					try {
-	    						_mp.setDataSource(this,Uri.parse(mySharedPreferences.getString("soundPref", "alarm_alert"))); 		    	 		    	 	
-			    	 		 	_mp.setAudioStreamType(AudioManager.STREAM_ALARM);
-			    	 		 	_mp.setLooping(true);
-			    	 		 	_mp.prepare();
-    						}
-				    	catch (IOException e) {
-				    			 Log.i("NerdAlarm","Preparing sound prefernces :" + e.getMessage());
-				    			 e.printStackTrace();}
-				    	 	 
+    	else 		{
+    					_mp.setDataSource(this,Uri.parse(mySharedPreferences.getString("soundPref", "alarm_alert"))); 		    	 		    	 	
+			    	 	_mp.setAudioStreamType(AudioManager.STREAM_ALARM);
+			    	 	_mp.setLooping(true);
+			    	 	_mp.prepare();    					 	 
     	}
     	
-    	try {_mp.start();}
-    	catch (IllegalStateException e) {
-			Log.i("NerdAlarm","Starting MediaPlayer:" + (e.getMessage()));}
-		 
+    	_mp.start();
+    	   	
     	_mp.setOnCompletionListener(new OnCompletionListener(){
          // @Override
          public void onCompletion(MediaPlayer arg0) {
@@ -255,13 +243,12 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	 	
     }
     
-
     public void onInit(int i) {
 		  if (i == TextToSpeech.SUCCESS) {
 	            //TODO Consider doing something with locales?
 			  	 if(mSpeak){saySomething();}
 	        } 
-		  else {Log.i("NerdAlarm", "Could not initialise TextToSpeech.");}
+		  else {Log.e("NerdAlarm", "Could not initialise TextToSpeech.");}
 	}
     
     private void PowerUp() { 
@@ -319,8 +306,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	   	int _playThis=0;
 	   	mStatus=0;
 	   	
-	   	Log.i("NerdAlarm","Mode!" + mMode);
- 	   
    	   if (mMode==0){ 						//Bunny
 		       	if (mCounter==0){
 		       		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (maxVolume - 5), AudioManager.FLAG_VIBRATE);
@@ -392,7 +377,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
  		   int _angryStuff = (int)(Math.random() * (9 - 0));	
     	   String[] _andy=getResources().getStringArray(R.array.andy_array); 
     	   mySpeak3 = _andy[_angryStuff];
-    	   Log.i("NerdAlarm","Andy!:" + mySpeak3);
     	   if (mCounter==1){mySpeak1 = " aha ";}
     	   mStatus=2;	
        		}
@@ -404,24 +388,31 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 		   int _happyStuff = (int)(Math.random() * (9 - 0));	
 		   String[] _happy=getResources().getStringArray(R.array.helen_array); 
 		   mySpeak3 = _happy[_happyStuff];
-		   Log.i("NerdAlarm","Happy!:" + mySpeak3);
 		   if (mCounter==1){mySpeak1 = " oh la la ";}
 		   mStatus=2;	
        		}
        
-       if(_Lock){UnlockKeyguard();}
+       if(_Lock && (mTest==0)){UnlockKeyguard();} // For test me - make it harder to get to the alarm if keyguard is on.
    	   
        if(mVibrate){
    		   		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
    		   		v.vibrate(200);}
 	   
    	   if(mNerd){mySpeak1=getNerdDetails();}
-   	   if(_Play){playSomething(_playThis);}
-       	
+   	   if(_Play){
+   		   			try {
+   		   					playSomething(_playThis);} 
+   		   			catch (IllegalStateException e) {
+   		   					Log.e("NerdAlarm","MediaPlayer -" + _Play + " - " + e.getMessage());
+   		   					e.printStackTrace();} 
+   		   			catch (IOException e) {
+   		   					Log.e("NerdAlarm","MediaPlayer -" + _Play + " - " + e.getMessage());
+   		   					e.printStackTrace();}}
+   		   			       	
    }
    
    private void rescheduleAlarm(int _status){	   
-	   my_records = new Display_Records();
+	   my_records = new DisplayRecords();
        my_records.SetMe(AlarmActivity.this); 
        
        int mCurrHour, mCurrMinute;
@@ -429,45 +420,41 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
        final Calendar c = Calendar.getInstance();
        mCurrHour = c.get(Calendar.HOUR_OF_DAY);
        mCurrMinute = c.get(Calendar.MINUTE);
-       
-       _db.open();
         
        if (_status==1) {
     	   // Just reload the alarm again in 15 mins.
     	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+15,0,mMode);
-    	   Log.i("NerdAlarm","Setting reload alarm again");
-		   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
+    	   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
        	   mCounter+=1;
        }
        else if (_status==2) {
     	   // Snooze
     	   mNextAlarm = my_records.setTime((int)(mAlarmID),mCurrHour,mCurrMinute+mSnooze,0,mMode); 
-    	   Log.i("NerdAlarm","Setting reload alarm again in snooze time:"+ mCurrMinute + "+" + mSnooze);
-		   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
+    	   Toast.makeText(AlarmActivity.this,mNextAlarm, Toast.LENGTH_SHORT).show();
        	   mCounter+=1;
        	}
        else if (_status==3) {
     	   // Reschedule for next time..
     	   mCounter=0; 
     	   if (mRepeat>0) {
-    		   		Log.i("NerdAlarm","Set alarm to repeat whenever");
-				 	mNextAlarm = my_records.setTime((int)(mAlarmID),mHour,mMinute,mRepeat,mMode);
-		       	   Toast.makeText(AlarmActivity.this,"Next time:" + mNextAlarm, Toast.LENGTH_SHORT).show();}
+	    		   	mNextAlarm = my_records.setTime((int)(mAlarmID),mHour,mMinute,mRepeat,mMode);
+			       	Toast.makeText(AlarmActivity.this, mNextAlarm, Toast.LENGTH_SHORT).show();
+			       	mEnabled=1;}
     	   else
-    		   mCounter=0;
-    	   	   mEnabled=0;
-    	   	  Toast.makeText(AlarmActivity.this, getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();
+    	   	   		mEnabled=0;
+    	   	  		Toast.makeText(AlarmActivity.this, getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();
     	   }
        
-       /* Testing Alarm */
-       mTime = mySpeak1 + "-" + mHour + ":" + mMinute;
-       //Log.i("NerdAlarm","Set alarm " + mAlarmID + " to Counter: " + mCounter + " and Enabled :" + mEnabled);
-	 	 
-       _db.updateStatistic(mAlarmID,mCounter,mEnabled,mTime + ":" + mMode);
-       _db.close();
-
-       mMovingMode = true;
-       finish();
+	       /* Testing Alarm */
+	       mTime = mySpeak1 + "-" + mHour + ":" + mMinute;
+	        
+	       Log.i("NerdAlarm", "Resetting Alarm " + mAlarmID + ",Enabled:" + mEnabled);
+	       _db.open();
+	       _db.updateStatistic(mAlarmID,mCounter,mEnabled,mTime + ":" + mMode);
+	       _db.close();
+	
+	       mMovingMode = true;
+	       finish();
    }
    
    private String getNerdDetails()
@@ -496,7 +483,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	 		SAXParserFactory spf = SAXParserFactory.newInstance();
 	 		SAXParser sp;
         	sp = spf.newSAXParser(); 
-        	xmlHandler _xmlHandler = new xmlHandler();
+        	XmlHandler _xmlHandler = new XmlHandler();
         	XMLReader xr = null;
         	xr = sp.getXMLReader();
         	xr.setContentHandler(_xmlHandler);
@@ -509,7 +496,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	
 			// xmlHandler provides the parsed data
 			Log.i("NerdAlarm","URL:" + url);
-	        parsedXmlSet _parsedXmlSet = _xmlHandler.getParsedData();
+	        ParsedXmlSet _parsedXmlSet = _xmlHandler.getParsedData();
 	        Log.i("NerdAlarm",_parsedXmlSet.toString());
 	        
 	        String _nerdDetails = "No";

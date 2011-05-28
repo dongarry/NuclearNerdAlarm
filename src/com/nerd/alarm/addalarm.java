@@ -29,11 +29,11 @@ import android.view.View.OnKeyListener;
 
 /* 
  * Nerd Alarm - Add update alarms
- * TODO Move setting of the alarm to display_record - currently this is the same code duplicated!.
+ * TODO Move setting of the alarm to DisplayRecord - currently this is the same code duplicated!.
  * 
  */
 
-public class addalarm extends Activity {
+public class AddAlarm extends Activity {
 	TextView mSelectTime,mRepeatTime;
 	Spinner mode_spinner;
 	EditText title_edittext; 
@@ -47,7 +47,7 @@ public class addalarm extends Activity {
 
 	static final int TIME_DIALOG_ID = 0;
 	
-	database_adapter _db = new database_adapter(this); 
+	DatabaseAdapter _db = new DatabaseAdapter(this); 
 	
     /** Called when the activity is first created. */
     @Override
@@ -88,7 +88,7 @@ public class addalarm extends Activity {
         	
         	if (_a!=null){LoadExistingAlarm(_a);}
         	else {Log.i("NerdAlarm","FAILED Loading Alarm " + mAlarmID + " to DB");
-        		Toast.makeText(addalarm.this, getString(R.string.err_greeting) +  ": Failed to load alarm :" + mAlarmID, Toast.LENGTH_SHORT).show();} 
+        		Toast.makeText(AddAlarm.this, getString(R.string.err_greeting) +  ": Failed to load alarm :" + mAlarmID, Toast.LENGTH_SHORT).show();} 
         	
         	_db.close();}
         
@@ -109,7 +109,7 @@ public class addalarm extends Activity {
             public void onClick(View v) {
             	Bundle aBundle = new Bundle();
             	aBundle.putLong("Alarm",mAlarmID);
-            	Intent dayIntent = new Intent(addalarm.this,days.class);
+            	Intent dayIntent = new Intent(AddAlarm.this,RepeatDays.class);
             	dayIntent.putExtras(aBundle);
             	startActivityForResult (dayIntent,GET_REPEAT);
         	}
@@ -168,7 +168,7 @@ public class addalarm extends Activity {
 		                
 		                if (bUpdate){Log.i("NerdAlarm","Updated Alarm " + mAlarmID + " to DB");}
 		                else{Log.i("NerdAlarm","FAILED updating Alarm " + mAlarmID + " to DB");
-		                	Toast.makeText(addalarm.this, getString(R.string.err_greeting) +  ": Alarm was not saved!", Toast.LENGTH_SHORT).show();}
+		                	Toast.makeText(AddAlarm.this, getString(R.string.err_greeting) +  ": Alarm was not saved!", Toast.LENGTH_SHORT).show();}
 	                	}
 	                
 	                else{
@@ -206,8 +206,7 @@ public class addalarm extends Activity {
         	selectedDays=data.getIntExtra("SelectedDay", 0);  
         	mRepeatTime.setText(setDays(selectedDays));
     		mAlarmID=data.getLongExtra("Alarm", 0);
- 	       Log.i("NerdAlarm","Repeat from Repeat screen:" + selectedDays + " - " + setDays(selectedDays));
-        	} 
+ 	    } 
     	case 101:
         	{
         		mAlarmID=data.getLongExtra("Alarm", 0);  
@@ -256,14 +255,15 @@ public class addalarm extends Activity {
 		     
 		     if (mCurrHour>mHour) {mHour+=24;}
 		     if ((mCurrMin>mMinute) && (mCurrHour==mHour)) {mHour+=24;}
-			     
+		     else if ((mCurrMin==mMinute) && (mCurrHour==mHour)) {mHour+=24;}
+		          
 		     if (mCurrHour<mHour) {_timeDiff+=((mHour-mCurrHour)*3600000);}
 		      
 		     if (mCurrMin>mMinute) {mMinute+=60;}
 		    	  
 		     if (mCurrMin<mMinute) {
-		    	  if (mMinute>60) {_timeDiff-=3600000;} // take off an hour
-		    	  _timeDiff+=(((mMinute-mCurrMin)*60000));} // Add minutes
+		    	  if (mMinute>60) {_timeDiff-=3600000;} 	// reduce an hour
+		    	  _timeDiff+=(((mMinute-mCurrMin)*60000));} // add minutes
 		     
 		     /* TODO Cater for modes here
 		      * Currently Bunny Mode is the only mode that wakes earlier than planned
@@ -282,13 +282,13 @@ public class addalarm extends Activity {
 		     _timeDiff=_timeDiff/1000;
 		     
 		     if (_timeDiff>(24 * 3600)){
-		    	  alarmDetails =  alarmDetails + (_timeDiff / (24 * 3600)) + " " + getString(R.string.alarm_days) + (_timeDiff/(3600)) + " " + getString(R.string.alarm_hours) + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}
+		    	  alarmDetails =  alarmDetails + (_timeDiff / (24 * 3600)) + " " + getString(R.string.alarm_days) + " " + (_timeDiff%(24 * 3600)/(3600)) + " " + getString(R.string.alarm_hours) + " " + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}
 		     else if (_timeDiff>(3600)){
-		    	  alarmDetails =  alarmDetails + (_timeDiff/(3600)) + " " + getString(R.string.alarm_hours) + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}	    	  
+		    	  alarmDetails =  alarmDetails + (_timeDiff/(3600)) + " " + getString(R.string.alarm_hours) + " " + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}	    	  
 			 else
 				alarmDetails =  alarmDetails + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";
 	  		
-		     Toast.makeText(addalarm.this, alarmDetails, Toast.LENGTH_SHORT).show();	
+		     Toast.makeText(AddAlarm.this, alarmDetails, Toast.LENGTH_SHORT).show();	
 
 	  	}
 	  	else
@@ -296,7 +296,7 @@ public class addalarm extends Activity {
 	  		  if (reset==1) { // Cancel Previous Intent
 	  			Log.i("NerdAlarm", "Cancelled previous alarm : "+ mAlarmID);
 	  			alarmManager.cancel(pendingIntent);	
-	  			Toast.makeText(addalarm.this, getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();	
+	  			Toast.makeText(AddAlarm.this, getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();	
 	  		  }
 	  	}
 		      return;
@@ -315,8 +315,7 @@ public class addalarm extends Activity {
 	       
 	       selectedDays = alarmDetails.getInt(alarmDetails.getColumnIndex("repeat"));
 	       mRepeatTime.setText(setDays(selectedDays));
-	       Log.i("NerdAlarm","Repeat from load :" + selectedDays + " - " + setDays(selectedDays));
-
+	      
 	       int _counter = alarmDetails.getInt(alarmDetails.getColumnIndex("enabled"));
 	       
 	       mEnabled=_counter;
