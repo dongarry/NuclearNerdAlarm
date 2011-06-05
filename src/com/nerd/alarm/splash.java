@@ -45,7 +45,7 @@ private final int mMode = Activity.MODE_PRIVATE;
                     // do nothing
                 } finally {
                     finish();
-                    startActivity(new Intent("com.nerd.Alarm"));
+                    startActivity(new Intent("com.nerd.ViewAlarm"));
          	        stop();
                 }
             }
@@ -65,8 +65,18 @@ private final int mMode = Activity.MODE_PRIVATE;
 	private void SetDefaultPrefs()	{
 		
 		String modeArr [];
-		boolean _vibrate=false,_nerd=false,h_vibrate,h_nerd;
-		String _greeting=null,_sound=null,h_greeting=null,h_sound=null,_snooze="5",h_snooze;
+		
+		int nerd = 0;
+		String sound = "";
+		int vibrate = 0;
+		int snooze = 5;
+		String greeting = "";
+		
+		int holdVibrate;
+		int holdNerd;
+		String holdGreeting;
+		String holdSound;
+		int holdSnooze;
         
 		modeArr=getResources().getStringArray(R.array.modes_array);
 		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); 
@@ -86,38 +96,38 @@ private final int mMode = Activity.MODE_PRIVATE;
 				
 				switch (i){
 			    	case 0: 	
-			    				_snooze="15";
-			    				_greeting=getString(R.string.bunny_greeting);
-			    				_sound=alert.toString();
+			    				snooze=15;
+			    				greeting=getString(R.string.bunny_greeting);
+			    				sound=alert.toString();
 			    				break;		    
 			    	case 1: 
-			    				_snooze="10";
-			    				_sound=alert.toString();
-			    				_nerd=true;
-			    				_greeting=getString(R.string.nerd_greeting);
+			    				snooze=10;
+			    				sound=alert.toString();
+			    				nerd=1;
+			    				greeting=getString(R.string.nerd_greeting);
 			    				break; 
 			    	case 2: 
-					    		_snooze="5";
-			    				_nerd=false;
-			    				_vibrate=true;
-			    				_greeting=getString(R.string.nuclear_greeting);
-			    				_sound=alert.toString();
+					    		snooze=5;
+			    				nerd=0;
+			    				vibrate=1;
+			    				greeting=getString(R.string.nuclear_greeting);
+			    				sound=alert.toString();
 			    				break; 
 			    	case 3: 
-					    		_snooze="10";
-			    				_greeting=getString(R.string.ninja_greeting);
-			    				_sound=alert.toString();
+					    		snooze=10;
+			    				greeting=getString(R.string.ninja_greeting);
+			    				sound=alert.toString();
 			    				break; 
 			    	case 4: 
-					    		_snooze="5";
-					    		_greeting=getString(R.string.andy_greeting);
-			    				_sound=alert.toString();
+					    		snooze=5;
+					    		greeting=getString(R.string.andy_greeting);
+			    				sound=alert.toString();
 			    				break; 
 			    	case 5: 
-			    	    		_snooze="10";
-					    		_vibrate=false;
-			    				_greeting=getString(R.string.helen_greeting);
-			    				_sound=alert.toString();
+			    	    		snooze=10;
+					    		vibrate=0;
+			    				greeting=getString(R.string.helen_greeting);
+			    				sound=alert.toString();
 			    				break; 
  		    			  }  	
 				
@@ -128,17 +138,17 @@ private final int mMode = Activity.MODE_PRIVATE;
 				//so we ensure the defaults are set for each one
 				//we couldn't simply use getDefaultSharedPreferences
 				
-				h_greeting = mySharedPreferences.getString("greetingPref", _greeting);
-				h_vibrate = mySharedPreferences.getBoolean("vibratePref", _vibrate);
-	    	    h_snooze = mySharedPreferences.getString("snoozePref", _snooze);
-	    	    h_nerd = mySharedPreferences.getBoolean("nerdPref", _nerd);
-	    	    h_sound = mySharedPreferences.getString("soundPref", _sound);
+				holdGreeting = mySharedPreferences.getString("greetingPref", greeting);
+				holdVibrate = mySharedPreferences.getInt("vibratePref", vibrate);
+	    	    holdSnooze = mySharedPreferences.getInt("snoozePref", snooze);
+	    	    holdNerd = mySharedPreferences.getInt("nerdPref", nerd);
+	    	    holdSound = mySharedPreferences.getString("soundPref", sound);
 	    	    	
-				editor.putString("greetingPref", h_greeting);
-				editor.putBoolean("vibratePref", h_vibrate);
-				editor.putString("snoozePref", h_snooze);
-				editor.putBoolean("nerdPref", h_nerd);
-				editor.putString("soundPref", h_sound);
+				editor.putString("greetingPref", holdGreeting);
+				editor.putInt("vibratePref", holdVibrate);
+				editor.putInt("snoozePref", holdSnooze);
+				editor.putInt("nerdPref", holdNerd);
+				editor.putString("soundPref", holdSound);
 				editor.commit();
 				
 		}

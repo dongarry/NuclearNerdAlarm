@@ -25,6 +25,7 @@ import android.widget.Toast;
  * 	caters for switching the alarms on and off
  * TODO - CustomSqlCursorAdapter - instead of checkboxes, have icons for each mode
  * 	Incorporate colours into Preferences (maybe)	
+ *  Remove dependancy on Display_Records class - this is not required..
  */
 
 public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
@@ -69,19 +70,19 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	       else if(mMode==5){aTime.setTextColor(context.getResources().getColor(R.color.royal_blue));;}		//Happy
 	       
 	       
-	       int _counter = this.myCursor.getInt(this.myCursor.getColumnIndex("enabled"));
-	       int _repeat = this.myCursor.getInt(this.myCursor.getColumnIndex("repeat"));
+	       int enabled = this.myCursor.getInt(this.myCursor.getColumnIndex("enabled"));
+	       int repeat = this.myCursor.getInt(this.myCursor.getColumnIndex("repeat"));
 	       
 	       DisplayRecords my_records = new DisplayRecords();
 	       my_records.SetMe(context); 
-	       String mRepeatDesc=my_records.setDays(_repeat);
+	       String mRepeatDesc=my_records.setDays(repeat);
 	       
 	       TextView aCounter = (TextView) v.findViewById(R.id.secondLine);
 	       aCounter.setText(mRepeatDesc);
 	       
 	       CheckBox cb=(CheckBox)v.findViewById(R.id.enable_cbx);
 	       cb.setTag(new Integer(pos));
-	       if  (_counter>0) {
+	       if  (enabled>0) {
 	       		cb.setChecked(true);}
 	       else cb.setChecked(false);
 	       

@@ -54,7 +54,7 @@
         android:textColor="#a52a2a"
         android:text="@string/stop"/> 
         <Button
-        android:id="@+id/button"
+        android:id="@+id/snooze"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"

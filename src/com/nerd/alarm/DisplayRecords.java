@@ -88,7 +88,7 @@ public class DisplayRecords extends Activity{
 		    		  
 		    	  	}
 		      	}
-		       	  
+		       	     
 	      if (mCurrHour>mHour) {mHour+=24;}
 	      
 	      if ((mCurrMin>mMinute) && (mCurrHour==mHour)) {mHour+=24;}
@@ -111,6 +111,14 @@ public class DisplayRecords extends Activity{
 	      
 	      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeDiff, pendingIntent);
 	      
+	   // TODO Much Much better: - so much resource being ATE here!!!
+   	   /*
+   	    int type = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+			long interval=AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+			long triggerTime = SystemClock.elapsedRealtime()+ interval;
+			
+			setRepeating(int, long, long, PendingIntent) in
+   	   */
 	      
 	      // Update the user 
 	      

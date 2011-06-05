@@ -1,160 +1,555 @@
 package com.nerd.alarm;
 
-import android.app.ListActivity;
+/* Alarm Class - Base class for all alarms */
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Calendar;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.BaseColumns;
+import android.os.SystemClock;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.speech.tts.TextToSpeech;
-import android.widget.ListView;
 
-import android.widget.Toast;
-
-/* Credits
- * Android Tutorial on TextToSpeech
- * http://kahdev.wordpress.com/2010/09/27/android-using-the-sqlite-database-with-listview/	   
- * 
- * Nerd Alarm - Main screen to display current alarms and allow each switching on/off
- * custom menu to access preferences and delete
- * TODO Facility to delete just one alarm - maybe play on long click
- *  Cancel all enabled alarms when Delete all is selected, currently these are just dismissed when fired
- * 
- */
-public class Alarm extends ListActivity {
-    private long m_alarmID;
-	private static final int MY_DATA_CHECK_CODE = 1;
-	DatabaseAdapter db = null; 
-	private CustomSqlCursorAdapter dataSource;
-	private static final String fields[] = { "time", "title","enabled","counter","mode",BaseColumns._ID };
+public class Alarm {
 	
-	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);        
-   
-        if (this.db == null) {this.db = new DatabaseAdapter(this);}
-        
-        db.open();
-        
-        setContentView(R.layout.main); 
-        setTitle(getString(R.string.app_name));
+	private int mode = Activity.MODE_PRIVATE;
+	private static final int nextAlarmTime = 0;
+	private static final int nextSnooze = 1;
+	
+	private int volume;
+	private String[] modes;
+	private String status=" ";
+	private boolean bolReturn;
+	private boolean bolScheduled;
+	private long interval=0;
+	private boolean talk;
+	private String nerdSummary;
+	private String nerdDetails;
+	
+	private Context context;
+	public AudioManager mAudioManager = null;
+	private DatabaseAdapter db = null;
+	MediaPlayer mp = null;	
+	SharedPreferences mySharedPreferences; 	
+	
+	// Alarm
+	private long alarmID; 			//	row_id
+	private int alarmMode; 
+	private String alarmTitle;
+	private int repeat;
+	private int counter;
+	private int enabled; 
+	private int testme;
+	private int customSound;
+	private String time;
+	
+	// Preferences
+	private int vibrate;
+	private int snooze;
+	private int nerd;
+	private String greeting="..";
+	private String talk1="..";
+	private String talk2="..";
+	private String sound;
+	
+	public Alarm(long ID, Context alarmContext) {
+		
+		alarmID=ID; 
+		context=alarmContext;
+		talk=true;
+		bolScheduled=false;
+		nerdSummary="";
+		
+		Log.i("NerdAlarm","Loaded the Constructor");
+		mAudioManager = (AudioManager) alarmContext.getSystemService(Context.AUDIO_SERVICE);
+		db = new DatabaseAdapter(alarmContext);
+		talk2 = alarmContext.getString(R.string.alarmtext2);
+		
+		if(alarmID!=0)	{
+							if(!loadAlarm() || !loadPrefs() )	{
+								status="Failed loading Alarm settings";
+							}
+		}
+		else bolReturn=false;
+	}
+	
+	public long getAlarmID() {return alarmID;}
+	public void setAlarmID(long newValue) {alarmID = newValue;}
+
+	public int getAlarmMode() {return alarmMode;}
+	public void setAlarmMode(int newValue) {alarmMode = newValue;}
+
+	public int getAlarmCounter() {return counter;}
+	public void setAlarmCounter(int newValue) {counter = newValue;}
+
+	public int getAlarmRepeat() {return repeat;}
+	public void setAlarmRepeat(int newValue) {repeat = newValue;}
+
+	public String getAlarmTime() {return time;}
+	public void setAlarmTime(String newValue) {time = newValue;}
+
+	public String getAlarmTitle() {return alarmTitle;}
+	public void setAlarmTitle(String newValue) {alarmTitle = newValue;}
+	
+	public Boolean getAlarmTestMe() {return testme==1;}
+	public void setAlarmTestMe(int newValue) {testme = newValue;}
+	
+	public boolean getAlarmEnabled() {return enabled==1;}
+	public void setAlarmEnabled(int newValue) {enabled = newValue;}
+	
+	public int getAlarmVolume() {return volume;}
+	public void setAlarmVolume(int newValue) {volume = newValue;}
+
+	public int getCustomSound() {return customSound;}
+	public void setCustomSound(int newValue) {customSound = newValue;}
+	
+	public boolean doTalk() {return talk;}
+	public void setTalk(boolean newValue) {talk = newValue;}
+
+	public String getAlarmStatus() {return status;}
+	
+	public String getSpeakLine() {return talk1;}
+	public void setSpeakLine(String newValue) {talk1 = newValue;}
+	
+	public String getSpeakNextLine() {return talk2;}
+	public void setSpeakNextLine(String newValue) {talk2 = newValue;}
+
+	public void setInterval(long newValue) {interval = newValue;}
+	
+	public String getNerdDetails() {return nerdDetails;}
+	
+	public boolean doVibrate() {return vibrate==1;}
+	public void setVibrate(int newValue) {vibrate = newValue;}
+	
+	public boolean doNerd() {return nerd==1;}
+	public boolean isValid() {return bolReturn;}
+	public Boolean isScheduled() {return bolScheduled;}
+	public String getAlarmGreeting() {return greeting + " " + nerdSummary;}
+	public int getAlarmSnooze() {return snooze;}
+	
+	public void updateAlarm()	{
+		try {
+			db.open();
+			if (alarmID!=0)
+				{
+				Log.i("NerdAlarm","Update:" + alarmMode);
+				bolReturn = db.updateAlarm(alarmID,
+				        		time,
+				        		alarmTitle,
+				        		repeat,
+				        		enabled,
+				        		counter,
+				        		alarmMode,
+				        		testme);
+				
+				}
+			else
+				{
+				alarmID = db.insertAlarm(
+                			time,
+                			alarmTitle,
+                			repeat,
+                			enabled,
+                			counter,
+                			alarmMode,
+                			testme);
+				
+				bolReturn = true;
+
+				}
+				db.close();
+				
+				Log.i("NerdAlarm","Schedule");	
+			rescheduleAlarm(nextAlarmTime);
+			}
+		
+		catch(Exception e)	{
+			Log.e("NerdAlarm","Error Saving Alarm :" + alarmID + " : " + e.getMessage());
+			bolReturn=false;
+			}
+	}
+	
+	public boolean snoozeAlarm() {
+		try {
+				rescheduleAlarm(nextSnooze);
+			}
+		catch(Exception e) {Log.i("NerdAlarm","Error setting alarm snooze");
+			//status="Error setting alarm snooze"
+			bolReturn=false;
+			return bolReturn;
+		}
+		bolReturn=true;
+		return bolReturn;
+	}
+
+	public boolean resetAlarm() {
+		try {
+				rescheduleAlarm(nextAlarmTime);
+			}
+		catch(Exception e) {Log.i("NerdAlarm","Error re-setting alarm");
+			//status="Error re-setting alarm"
+			bolReturn=false;
+			return bolReturn;
+		}
+		bolReturn=true;
+		return bolReturn;
+	}
+	
+	public void cancelAlarm(){
+		Intent alarmIntent = new Intent(context, AlarmActivity.class);
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+	    PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)(alarmID), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	    alarmManager.cancel(pendingIntent);
+	    status = context.getString(R.string.alarm_disabled);
+	}
+	
+	
+	public void rescheduleAlarm(long onDo){	   
+		if (enabled == 0) {
+			status=context.getString(R.string.alarm_disabled);
+			counter=0;
+		}
+		else
+		{
+		    long interval = 0;
+	       
+		   Bundle params = new Bundle();
+		   params.putLong("AlarmID",alarmID);   
+		   params.putInt("AlarmMode",alarmMode);
+		   
+	       Intent alarmIntent = new Intent(context, AlarmActivity.class);
+		   alarmIntent.putExtras(params); //Pass the Alarm ID and Mode
+	       
+		   AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+	       PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)(alarmID), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	       
+	       if (onDo==nextSnooze)	{				// Snooze  	    	   
+	 	       counter+=1;
+	    	   
+			   interval=(snooze * 60000);
+			   Log.i("NerdAlarm","Interval Snooze:"+interval);
+			   alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingIntent);
+		   	}
+	       
+	       else if (onDo==nextAlarmTime)	{	
+	    	   						// Reschedule for alarm time (will include repeats also)
+	    	   					   interval=getNextInterval();			   
+								   Log.i("NerdAlarm","Interval:"+interval);
+	    	   					   alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingIntent);  
+	    	 }
+	       
+	       else	{						// OnDo is the next Interval
+	       				
+	 	       				   counter+=1;
+	    	   				   interval = onDo;			   
+							   alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingIntent);
+	       	}
+		        
+	       setStatus(interval);
+	    }   
 	    
-        loadAlarms();
-        
-		Intent checkIntent = new Intent();
-	    checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-	    startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
-    
-    } 
-    
-    @Override
-        protected void onRestart() {
-            super.onRestart();}
-
-    @Override
-        protected void onPause() {
-            super.onPause();}
-    
-    @Override
-    protected void onResume(){
-        super.onResume();
-        dataSource.getCursor().requery();
-    }
-    
-    protected void onClose(){
-        //super.onClose();
-    	this.db.close();
-    }
-     
-    // Edit existing alarms
-    @Override
-    protected void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
- 
-        //Intent intent = new Intent(Intent.ACTION_CALL);
-        Cursor _cursor = (Cursor) dataSource.getItem(position);
-        m_alarmID = _cursor.getLong(_cursor.getColumnIndex(BaseColumns._ID));
-    	
-        if(m_alarmID>0){
-        	Bundle aBundle = new Bundle();
-        	aBundle.putLong("Alarm",m_alarmID);
-        	Intent editIntent = new Intent(this,AddAlarm.class); 
-        	editIntent.putExtras(aBundle);       
-		    startActivityForResult(editIntent,0);
-        }
-    }
-    
-    //Check Text to Speech..
-    protected void onActivityResult( int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case MY_DATA_CHECK_CODE: {
-    	    if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                // success, create the TTS instance
-    	    	Log.i("NerdAlarm","TTS passed check!");} 
-    	    else {
-                // missing data, install it
-                Intent installIntent = new Intent();
-                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);	}
-        		}
-        default: {}
-        }
-    }
-   
-    public void loadAlarms(){
-    	Cursor _a = db.getAlarms();
-        DisplayAlarm(_a);
-        }
-    
-    public void addalarm(View view) {
-    	Bundle aBundle = new Bundle();
-    	aBundle.putLong("Alarm",0);
-		Intent addIntent = new Intent(this,AddAlarm.class); 
-		addIntent.putExtras(aBundle);       
-	    startActivityForResult(addIntent,0);		
-    }
-
-	// Display our own custom menu when menu is selected.
-	 @Override
+		bolScheduled=true;   
+		
+		Log.i("NerdAlarm", "Resetting Alarm " + alarmID + ",Enabled:" + enabled + "-Counter:" + counter);
+		db.open();
+		db.updateStatistic(alarmID,counter,enabled,time + ":" + alarmMode);
+		db.close();  
+		Log.i("NerdAlarm","Completed Scheduling!");
+	}
 	
-	public boolean onCreateOptionsMenu(Menu mymenu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.alarm_menu, mymenu);
-		return true;
-		}
-	 
-	 
-	 public boolean onOptionsItemSelected(MenuItem item) {
-		    // Handle item selection
-		    switch (item.getItemId()) {
-		    case R.id.preferences:
-		      	Intent prefIntent = new Intent(this,AlarmPref.class); 
-				startActivity(prefIntent);
-		      	return true;
-		    case R.id.clear_all:
-		    	Toast.makeText(Alarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
-		    	/* TODO Ensure we cancel all enabled alarms when doing this */
-		    	boolean _del = db.deleteAllAlarms();
-		    	dataSource.getCursor().requery();
-		    	return (_del);
-		    	
-			 default:
-		    	Toast.makeText(Alarm.this,getString(R.string.err_greeting) + item.getItemId(), Toast.LENGTH_SHORT).show();
-		    	return true;
-		     }
-		}
-	   
-	   public void DisplayAlarm(Cursor _data){ 
-		   dataSource = new CustomSqlCursorAdapter(this, 
-	    			 R.layout.alarm_list, _data, 
-                   fields, new int[] {R.id.alarmTime,R.id.firstLine, R.id.secondLine},db);
-	    	 setListAdapter(dataSource);
-	   
-		   }
+	
+    public void mediaPlay() throws IllegalStateException, IOException
+    {	
+    	mp = new MediaPlayer();
+    	mp.setOnErrorListener(
+				new MediaPlayer.OnErrorListener() {
+			        public boolean onError(MediaPlayer mp, int arg, int argx) {
+			        	Log.e("NerdAlarm", "Error in MediaPlayer: (" + arg + ") with extra (" + argx +")" );
+			    		return false;}
+			    });
+    
+    	if(customSound>0) {
+    					mp = MediaPlayer.create(context,customSound);
+    					mp.setLooping(alarmMode==2); //Only loop on Nuclear for custom sounds.
+    					//_mp.prepare(); Tut tut!
+    	}
+    	
+    	else 		{
+    					mp.setDataSource(context,Uri.parse(sound)); 		    	 		    	 	
+			    	 	mp.setAudioStreamType(AudioManager.STREAM_ALARM);
+			    	 	mp.setLooping(true);
+			    	 	mp.prepare();    					 	 
+    	}
+    	
+    	mp.start();
+    	   	
+    	mp.setOnCompletionListener(new OnCompletionListener(){
+         // @Override
+	         public void onCompletion(MediaPlayer arg0) {
+	        	 rescheduleAlarm(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+	        	 ((Activity) context).finish();
+	         }
+    	});
+    	 	
+    }
+    
+    public void ResetMedia(){
+   	 // DEALLOCATE MEMORY
+   	    if (mp != null) {
+   	        if (mp.isPlaying()) {
+   	            mp.stop();
+   	        }
+   	        
+   	        mp.release();
+   	        mp= null;
+   	    }   	    
+   	}
+	
+	private final boolean loadAlarm()	{
+		try {
+			
+				db.open();
+	        	Cursor data = db.getAlarm(alarmID);
+	        	
+	        	if (data!=null){
+	        		bolReturn = true;
+	        		time = data.getString(data.getColumnIndex("time"));	         	   
+	     	        alarmTitle = data.getString(data.getColumnIndex("title"));
+	     	        alarmMode = data.getInt(data.getColumnIndex("mode"));	     	       
+	     	        repeat = data.getInt(data.getColumnIndex("repeat"));
+	     	        enabled = data.getInt(data.getColumnIndex("enabled"));
+	     	        testme = data.getInt(data.getColumnIndex("test"));
+	     	        counter=data.getInt(data.getColumnIndex("counter"));
+	        	}
+	        	else {
+	        		bolReturn = false;
+	        	}
+	        	
+	        	db.close();
+	        	return bolReturn;
+		
+			}
+		
+		catch(Exception e)	{
+			Log.i("NerdAlarm","Error Updating Alarm :" + alarmID + " : " + e.getLocalizedMessage());
+			return false;
+			}
+	}
 
+	private final Boolean loadPrefs() {
+		try {
+	        
+			
+			modes= context.getResources().getStringArray(R.array.modes_array); 
+	        mySharedPreferences = context.getSharedPreferences(modes[alarmMode],mode);
+	    	
+	        greeting=mySharedPreferences.getString("greetingPref","");
+	    	vibrate=mySharedPreferences.getInt("vibratePref",0);
+	    	nerd=mySharedPreferences.getInt("nerdPref",0);
+	    	snooze=mySharedPreferences.getInt("snoozePref",5);
+	    	sound=mySharedPreferences.getString("soundPref", "alarm_alert");
+	    	
+	    	if(nerd==1)	{
+	    					getWeatherDetails();
+	    				}
+	    	
+	    	bolReturn=true;
+	    	
+			return bolReturn;
+			}
+		
+		catch (Exception e)	{
+			Log.i("NerdAlarm","Cannot load Preferences : " + e.getMessage());
+			bolReturn=false;
+			return bolReturn;
+			}
+	}
+	
+	   
+	private final long getNextInterval() {
+	            
+	     int addHours=0;	      
+	     long timeDiff =0;
+	       
+	     Calendar alarmTime = Calendar.getInstance();
+	     int currHour = alarmTime.get(Calendar.HOUR_OF_DAY);
+	     int currMin = alarmTime.get(Calendar.MINUTE);
+		 int day=alarmTime.get(Calendar.DAY_OF_WEEK); 
+	     int day_power=1;
+	                       
+	     if (repeat>0)  {
+		    	 
+	    	 	 /* Handle our next repeat day 
+			      * Here we locate which power is associated with today
+			      */
+			     
+			     while(day>0)	{ 
+			    			  	day_power=day_power*2;
+			    			  	day-=1;
+			    			  	}
+			    		  	      
+			     /* We now go through each day to see if our
+			      * find when is our next alarm day
+			      */
+			     
+				 while (day_power>0)	{
+				    		  				if (day_power==128)	{
+				    		  										day_power=1; // End of week
+				    		  									} 
+				    		  				day_power=day_power*2;
+				     	      
+				    		  				if ((repeat & day_power)== day_power)	{
+				    		  															day_power=0;
+				    		  														}
+				    		  				else	{
+				    		  							addHours+=24;
+				    		  						}
+				    	  				}
+	     				}
+	     
+		 String[] parts = time.split(":",2);
+     	 int alarmHour = Integer.valueOf(parts[0]);
+     	 int alarmMinute = Integer.valueOf(parts[1]);     	    
+     	 
+	      if (currHour>alarmHour) 									{
+	    	  															alarmHour+=24;
+	    	  														}
+	      
+	      if ((currMin>alarmMinute) && (currHour==alarmHour)) 		{
+	    	  															alarmHour+=24;
+	    	  														}
+	      
+	      else if ((currMin==alarmMinute) && (currHour==alarmHour))	{
+	    	  															alarmHour+=24;
+	    	  														}
+	      
+	      if (currHour<alarmHour) 	{ // Add hours
+	    	  								timeDiff+=((alarmHour-currHour)*3600000);
+	    	  						}
+	      
+	      if (currMin>alarmMinute) 	{
+	    	  							alarmMinute+=60;
+	    	  						}
+	    	  
+	      if (currMin<alarmMinute) 	{   // Add minutes
+	    	  							if (alarmMinute>60) 	{
+	    	  														timeDiff-=3600000; // reduce an hour
+	    	  													} 		
+	    	  							timeDiff+=(((alarmMinute - currMin)*60000));
+	    	  						} 
+	      
+	      timeDiff+=((addHours)*3600000); // Add in the next repeat day if exists
+	      
+	      return timeDiff;
+	}   
+	
+	private final void setStatus(long interval) {
+		  
+	      status =  context.getString(R.string.alarm_enabled) + " ";
+	      interval=interval/1000;
+	      
+	      if (interval>(24 * 3600))		{
+	    	  	status =  status + (interval / (24 * 3600)) + " " + context.getString(R.string.alarm_days) + " " + (interval%(24 * 3600)/(3600)) + " " + context.getString(R.string.alarm_hours) + " " + (interval%(3600)/60) + " " + context.getString(R.string.alarm_minutes) + ".";
+	    	  							}
+		  
+	      else if (interval>(3600))		{
+		    	status =  status + (interval/(3600)) + " " + context.getString(R.string.alarm_hours) + " " + (interval%(3600)/60) + " " + context.getString(R.string.alarm_minutes) + ".";
+		    	  						}	    	  
+		  
+		  else 
+			  	status =  status + (interval%(3600)/60) + " " + context.getString(R.string.alarm_minutes) + ".";
+	      
+	      Log.i("NerdAlarm","Status:"+ status);
+		}
+	
+	   private void getWeatherDetails()
+	   { 
+		  	
+		try {   
+				LocationManager locationManager;
+			  	String locService = Context.LOCATION_SERVICE;
+			 	locationManager = (LocationManager)context.getSystemService(locService);
+			 	String provider = LocationManager.NETWORK_PROVIDER;
+			 	Location location = locationManager.getLastKnownLocation(provider);
+			 	Log.i("NerdAlarm","Location: " + location.getLongitude()  + ":" + location.getLatitude());
+
+			 	//We now have coordinates - let's get the weather
+			 	//http://www.google.com/ig/api?weather=,,,4550000,-7358300
+			 	//These coordinates need to be formatted
+			 	String weatherString = "http://www.google.com/ig/api?weather=,,,";
+			 	String lat= location.getLatitude() + ""; 
+			 	String lon = "" + location.getLongitude();
+			 	lat=f_Coordinates(lat) + "," + f_Coordinates(lon); 	
+			 	weatherString = weatherString + lat;
+			 	URL url;	 	
+				url = new URL(weatherString); 
+			 	
+				//Return should be XML so deal with it:
+		 		SAXParserFactory spf = SAXParserFactory.newInstance();
+		 		SAXParser sp;
+	        	sp = spf.newSAXParser(); 
+	        	XmlHandler xmlHandler = new XmlHandler();
+	        	XMLReader xr = null;
+	        	xr = sp.getXMLReader();
+	        	xr.setContentHandler(xmlHandler);
+			
+	        	// We cannot be waiting long for this..
+	        	URLConnection conn = url.openConnection();
+	        	conn.setConnectTimeout(3000);
+	        	conn.setReadTimeout(2000);
+	        	xr.parse(new InputSource(conn.getInputStream())); 
+		
+				// xmlHandler provides the parsed data
+		        ParsedXmlSet parsedXmlSet = xmlHandler.getParsedData();
+		        
+		        if (parsedXmlSet.getWind().length()>4){
+		        		nerdDetails = parsedXmlSet.toString();
+		        		}
+		}
+
+		catch (Exception e) {
+				Log.e("NerdAlarm", "Error getting Weather info:" + e.getMessage());
+	        	}
+		  }
+	   
+	   private String f_Coordinates(String _c) 
+	   {	// Ensure Coordinates are in the correct format..
+		   _c=_c.replace(".", "");   
+		   if(_c.length()>8){_c=_c.substring(0, 8);}
+		   else if(_c.length()<8){_c=_c.format("%-" + 8 + "s", _c).replace(' ', '0');}
+		   
+		   return _c;
+		    
+	   }
+	   
+	   public void soundAlarm() {
+		   //Implement in each sub class
+	   }
 	   
 }
+
+	
+
+
+
+

@@ -36,6 +36,9 @@
     <string name="done">Done</string>
     <string name="info">Info</string>
     <string name="stop">Stop</string>
+    <string name="nerd_cough">cough</string>
+    <string name="angry_cough">arrrgh</string>
+    <string name="happy_cough">ooh la la</string>
     <string name="repeat">Repeating Alarm</string>
     <string name="repeat_2">No Repeat Set</string>
 	<string name="norepeatset">No Repeat Set</string>

@@ -44,8 +44,9 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
 	private ListPreference snoozePref,modePref;
 	private RingtonePreference soundPref;
 	private SharedPreferences.Editor editor;
-	private String _sound;
+	private String sound;
 	private int mode = Activity.MODE_PRIVATE;
+	private int snooze;
 	
 	static final private int ALARM_DETAIL = 1;
 
@@ -67,18 +68,21 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         
         modePref.setValue(getString(R.string.mode_default));
-        getPrefs(getString(R.string.mode_default)); //start on the default..
+        Log.i("NerdAlarm","Loading Prefs.." + getString(R.string.mode_default));
+		getPrefs(getString(R.string.mode_default)); //start on the default..
+		Log.i("NerdAlarm","LoadingPref - after");
+    	
         
         soundPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
     		 public boolean onPreferenceChange(Preference preference, Object newValue) {
     			 		 	
     			 	mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
     	    		editor = mySharedPreferences.edit();
-    	    		_sound=newValue.toString();
-    	    		editor.putString("soundPref", _sound);
+    	    		sound=newValue.toString();
+    	    		editor.putString("soundPref", sound);
     	    		editor.commit();
     	    		
-    	    		setSoundPref(_sound); 
+    	    		setSoundPref(sound); 
     	    		return true;	}
          });  
     } 
@@ -126,20 +130,19 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
       	 if (!key.equals("modePref")){ 
     		mySharedPreferences = getSharedPreferences(modePref.getValue(), mode);
     		editor = mySharedPreferences.edit();}
-
-      	 
     	if (key.equals("modePref")) {
 			getPrefs(modePref.getValue());}
 		else if (key.equals("greetingPref")) {
 			editor.putString("greetingPref", greetingPref.getText());		     
 			greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  greetingPref.getText());}
         else if (key.equals("snoozePref")) {
-        	editor.putString("snoozePref", snoozePref.getValue());		     
+        	Log.i("NerdAlarm","Applying to snooze:" + snoozePref.getValue());
+        	editor.putInt("snoozePref", Integer.parseInt(snoozePref.getValue()));		     
 			snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + snoozePref.getValue());}
         else if (key.equals("vibratePref")) {
-    		editor.putBoolean("vibratePref",vibratePref.isChecked());}
+    		editor.putInt("vibratePref",(int)(vibratePref.isChecked()?1:0));}
         else if (key.equals("nerdPref")) {
-        	editor.putBoolean("nerdPref",nerdPref.isChecked());} 
+        	editor.putInt("nerdPref",(int)(nerdPref.isChecked()?1:0));} 
     	
     	
     	if (!key.equals("modePref")){ editor.commit();}
@@ -149,11 +152,14 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
     	
     	mySharedPreferences = getSharedPreferences(_pref,mode);
     	modePref.setTitle(getString(R.string.mode)+ " : " + _pref);
- 		
+    	Log.i("NerdAlarm","SnoozePref - set title done");
+    	
     	greetingPref.setText(mySharedPreferences.getString("greetingPref",""));
-    	vibratePref.setChecked(mySharedPreferences.getBoolean("vibratePref",false));
-    	nerdPref.setChecked(mySharedPreferences.getBoolean("nerdPref",false));
-    	snoozePref.setValue(mySharedPreferences.getString("snoozePref","5"));
+    	vibratePref.setChecked(mySharedPreferences.getInt("vibratePref",0) == 1);
+    	nerdPref.setChecked(mySharedPreferences.getInt("nerdPref",0) == 1);
+    	Log.i("NerdAlarm","SnoozePref - next");
+    	snoozePref.setValue(String.valueOf(mySharedPreferences.getInt("snoozePref",5)));
+    	Log.i("NerdAlarm","SnoozePref - after");
     	
     	try {
 	    	soundPref.setPersistent(true); 
@@ -163,7 +169,8 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
     	catch(Exception e){Log.e("NerdAlarm","Another ringtone issue: getPrefs :" + e.getMessage());}
     	
     	greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  mySharedPreferences.getString("greetingPref",""));
-		snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + mySharedPreferences.getString("snoozePref","5"));        
+    	Log.i("NerdAlarm","SnoozePref - set summary next");
+    	snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + String.valueOf(mySharedPreferences.getInt("snoozePref",5)));        
 		}
     
     private void setSoundPref(String _sound){

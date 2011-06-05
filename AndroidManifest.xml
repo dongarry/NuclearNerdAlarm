@@ -17,9 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Alarm" android:label="@string/app_name">
+        <activity android:name=".ViewAlarm" android:label="@string/app_name">
             <intent-filter>
-                <action android:name="com.nerd.Alarm" />
+                <action android:name="com.nerd.ViewAlarm" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

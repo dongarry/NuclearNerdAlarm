@@ -34,20 +34,25 @@ import android.view.View.OnKeyListener;
  */
 
 public class AddAlarm extends Activity {
-	TextView mSelectTime,mRepeatTime;
+	
+	TextView mSelectTime;
+	TextView mRepeatTime;
 	Spinner mode_spinner;
 	EditText title_edittext; 
 	CheckBox enabled_cb,test_cb;
 	
-	private int mHour, mCurrHour, mEnabled=0, mCounter=0,mStat=0,mBuffer=0;
-	private int mMinute, mCurrMin,selectedDays=0,mReset=0,mTest=0;
 	private long mAlarmID=0;
 	private String mAlarmtime;
+	private int reset=0;
+	
+	private int selectedDays=0;
+	private Alarm oAlarm=null;
+	private int alarmMinute;
+	private int alarmHour; 
+	
 	static final private int GET_REPEAT = 1;
-
 	static final int TIME_DIALOG_ID = 0;
 	
-	DatabaseAdapter _db = new DatabaseAdapter(this); 
 	
     /** Called when the activity is first created. */
     @Override
@@ -73,26 +78,25 @@ public class AddAlarm extends Activity {
         // get the current time
         
         final Calendar c = Calendar.getInstance();
-        mHour = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
+        alarmHour = c.get(Calendar.HOUR_OF_DAY);
+        alarmMinute = c.get(Calendar.MINUTE);
         
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 	    		this, R.array.modes_array, android.R.layout.simple_spinner_item);
 	        	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	        	mode_spinner.setAdapter(adapter);
-	   
+	        	
+	    oAlarm = new Alarm(mAlarmID,AddAlarm.this);
+	    
+	    
+        if(oAlarm.isValid())	{
+						        	Log.i("NerdAlarm","Add - Load Alarm :" + oAlarm.getAlarmID());
+									LoadExistingAlarm(oAlarm);
+        						}		
         
-        if(mAlarmID>0){
-        	_db.open();
-        	Cursor _a = _db.getAlarm(mAlarmID);
-        	
-        	if (_a!=null){LoadExistingAlarm(_a);}
-        	else {Log.i("NerdAlarm","FAILED Loading Alarm " + mAlarmID + " to DB");
-        		Toast.makeText(AddAlarm.this, getString(R.string.err_greeting) +  ": Failed to load alarm :" + mAlarmID, Toast.LENGTH_SHORT).show();} 
-        	
-        	_db.close();}
-        
-        else{updateDisplay();}     // display the current date           
+        else					{
+        							updateDisplay(); // display the current time           
+        						}     
         	
         
         // We don't want the keyboard to pop up automatically..
@@ -127,70 +131,47 @@ public class AddAlarm extends Activity {
 		            	}
 		        });
         
-		enabled_cb.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				if (((CheckBox) v).isChecked()) {mEnabled=1;}
-					 else {mEnabled=0;}		                
-		            }
-		        });
-        
-		test_cb.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				if (((CheckBox) v).isChecked()) {mTest=1;}
-					 else {mTest=0;}		                
-		            }
-		        });
 		
 	        	
 	    mSaveAlarm.setOnClickListener(new View.OnClickListener() {
 	    	public void onClick(View v) {
-	            	_db.open();        
 	            
-	            	int _mode = mode_spinner.getSelectedItemPosition();
-	                if (_mode<0) {_mode=0;}
+	            	int mode = mode_spinner.getSelectedItemPosition();
+	                if (mode<0) {mode=0;}
 	            	
-	                //Save alarm details
-	                if(mAlarmID>0){
-	                	
-	                	Cursor _b = _db.getEnabledAlarm(mAlarmID);
-	                    if (_b!=null){
-	                    		if(_b.getInt(_b.getColumnIndex("enabled"))!=mEnabled){mReset=_b.getInt(_b.getColumnIndex("enabled"));}}
-	                	
-	                	mReset=1;
-		                boolean bUpdate = _db.updateAlarm(mAlarmID,
-		    		                		mAlarmtime,
-		    		                		title_edittext.getText().toString(),
-		    		                		selectedDays,
-		    		                		mEnabled,
-		    		                		mCounter,
-		    		                		_mode,
-		    		                		mTest);
-		                
-		                if (bUpdate){Log.i("NerdAlarm","Updated Alarm " + mAlarmID + " to DB");}
-		                else{Log.i("NerdAlarm","FAILED updating Alarm " + mAlarmID + " to DB");
-		                	Toast.makeText(AddAlarm.this, getString(R.string.err_greeting) +  ": Alarm was not saved!", Toast.LENGTH_SHORT).show();}
+	                reset=(int)(oAlarm.getAlarmEnabled()?1:0); // previous alarm value
+	                
+	                oAlarm.setAlarmTime(mAlarmtime);
+                	oAlarm.setAlarmTitle(title_edittext.getText().toString());
+                	oAlarm.setAlarmEnabled((int)(enabled_cb.isChecked()?1:0));
+                	oAlarm.setAlarmMode(mode);
+                	oAlarm.setAlarmTestMe((int)(test_cb.isChecked()?1:0));
+                	oAlarm.setAlarmRepeat(selectedDays);
+         	       
+                	Log.i("NerdAlarm","don-"+ mAlarmtime+"-"+title_edittext.getText().toString()+" - "+enabled_cb.isChecked()+"-"+mode+"-"+selectedDays);
+
+	                oAlarm.updateAlarm();
+	                
+	                if (reset==1 && enabled_cb.isChecked()== false)	{
+	                		oAlarm.cancelAlarm();
+	                }
+	                
+	                Log.i("NerdAlarm","Upd Completed!");
+
+	                if (oAlarm.isValid()==false) {
+	                			Log.e("NerdAlarm","Error saving Alarm :" + oAlarm.getAlarmID() + " : " + oAlarm.getAlarmStatus());
+	                }
+	                
+	                else	{
+		                if(oAlarm.getAlarmStatus().length()>1){
+		                	Log.i("NerdAlarm","Upd Completed2!"+oAlarm.getAlarmStatus());
+	                		Toast.makeText(AddAlarm.this, oAlarm.getAlarmStatus(), Toast.LENGTH_SHORT).show();	
 	                	}
-	                
-	                else{
-	                	mAlarmID = _db.insertAlarm(
-		                		mAlarmtime,
-		                		title_edittext.getText().toString(),
-		                		selectedDays,
-		                		mEnabled,
-		                		mCounter,
-		                		_mode,
-		                		mTest);//,mStat);     
 	                }
-		            
-	                _db.close();
 	                
-	                //if (mReset==1){Toast.makeText(addalarm.this, "Alarm: is reset!", Toast.LENGTH_SHORT).show();
-	                setTime((int)(mAlarmID),mReset);
-	                Log.i("NerdAlarm","Set time completed");
-	                mReset=0;
-	            	finish(); 
-	                }
-	        });
+	                finish(); 
+	        }
+	   });
  
     } //OnCreate
     
@@ -232,111 +213,36 @@ public class AddAlarm extends Activity {
     	
     	return _days;
     }
-    
-    public void setTime(int alarmID, int reset) {
-    	 //TODO call the display records class ..
-		 Intent alarmIntent = new Intent(this, AlarmActivity.class);
-		      
-		 Bundle params = new Bundle();
-		 params.putLong("AlarmID",alarmID);   
-		 alarmIntent.putExtras(params); //Pass the Alarm ID
-	  	      
-		 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-	  	 PendingIntent pendingIntent = PendingIntent.getActivity(this, alarmID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-	  	 
-	  	if (mEnabled==1){
-	  		 //If an alarm has been previously set with the same intent,
-	  		 // alarm Manager will automatically cancel it and set the new one.
-	  		 	 
-	  		 long _timeDiff =0; 
-	  	     Calendar alarmTime = Calendar.getInstance();
-	  	     mCurrHour = alarmTime.get(Calendar.HOUR_OF_DAY);
-		     mCurrMin = alarmTime.get(Calendar.MINUTE);
-		     
-		     if (mCurrHour>mHour) {mHour+=24;}
-		     if ((mCurrMin>mMinute) && (mCurrHour==mHour)) {mHour+=24;}
-		     else if ((mCurrMin==mMinute) && (mCurrHour==mHour)) {mHour+=24;}
-		          
-		     if (mCurrHour<mHour) {_timeDiff+=((mHour-mCurrHour)*3600000);}
-		      
-		     if (mCurrMin>mMinute) {mMinute+=60;}
-		    	  
-		     if (mCurrMin<mMinute) {
-		    	  if (mMinute>60) {_timeDiff-=3600000;} 	// reduce an hour
-		    	  _timeDiff+=(((mMinute-mCurrMin)*60000));} // add minutes
-		     
-		     /* TODO Cater for modes here
-		      * Currently Bunny Mode is the only mode that wakes earlier than planned
-		      * but this buffer should be incorporated into the preferences so that
-		      * it can be enabled for other alarms and altered.
-		      */
-		     
-		     // For Bunny Mode, we wake 30 mins early, we will only do this for alarms > 5 hours away
-		     if((mode_spinner.getSelectedItemPosition()<=0) && (_timeDiff>18000000)){_timeDiff-=1800000;} 
-		     else{_timeDiff-=10000;} 
-		     
-		     alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + _timeDiff, pendingIntent);
-		     
-		     String alarmDetails =  getString(R.string.alarm_enabled) + " ";
-		     
-		     _timeDiff=_timeDiff/1000;
-		     
-		     if (_timeDiff>(24 * 3600)){
-		    	  alarmDetails =  alarmDetails + (_timeDiff / (24 * 3600)) + " " + getString(R.string.alarm_days) + " " + (_timeDiff%(24 * 3600)/(3600)) + " " + getString(R.string.alarm_hours) + " " + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}
-		     else if (_timeDiff>(3600)){
-		    	  alarmDetails =  alarmDetails + (_timeDiff/(3600)) + " " + getString(R.string.alarm_hours) + " " + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";}	    	  
-			 else
-				alarmDetails =  alarmDetails + (_timeDiff%(3600)/60) + " " + getString(R.string.alarm_minutes) + ".";
-	  		
-		     Toast.makeText(AddAlarm.this, alarmDetails, Toast.LENGTH_SHORT).show();	
+      	    
 
-	  	}
-	  	else
-	  	{
-	  		  if (reset==1) { // Cancel Previous Intent
-	  			Log.i("NerdAlarm", "Cancelled previous alarm : "+ mAlarmID);
-	  			alarmManager.cancel(pendingIntent);	
-	  			Toast.makeText(AddAlarm.this, getString(R.string.alarm_disabled), Toast.LENGTH_SHORT).show();	
-	  		  }
-	  	}
-		      return;
-    };
-  	    
-
-    private void LoadExistingAlarm(Cursor alarmDetails) {
-    	   mAlarmtime = alarmDetails.getString(alarmDetails.getColumnIndex("time"));
+    private void LoadExistingAlarm(Alarm alarm) 	{
+    	
+    	   mAlarmtime = alarm.getAlarmTime();
     	   mSelectTime.setText(getString(R.string.timesetto)+ " " + mAlarmtime);
 	       
-	       String _title = alarmDetails.getString(alarmDetails.getColumnIndex("title"));
-	       title_edittext.setText(_title);
+	       title_edittext.setText(alarm.getAlarmTitle());
 	       
-	       int _mode = alarmDetails.getInt(alarmDetails.getColumnIndex("mode"));
-	       mode_spinner.setSelection(_mode);
+	       Log.i("NerdAlarm","Add - Load Alarm Mode:" + oAlarm.getAlarmMode());
+			
+	       mode_spinner.setSelection(alarm.getAlarmMode());
 	       
-	       selectedDays = alarmDetails.getInt(alarmDetails.getColumnIndex("repeat"));
-	       mRepeatTime.setText(setDays(selectedDays));
+	       selectedDays = alarm.getAlarmRepeat();
+	       mRepeatTime.setText(setDays(alarm.getAlarmRepeat()));
 	      
-	       int _counter = alarmDetails.getInt(alarmDetails.getColumnIndex("enabled"));
+	       enabled_cb.setChecked(alarm.getAlarmEnabled());
 	       
-	       mEnabled=_counter;
-	       if  (_counter>0) {
-	       		enabled_cb.setChecked(true);}
-	       else enabled_cb.setChecked(false);
+	       test_cb.setChecked(alarm.getAlarmTestMe());
 	       
-	       int _test = alarmDetails.getInt(alarmDetails.getColumnIndex("test"));
-	       if  (_test>0) {
-	       		test_cb.setChecked(true);}
-	       else test_cb.setChecked(false);
-	       
+	       Log.i("NerdAlarm",mAlarmtime+"-"+alarm.getAlarmMode()+"-"+mRepeatTime);
     }
 
     private void updateDisplay() {
-    	StringBuilder _alarmTime = new StringBuilder()
-        .append(pad(mHour)).append(":")
-        .append(pad(mMinute));
+    	StringBuilder alarmTime = new StringBuilder()
+        .append(pad(alarmHour)).append(":")
+        .append(pad(alarmMinute));
         
-    	mSelectTime.setText(getString(R.string.timesetto)+ " " + _alarmTime);
-    	mAlarmtime=_alarmTime.toString();
+    	mSelectTime.setText(getString(R.string.timesetto)+ " " + alarmTime);
+    	mAlarmtime=alarmTime.toString();
     	        
     }
 
@@ -351,8 +257,8 @@ public class AddAlarm extends Activity {
     private TimePickerDialog.OnTimeSetListener mTimeSetListener =
         new TimePickerDialog.OnTimeSetListener() {
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                mHour = hourOfDay;
-                mMinute = minute;
+                alarmHour = hourOfDay;
+                alarmMinute = minute;
                 updateDisplay();
             }
         };
@@ -362,7 +268,7 @@ public class AddAlarm extends Activity {
             switch (_id) {
             case TIME_DIALOG_ID:
                 return new TimePickerDialog(this,
-                        mTimeSetListener, mHour, mMinute, false);
+                        mTimeSetListener, alarmHour, alarmMinute, false);
             }
             return null;
         }
