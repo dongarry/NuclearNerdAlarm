@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Nuclear Alarms</string>
-    <string name="app_name">Nuclear Nerd Alarm</string>
+    <string name="app_name">Nerd Ninja Alarm</string>
     <string name="add">Add Alarm</string>
     <string name="clear">Clear All</string>
     <string name="preferences">Preferences</string>
@@ -51,14 +51,18 @@
 	<string name="sunday">Sun</string>
 	<string name="weekdays">Weekdays</string>
 	<string name="everyday">Every Day - no rest for you!</string>
-	<string name="splash_screen">NERD NINJA ALARM</string>
 	<string name="alarm_enabled">Alarm will activate in</string>
 	<string name="alarm_disabled">Alarm is now deactivated</string>
 	<string name="alarm_updated">Alarm is now updated</string>
 	<string name="alarm_update_failed">Alarm failed to update</string>
+	<string name="testme_title">Test for you</string>
+	<string name="ok">OK</string>
+	<string name="testme_ok">You passed!</string>
+	<string name="testme_move_on">Lets move on</string>
+	<string name="testme_incorrect">Incorrect - Try Again</string>
 	<string name="alarm_days">days and</string>
-	<string name="alarm_hours">hours and</string>
 	<string name="alarm_minutes">minutes</string>
+	<string name="alarm_hours">hours and</string>
 	<string name="mode_default">Bunny</string>
 	<string name="alarm_category">Alarm Details</string>
 	<string name="alarm_greeting">Alarm Greeting</string>
@@ -165,11 +169,22 @@
 	<item>20</item>
 	<item>30</item>
 	</string-array>
-<string-array name="sound_array">
-	<item>Bird_light</item>
-	<item>Bird_mental</item>
-	<item>Animal_mad</item>
-	<item>Explosion</item>
-	<item>Classic</item>
+<string-array name="testme_array">
+	<item>Are you awake?? - Please type "yes"</item>
+	<item>Are you awake?? - Please type "yawn"</item>
+	<item>Are you awake?? - Please type "snoozy"</item>
+	<item>Are you awake?? - Please type ":("</item>
+	<item>Are you awake?? - Please type "iamnow"</item>
+	<item>You deserve more rest</item>
+	<item>You look tired, - just hit OK</item>
+	</string-array>
+<string-array name="testme_answers">
+	<item>yes</item>
+	<item>yawn</item>
+	<item>snoozy</item>
+	<item>:(</item>
+	<item>iamnow</item>
+	<item>ok</item>
+	<item>ok</item>
 	</string-array>
 </resources>

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.util.Log;
 
 public class NerdAlarm extends Alarm{
 
@@ -17,7 +16,6 @@ private Context context;
 
 	
 	public void soundAlarm () {
-		Log.i("NerdAlarm","Nerd MediaPlayer -" + this.getAlarmCounter());
 		
 		int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 		
@@ -38,11 +36,9 @@ private Context context;
 		
 		try { this.mediaPlay();} 
 		catch (IllegalStateException e) {
-			Log.e("NerdAlarm","Nerd MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
 			e.printStackTrace();
 			} 
 		catch (IOException e) {
-			Log.e("NerdAlarm","Nerd MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
 			e.printStackTrace();
 			}
 	   }

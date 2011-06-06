@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.util.Log;
 
 public class HappyAlarm extends Alarm{
 
@@ -18,7 +17,6 @@ private Context context;
 	public void soundAlarm () {
 				   
 		int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-		Log.i("NerdAlarm","Happy MediaPlayer -" + this.getAlarmCounter());
 		
 		this.setAlarmVolume(maxVolume-2);    	   	
     	
@@ -34,13 +32,11 @@ private Context context;
 		
 		try { this.mediaPlay();} 
 		catch (IllegalStateException e) {
-			Log.e("NerdAlarm","Happy MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
-			e.printStackTrace();
-			} 
-		catch (IOException e) {
-			Log.e("NerdAlarm","Happy MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
-			e.printStackTrace();
-			}
+											e.printStackTrace();
+										} 
+		catch (IOException e) 			{
+											e.printStackTrace();
+										}
 	   }
 
 }

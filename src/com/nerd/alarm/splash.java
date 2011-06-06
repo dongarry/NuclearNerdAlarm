@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 
 /* Credits
@@ -85,13 +84,11 @@ private final int mMode = Activity.MODE_PRIVATE;
 			// Emulator is teaching me there is no such thing as a default alarm tone 
             // use default ringtone instead..
             alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);               
-            Log.i("NerdAlarm","No default Alarm sounds");
 		} 
 		
 		SharedPreferences mySharedPreferences = null;
 
 		for (int i = 0; i < modeArr.length; ++i) {
-				Log.i("NerdAlarm","Set up Preferences for " + modeArr[i]);
 				mySharedPreferences = getSharedPreferences(modeArr[i], mMode);
 				
 				switch (i){

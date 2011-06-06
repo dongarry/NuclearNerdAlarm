@@ -1,18 +1,12 @@
 package com.nerd.alarm;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.SystemClock;
 import java.util.Calendar;
 
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,13 +18,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 
 /* 
  * Nerd Alarm - Add update alarms
- * TODO Move setting of the alarm to DisplayRecord - currently this is the same code duplicated!.
- * 
  */
 
 public class AddAlarm extends Activity {
@@ -90,8 +81,7 @@ public class AddAlarm extends Activity {
 	    
 	    
         if(oAlarm.isValid())	{
-						        	Log.i("NerdAlarm","Add - Load Alarm :" + oAlarm.getAlarmID());
-									LoadExistingAlarm(oAlarm);
+						        	LoadExistingAlarm(oAlarm);
         						}		
         
         else					{
@@ -148,24 +138,17 @@ public class AddAlarm extends Activity {
                 	oAlarm.setAlarmTestMe((int)(test_cb.isChecked()?1:0));
                 	oAlarm.setAlarmRepeat(selectedDays);
          	       
-                	Log.i("NerdAlarm","don-"+ mAlarmtime+"-"+title_edittext.getText().toString()+" - "+enabled_cb.isChecked()+"-"+mode+"-"+selectedDays);
-
 	                oAlarm.updateAlarm();
 	                
 	                if (reset==1 && enabled_cb.isChecked()== false)	{
 	                		oAlarm.cancelAlarm();
 	                }
 	                
-	                Log.i("NerdAlarm","Upd Completed!");
-
-	                if (oAlarm.isValid()==false) {
-	                			Log.e("NerdAlarm","Error saving Alarm :" + oAlarm.getAlarmID() + " : " + oAlarm.getAlarmStatus());
-	                }
+	                if (oAlarm.isValid()==false) {}
 	                
 	                else	{
 		                if(oAlarm.getAlarmStatus().length()>1){
-		                	Log.i("NerdAlarm","Upd Completed2!"+oAlarm.getAlarmStatus());
-	                		Toast.makeText(AddAlarm.this, oAlarm.getAlarmStatus(), Toast.LENGTH_SHORT).show();	
+		                	Toast.makeText(AddAlarm.this, oAlarm.getAlarmStatus(), Toast.LENGTH_SHORT).show();	
 	                	}
 	                }
 	                
@@ -222,8 +205,7 @@ public class AddAlarm extends Activity {
 	       
 	       title_edittext.setText(alarm.getAlarmTitle());
 	       
-	       Log.i("NerdAlarm","Add - Load Alarm Mode:" + oAlarm.getAlarmMode());
-			
+	       
 	       mode_spinner.setSelection(alarm.getAlarmMode());
 	       
 	       selectedDays = alarm.getAlarmRepeat();
@@ -233,8 +215,7 @@ public class AddAlarm extends Activity {
 	       
 	       test_cb.setChecked(alarm.getAlarmTestMe());
 	       
-	       Log.i("NerdAlarm",mAlarmtime+"-"+alarm.getAlarmMode()+"-"+mRepeatTime);
-    }
+	}
 
     private void updateDisplay() {
     	StringBuilder alarmTime = new StringBuilder()

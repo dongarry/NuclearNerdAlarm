@@ -27,7 +27,7 @@ public class DatabaseAdapter{
 	    public static final String KEY_COUNTER = "counter"; // Used to determine behavior    
 	    public static final String KEY_MODE = "mode";    
 	    public static final String KEY_TEST = "test";    
-	    private static final String TAG = "DBAdapter";
+	    private static final String TAG = "Nerd Alarm DBAdapter";
 	    
 	    private static final String DATABASE_NAME = "NuclearAlarms";
 	    private static final String DATABASE_TABLE = "Alarms";
@@ -76,11 +76,12 @@ public class DatabaseAdapter{
 	        }
 	    }    
 	    
-	    public Cursor getEnabledAlarm(long rowId) throws SQLException 
+	    public Cursor getEnabledAlarms() throws SQLException 
 	    {
 	        Cursor mCursor = db.query(true, DATABASE_TABLE, new String[] {
+	        								KEY_ROWID,
 						            		KEY_ENABLED}, 
-						            		KEY_ROWID + "=" + rowId, 
+						            		KEY_ENABLED + "=1", 
 						            		null,
 						            		null, 
 						            		null, 

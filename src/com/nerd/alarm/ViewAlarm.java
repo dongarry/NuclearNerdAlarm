@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +26,7 @@ import android.widget.Toast;
  */
 public class ViewAlarm extends ListActivity {
     private long m_alarmID;
+    Alarm oAlarm = null;
 	private static final int MY_DATA_CHECK_CODE = 1;
 	DatabaseAdapter db = null; 
 	private CustomSqlCursorAdapter dataSource;
@@ -63,7 +63,6 @@ public class ViewAlarm extends ListActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        Log.i("NerdAlarm","ViewAlarm - > Requery!");
         dataSource.getCursor().requery();
   }
     
@@ -139,8 +138,21 @@ public class ViewAlarm extends ListActivity {
 				startActivity(prefIntent);
 		      	return true;
 		    case R.id.clear_all:
+		    	Cursor enAlarms = db.getEnabledAlarms();
+		    	
+		    	if(enAlarms != null) {
+		    		//enAlarms.moveToFirst();
+		            while (enAlarms.isAfterLast() == false) {
+		            	oAlarm = new Alarm(enAlarms.getLong(enAlarms.getColumnIndex(BaseColumns._ID)),this);
+		            	oAlarm.cancelAlarm();
+		            	enAlarms.moveToNext();
+		            }
+		            enAlarms.close();
+		    		
+		    	}
+		    	
 		    	Toast.makeText(ViewAlarm.this, getString(R.string.delete_all), Toast.LENGTH_SHORT).show();
-		    	/* TODO Ensure we cancel all enabled alarms when doing this */
+		    	
 		    	boolean _del = db.deleteAllAlarms();
 		    	dataSource.getCursor().requery();
 		    	return (_del);

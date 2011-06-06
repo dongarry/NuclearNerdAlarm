@@ -11,7 +11,7 @@
 <Button android:id="@+id/addalarm"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:drawableLeft="@drawable/ic_att6_2"
+	android:drawableLeft="@drawable/ic_att6"
 	android:text="@string/add"
 	android:onClick="addalarm"/>
 

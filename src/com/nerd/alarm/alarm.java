@@ -28,7 +28,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 
 public class Alarm {
 	
@@ -80,7 +79,6 @@ public class Alarm {
 		bolScheduled=false;
 		nerdSummary="";
 		
-		Log.i("NerdAlarm","Loaded the Constructor");
 		mAudioManager = (AudioManager) alarmContext.getSystemService(Context.AUDIO_SERVICE);
 		db = new DatabaseAdapter(alarmContext);
 		talk2 = alarmContext.getString(R.string.alarmtext2);
@@ -152,7 +150,6 @@ public class Alarm {
 			db.open();
 			if (alarmID!=0)
 				{
-				Log.i("NerdAlarm","Update:" + alarmMode);
 				bolReturn = db.updateAlarm(alarmID,
 				        		time,
 				        		alarmTitle,
@@ -179,12 +176,10 @@ public class Alarm {
 				}
 				db.close();
 				
-				Log.i("NerdAlarm","Schedule");	
 			rescheduleAlarm(nextAlarmTime);
 			}
 		
 		catch(Exception e)	{
-			Log.e("NerdAlarm","Error Saving Alarm :" + alarmID + " : " + e.getMessage());
 			bolReturn=false;
 			}
 	}
@@ -193,7 +188,7 @@ public class Alarm {
 		try {
 				rescheduleAlarm(nextSnooze);
 			}
-		catch(Exception e) {Log.i("NerdAlarm","Error setting alarm snooze");
+		catch(Exception e) {
 			//status="Error setting alarm snooze"
 			bolReturn=false;
 			return bolReturn;
@@ -206,7 +201,7 @@ public class Alarm {
 		try {
 				rescheduleAlarm(nextAlarmTime);
 			}
-		catch(Exception e) {Log.i("NerdAlarm","Error re-setting alarm");
+		catch(Exception e) {
 			//status="Error re-setting alarm"
 			bolReturn=false;
 			return bolReturn;
@@ -247,15 +242,13 @@ public class Alarm {
 	 	       counter+=1;
 	    	   
 			   interval=(snooze * 60000);
-			   Log.i("NerdAlarm","Interval Snooze:"+interval);
 			   alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingIntent);
 		   	}
 	       
 	       else if (onDo==nextAlarmTime)	{	
 	    	   						// Reschedule for alarm time (will include repeats also)
 	    	   					   interval=getNextInterval();			   
-								   Log.i("NerdAlarm","Interval:"+interval);
-	    	   					   alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingIntent);  
+								   alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + interval, pendingIntent);  
 	    	 }
 	       
 	       else	{						// OnDo is the next Interval
@@ -270,11 +263,9 @@ public class Alarm {
 	    
 		bolScheduled=true;   
 		
-		Log.i("NerdAlarm", "Resetting Alarm " + alarmID + ",Enabled:" + enabled + "-Counter:" + counter);
 		db.open();
 		db.updateStatistic(alarmID,counter,enabled,time + ":" + alarmMode);
 		db.close();  
-		Log.i("NerdAlarm","Completed Scheduling!");
 	}
 	
 	
@@ -284,8 +275,7 @@ public class Alarm {
     	mp.setOnErrorListener(
 				new MediaPlayer.OnErrorListener() {
 			        public boolean onError(MediaPlayer mp, int arg, int argx) {
-			        	Log.e("NerdAlarm", "Error in MediaPlayer: (" + arg + ") with extra (" + argx +")" );
-			    		return false;}
+			        	return false;}
 			    });
     
     	if(customSound>0) {
@@ -340,6 +330,11 @@ public class Alarm {
 	     	        enabled = data.getInt(data.getColumnIndex("enabled"));
 	     	        testme = data.getInt(data.getColumnIndex("test"));
 	     	        counter=data.getInt(data.getColumnIndex("counter"));
+	     	        
+	     	        // Overwrite greeting with Title after initial run
+	     	        if(counter==0){greeting=greeting + " " + alarmTitle;}
+	     	        else greeting=alarmTitle;
+	     	        
 	        	}
 	        	else {
 	        		bolReturn = false;
@@ -351,7 +346,6 @@ public class Alarm {
 			}
 		
 		catch(Exception e)	{
-			Log.i("NerdAlarm","Error Updating Alarm :" + alarmID + " : " + e.getLocalizedMessage());
 			return false;
 			}
 	}
@@ -379,7 +373,6 @@ public class Alarm {
 			}
 		
 		catch (Exception e)	{
-			Log.i("NerdAlarm","Cannot load Preferences : " + e.getMessage());
 			bolReturn=false;
 			return bolReturn;
 			}
@@ -452,13 +445,17 @@ public class Alarm {
 	    	  						}
 	    	  
 	      if (currMin<alarmMinute) 	{   // Add minutes
-	    	  							if (alarmMinute>60) 	{
+	    	  							if (alarmMinute>59) 	{
 	    	  														timeDiff-=3600000; // reduce an hour
 	    	  													} 		
 	    	  							timeDiff+=(((alarmMinute - currMin)*60000));
 	    	  						} 
 	      
 	      timeDiff+=((addHours)*3600000); // Add in the next repeat day if exists
+	      
+	      if (alarmMode==0 && timeDiff > 18000000) {
+	    	  timeDiff-=1800000; // Half an hour early
+	      }
 	      
 	      return timeDiff;
 	}   
@@ -479,11 +476,10 @@ public class Alarm {
 		  else 
 			  	status =  status + (interval%(3600)/60) + " " + context.getString(R.string.alarm_minutes) + ".";
 	      
-	      Log.i("NerdAlarm","Status:"+ status);
-		}
+	}
 	
-	   private void getWeatherDetails()
-	   { 
+	private void getWeatherDetails()
+	{ 
 		  	
 		try {   
 				LocationManager locationManager;
@@ -491,8 +487,7 @@ public class Alarm {
 			 	locationManager = (LocationManager)context.getSystemService(locService);
 			 	String provider = LocationManager.NETWORK_PROVIDER;
 			 	Location location = locationManager.getLastKnownLocation(provider);
-			 	Log.i("NerdAlarm","Location: " + location.getLongitude()  + ":" + location.getLatitude());
-
+			 	
 			 	//We now have coordinates - let's get the weather
 			 	//http://www.google.com/ig/api?weather=,,,4550000,-7358300
 			 	//These coordinates need to be formatted
@@ -528,8 +523,7 @@ public class Alarm {
 		}
 
 		catch (Exception e) {
-				Log.e("NerdAlarm", "Error getting Weather info:" + e.getMessage());
-	        	}
+				}
 		  }
 	   
 	   private String f_Coordinates(String _c) 

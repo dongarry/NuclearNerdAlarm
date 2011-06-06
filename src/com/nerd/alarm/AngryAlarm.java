@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.util.Log;
 
 
 public class AngryAlarm extends Alarm {
@@ -35,13 +34,11 @@ private Context context;
 			
 			try { this.mediaPlay();} 
 			catch (IllegalStateException e) {
-				Log.e("NerdAlarm","Angry MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
-				e.printStackTrace();
-				} 
-			catch (IOException e) {
-				Log.e("NerdAlarm","Angry MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
-				e.printStackTrace();
-				}
+												e.printStackTrace();
+											} 
+			catch (IOException e) 			{
+												e.printStackTrace();
+											}
 		   }
 
 }

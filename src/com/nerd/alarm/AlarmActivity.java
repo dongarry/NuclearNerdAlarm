@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -39,7 +39,8 @@ import android.widget.Toast;
  */
 
 public class AlarmActivity extends Activity implements TextToSpeech.OnInitListener {
-    private TextToSpeech textToSpeech;
+    
+	private TextToSpeech textToSpeech;
     private long mAlarmID =0;
     private int mAlarmMode=0;
     
@@ -64,7 +65,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.alarm_wake);
     	
-    	Log.i("NerdAlarm","AA Loading:");
     	setTitle(getString(R.string.alarmtitle));
     	
     	mKeyguardMan = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);     	
@@ -74,7 +74,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         
     	PowerUp();
         loadDetails();
-    	Log.i("NerdAlarm","AA DoneLoading:");
     	
     	if(oAlarm.doNerd()){    	    
 	        mNerdDetails = (TextView) findViewById(R.id.nerd_info);
@@ -82,32 +81,36 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 			mNerdDetails.setTypeface(null,Typeface.BOLD);
         }
         
-    	if(!oAlarm.getAlarmTestMe())	{
-    		UnlockKeyguard();
-    	}
-    	
-    	Log.i("NerdAlarm","AA Sound next:");
-
-        oAlarm.soundAlarm();
+    	oAlarm.soundAlarm();
             
         
         if(oAlarm.doVibrate()){
 	        	Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 			   	v.vibrate(400);
         }
+
+        UnlockKeyguard();
+        
+        if(oAlarm.getAlarmTestMe())	{
+        							myCustomDialog dialog = new myCustomDialog(this); 
+        							dialog.setCancelable(false);
+        							dialog.setTitle(getString(R.string.testme_title));
+        							dialog.show();
+        }
+    	
         
         
         final Button button = (Button) findViewById(R.id.snooze);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	oAlarm.ResetMedia();
-            	oAlarm.rescheduleAlarm(1); //nextSnooze
-            	Toast.makeText(AlarmActivity.this, getString(R.string.snooze) + " : " + oAlarm.getAlarmSnooze(), Toast.LENGTH_SHORT).show();
-            	closeAlarm();
+            	if (oAlarm.getAlarmSnooze()>0) {
+		            	oAlarm.rescheduleAlarm(1); //nextSnooze
+		            	Toast.makeText(AlarmActivity.this, getString(R.string.snooze) + " : " + oAlarm.getAlarmSnooze(), Toast.LENGTH_SHORT).show();
+            	}    
+		        closeAlarm();
             }
         });
-        
-        Log.i("NerdAlarm","DoneAlarm:Over");
    }
     
     @Override
@@ -117,10 +120,20 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     
     @Override
     protected void onStop(){
-    	super.onStop();
     	if(bolExit)	{
     		closeAlarm();
     	}
+    	
+    	super.onStop();
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+        	closeAlarm();
+        	finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
     
     public void loadDetails (){    		
@@ -142,21 +155,19 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	        							}
         		
 	        
-			        if(oAlarm.isValid())	{
-			        	
-			            				TextView mTtitleDisplay = (TextView) findViewById(R.id.wakeup);
-			            				mTtitleDisplay.setText(oAlarm.getAlarmTitle()); 
-			        }
+			        if(oAlarm.isValid())	{			        	
+				            				TextView mTtitleDisplay = (TextView) findViewById(R.id.wakeup);
+				            				mTtitleDisplay.setText(oAlarm.getAlarmTitle()); 
+			        						}
 			        else	{
 			            		finish();
-			        }
+			        		}
 						
 		    }
         
         	else	{
-	        	Log.e("NerdAlarm","Alarm fired but was had no alarmID! - alarm " + mAlarmID);
-	        	finish();
-        	}        
+        			finish();
+        			}        
     }
     
     
@@ -175,16 +186,11 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     
     
     public void stopAlarm(View view) 	{
-    									//oAlarm.rescheduleAlarm(1);
-    									//if (oAlarm.getAlarmStatus().length()>1) {
-    									//	Toast.makeText(AlarmActivity.this, oAlarm.getAlarmStatus(), Toast.LENGTH_SHORT).show();
-    									//}
-    									Log.i("NerdAlarm","Let's call stop! - alarm " + mAlarmID);
-    									closeAlarm();
+    										closeAlarm();
     									}
     
     private void saySomething() {
-        textToSpeech.speak(oAlarm.getAlarmGreeting(), TextToSpeech.QUEUE_FLUSH, null);
+    	textToSpeech.speak(oAlarm.getAlarmGreeting(), TextToSpeech.QUEUE_FLUSH, null);
         textToSpeech.speak(oAlarm.getSpeakLine(), TextToSpeech.QUEUE_ADD, null);
         textToSpeech.speak(oAlarm.getSpeakNextLine(), TextToSpeech.QUEUE_ADD, null);        
     	}
@@ -194,7 +200,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	            //TODO Consider doing something with locales?
 			  	 if(oAlarm.doTalk()){saySomething();}
 	        } 
-		  else {Log.e("NerdAlarm", "Could not initialise TextToSpeech.");}
+		  else {}
 	}
     
     
@@ -225,7 +231,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
 	   		if( mKeyguardMan.inKeyguardRestrictedInputMode()) 
            		{ 
 	   				mKeyguardLock = mKeyguardMan.newKeyguardLock("NerdAlarm");
-	   				Log.i("NerdAlarm","Disabling KeyGuard");
 	   				mKeyguardLock.disableKeyguard(); 
            		} 
            else 
@@ -233,16 +238,13 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
    } 
    
    private void closeAlarm(){
-	 	 Log.i("NerdAlarm","AA Stopping alarm Activity!");
-	     	
-         oAlarm.ResetMedia();
+	 	 	
+        oAlarm.ResetMedia();
      	resetTalk();
      	mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (mDefaultVolume), AudioManager.FLAG_VIBRATE);
-     	Log.i("NerdAlarm","Stopping alarm Activity! = Resets done");
      	   
          if (!oAlarm.isScheduled() && oAlarm.isValid())	{
-         				Log.i("NerdAlarm","Stopping alarm Activity! = Rescheduling");
-
+        
          				if (oAlarm.getAlarmRepeat() == 0) {
          		   	   										oAlarm.setAlarmEnabled(0);
          		   	   	}
@@ -252,7 +254,6 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
          }
 
          Toast.makeText(AlarmActivity.this, oAlarm.getAlarmStatus(), Toast.LENGTH_SHORT).show();						
-         Log.i("NerdAlarm","Stopping alarm Activity! = WakeLock and KeyGuard");
          
         bolExit=false;
     	oAlarm = null;
@@ -260,7 +261,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
         cancelWakeLock();
         finish();
    }
-
+   
    private void exitKeyguard() { 
            if( mKeyguardLock != null ){ 
         	       if( mKeyguardMan.inKeyguardRestrictedInputMode()) 
@@ -274,5 +275,5 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
            } 
            else {} 
    	} 
-      
+ 
 }

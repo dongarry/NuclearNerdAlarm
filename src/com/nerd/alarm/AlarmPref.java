@@ -3,9 +3,7 @@ package com.nerd.alarm;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.media.Ringtone;
@@ -18,7 +16,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.RingtonePreference;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,7 +43,6 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
 	private SharedPreferences.Editor editor;
 	private String sound;
 	private int mode = Activity.MODE_PRIVATE;
-	private int snooze;
 	
 	static final private int ALARM_DETAIL = 1;
 
@@ -68,11 +64,8 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         
         modePref.setValue(getString(R.string.mode_default));
-        Log.i("NerdAlarm","Loading Prefs.." + getString(R.string.mode_default));
-		getPrefs(getString(R.string.mode_default)); //start on the default..
-		Log.i("NerdAlarm","LoadingPref - after");
-    	
-        
+        getPrefs(getString(R.string.mode_default)); //start on the default..
+		
         soundPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
     		 public boolean onPreferenceChange(Preference preference, Object newValue) {
     			 		 	
@@ -136,7 +129,6 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
 			editor.putString("greetingPref", greetingPref.getText());		     
 			greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  greetingPref.getText());}
         else if (key.equals("snoozePref")) {
-        	Log.i("NerdAlarm","Applying to snooze:" + snoozePref.getValue());
         	editor.putInt("snoozePref", Integer.parseInt(snoozePref.getValue()));		     
 			snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + snoozePref.getValue());}
         else if (key.equals("vibratePref")) {
@@ -152,26 +144,24 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
     	
     	mySharedPreferences = getSharedPreferences(_pref,mode);
     	modePref.setTitle(getString(R.string.mode)+ " : " + _pref);
-    	Log.i("NerdAlarm","SnoozePref - set title done");
-    	
     	greetingPref.setText(mySharedPreferences.getString("greetingPref",""));
     	vibratePref.setChecked(mySharedPreferences.getInt("vibratePref",0) == 1);
     	nerdPref.setChecked(mySharedPreferences.getInt("nerdPref",0) == 1);
-    	Log.i("NerdAlarm","SnoozePref - next");
     	snoozePref.setValue(String.valueOf(mySharedPreferences.getInt("snoozePref",5)));
-    	Log.i("NerdAlarm","SnoozePref - after");
     	
     	try {
 	    	soundPref.setPersistent(true); 
 	    	soundPref.setDefaultValue((Object)(mySharedPreferences.getString("soundPref","alarm_alert")));
 	    	setSoundPref(mySharedPreferences.getString("soundPref","alarm_alert"));
     		}
-    	catch(Exception e){Log.e("NerdAlarm","Another ringtone issue: getPrefs :" + e.getMessage());}
+    	catch(Exception e)	{
+    						e.printStackTrace();
+    						}
     	
     	greetingPref.setSummary(getString(R.string.greeting_summary) + " : " +  mySharedPreferences.getString("greetingPref",""));
-    	Log.i("NerdAlarm","SnoozePref - set summary next");
     	snoozePref.setSummary(getString(R.string.snooze_summary) + " : " + String.valueOf(mySharedPreferences.getInt("snoozePref",5)));        
-		}
+		
+    }
     
     private void setSoundPref(String _sound){
     	try {
@@ -181,8 +171,10 @@ public class AlarmPref extends PreferenceActivity implements OnSharedPreferenceC
 	    	Ringtone ringtone = rm.getRingtone(this, Uri.parse(mySharedPreferences.getString("soundPref","")));
 	    	soundPref.setSummary(getString(R.string.ringtone_summary) + " : " + ringtone.getTitle(this));        
     	}
-    	catch(Exception e){Log.e("NerdAlarm","Another ringtone issue: setSoundPref :" + e.getMessage());}
-    	}
+    	catch(Exception e)		{
+    							e.printStackTrace();
+    							}
+    }
     
 	// Display our own custom menu when menu is selected.
 	 @Override

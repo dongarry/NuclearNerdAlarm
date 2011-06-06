@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.util.Log;
 
 public class BunnyAlarm extends Alarm {
 	
@@ -16,11 +15,11 @@ public class BunnyAlarm extends Alarm {
 	public void soundAlarm () {
 		
 		int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-		Log.i("NerdAlarm","Bunny MediaPlayer -" + this.getAlarmCounter());
 		
 		if (this.getAlarmCounter()==0){
 		        	this.setAlarmVolume(maxVolume-5);    	   	
 		        	this.setCustomSound(R.raw.b_b_birds);
+		        	this.setAlarmTestMe(0);
 		        	//this.setInterval(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
 		        	this.setTalk(false);	
 		        }
@@ -28,6 +27,7 @@ public class BunnyAlarm extends Alarm {
 		else if (this.getAlarmCounter()==1){
 					this.setAlarmVolume(maxVolume-4);    	   	
 		        	this.setCustomSound(R.raw.b_b_birds);
+		        	this.setAlarmTestMe(0);
 		        	//this.setInterval(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
 		        	this.setTalk(false);
 		       		}
@@ -46,11 +46,9 @@ public class BunnyAlarm extends Alarm {
 		
 		try { this.mediaPlay();} 
 		catch (IllegalStateException e) {
-			Log.e("NerdAlarm","Bunny MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
 			e.printStackTrace();
 			} 
 		catch (IOException e) {
-			Log.e("NerdAlarm","Bunny MediaPlayer -" + this.getAlarmCounter() + " - " + e.getMessage());
 			e.printStackTrace();
 			}
 	   }

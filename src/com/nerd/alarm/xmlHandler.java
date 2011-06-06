@@ -7,7 +7,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *  http://www.anddev.org/parsing_xml_from_the_net_-_using_the_saxparser-t353.html
  * 
  * Nerd Alarm - To access weather info, we download from the google api but we handle the
- *  xml file ourselves, this is where we parse it
+ * xml file ourselves, this is where we parse it
  */
 public class XmlHandler extends DefaultHandler{
 	
