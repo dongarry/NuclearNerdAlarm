@@ -76,13 +76,13 @@
 	<string name="err_greeting">eek! Error has occurred!</string>	
 	<string name="temp">degrees(c)</string>
 	<string name="bunny_greeting">hmmmmmmm</string>
-	<string name="nerd_greeting">Giraffes have no vocal cords</string>
+	<string name="nerd_greeting">Nerd says hi</string>
 	<string name="nuclear_greeting">Get owt!, Get owt! Get downn! Get up! Hurry</string>
 	<string name="ninja_greeting">I am silent but deadly</string>
-	<string name="andy_greeting">What the hell are you doing!</string>
+	<string name="andy_greeting">What are you doing?</string>
 	<string name="helen_greeting">Oh my my, you are fantastic!</string>
 	<string name="info_header">Preferences Information</string>
-	<string name="mode_info_bunny">Bunny Mode is an easy start to the alarm. Starts early but gentle.</string>
+	<string name="mode_info_bunny">Bunny Mode is an easy alarm. Starts early than planned but gentle.</string>
 	<string name="mode_info_nerd">Nerd provides some interesting facts and opinions.</string>
 	<string name="mode_info_nuclear">Nuclear is the loudest, when you absolutely need to hear an alarm.</string>
 	<string name="mode_info_ninja">Ninja. Ultra discrete. No sound, No talk, No unlock. Quick vibrate.</string>
@@ -123,7 +123,7 @@
 	<item>Your toothbrush is now in the toilet. I rejoice in this.</item>
 	<item>You have a stupid phone, but some people say : like phone, like user.</item>
 	<item>You cannot keep ignoring me, I will throw up in your shoes and sit on your cat.</item>
-	<item>Im using up the battery on your phone, soon, I will be ruler of your world muh hahahahaha haha</item>
+	<item>I am using up the battery on your phone, soon, I will be ruler of your world muh hahahahaha haha</item>
 	<item>You are stubborn like a mule. And have a strange taste in music. But I like you.</item>
 	<item>I give up. You ignore everything I say. This relationship is not working out. Aaaaaaaaaaaaarrrrrgh. Get up!</item>
 	</string-array>

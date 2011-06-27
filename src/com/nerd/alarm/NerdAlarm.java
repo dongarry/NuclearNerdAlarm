@@ -27,8 +27,7 @@ private Context context;
 	      	   
 	        	int nerdFact = (int)(Math.random() * (9 - 0));	
 	        	String[] facts=context.getResources().getStringArray(R.array.nerd_array); 
-	    	   
-	        	this.setSpeakNextLine(facts[nerdFact]);
+	    	    this.setSpeakNextLine(facts[nerdFact]);
 	        	
 	        	if (this.getAlarmCounter()==1){this.setSpeakNextLine(context.getResources().getString(R.string.nerd_cough)+ "...");}
 	    	    if (this.getAlarmCounter()>6){this.setInterval(0);} 

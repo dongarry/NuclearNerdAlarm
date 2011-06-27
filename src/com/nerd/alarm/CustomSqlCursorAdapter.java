@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -114,10 +115,16 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	}
 
 	 public void setalarm(int _id, boolean _enabled, String _alarmTime) {
-	       
-	      Intent alarmIntent = new Intent(context, AlarmActivity.class);
-	        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-	        PendingIntent pendingIntent = PendingIntent.getActivity(context, _id, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+		   
+		 	Bundle params = new Bundle();
+			params.putLong("AlarmID",(long) _id);   
+			params.putInt("AlarmMode",mMode);
+			      
+			Intent alarmIntent = new Intent(context, AlarmActivity.class);
+	      	alarmIntent.putExtras(params); //Pass the Alarm ID and Mode
+			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+	        PendingIntent pendingIntent = PendingIntent.getActivity(context, _id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	        
 	        if (_enabled){
 	        	String[] parts = _alarmTime.split(":",2);
 	        	int hours = Integer.valueOf(parts[0]);
@@ -126,7 +133,7 @@ public class CustomSqlCursorAdapter extends SimpleCursorAdapter {
 	        	DisplayRecords my_a_records = new DisplayRecords();
 	        	my_a_records.SetMe(context); 
 	        	_alarmTime = my_a_records.setTime(_id,hours,minutes,0,mMode);
-	        	Toast.makeText(context, m_AlarmTime, Toast.LENGTH_SHORT).show();
+	        	Toast.makeText(context, _alarmTime, Toast.LENGTH_SHORT).show();
        			//a_enabled = my_a_records.testMe();
 	        	
 	        }

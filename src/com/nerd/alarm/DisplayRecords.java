@@ -122,7 +122,6 @@ public class DisplayRecords extends Activity{
  	   */
 
 	      // Update the user 
-
 	      String alarmDetails =  context.getString(R.string.alarm_enabled) + " ";
 	      timeDiff=timeDiff/1000;
 
@@ -133,7 +132,8 @@ public class DisplayRecords extends Activity{
 		    	  alarmDetails =  alarmDetails + (timeDiff/(3600)) + " " + context.getString(R.string.alarm_hours) + " " + (timeDiff%(3600)/60) + " " + context.getString(R.string.alarm_minutes) + ".";}	    	  
 
 		  else alarmDetails =  alarmDetails + (timeDiff%(3600)/60) + " " + context.getString(R.string.alarm_minutes) + ".";
-
+	      
+	      
 	      return alarmDetails;
 }
 

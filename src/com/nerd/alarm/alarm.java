@@ -66,6 +66,7 @@ public class Alarm {
 	private int vibrate;
 	private int snooze;
 	private int nerd;
+	private String gap = "   ";
 	private String greeting="..";
 	private String talk1="..";
 	private String talk2="..";
@@ -127,10 +128,14 @@ public class Alarm {
 	public String getAlarmStatus() {return status;}
 	
 	public String getSpeakLine() {return talk1;}
-	public void setSpeakLine(String newValue) {talk1 = newValue;}
+	public void setSpeakLine(String newValue) {
+		if (newValue!=null){talk1 = newValue;}
+	}
 	
 	public String getSpeakNextLine() {return talk2;}
-	public void setSpeakNextLine(String newValue) {talk2 = newValue;}
+	public void setSpeakNextLine(String newValue) {
+		if (newValue!=null){talk2 = newValue;}
+		}
 
 	public void setInterval(long newValue) {interval = newValue;}
 	
@@ -142,7 +147,14 @@ public class Alarm {
 	public boolean doNerd() {return nerd==1;}
 	public boolean isValid() {return bolReturn;}
 	public Boolean isScheduled() {return bolScheduled;}
-	public String getAlarmGreeting() {return greeting + " " + nerdSummary;}
+	
+	public String getAlarmGreeting() {
+		String returnString=gap;
+		if (greeting!=null) {returnString=greeting;}
+		if (nerdSummary!=null) {returnString=greeting + gap + nerdSummary;}
+		return returnString; 
+	}
+	
 	public int getAlarmSnooze() {return snooze;}
 	
 	public void updateAlarm()	{
@@ -211,7 +223,12 @@ public class Alarm {
 	}
 	
 	public void cancelAlarm(){
+		Bundle params = new Bundle();
+		params.putLong("AlarmID",alarmID);   
+		params.putInt("AlarmMode",alarmMode);
+		      
 		Intent alarmIntent = new Intent(context, AlarmActivity.class);
+		alarmIntent.putExtras(params); //Pass the Alarm ID and Mode
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 	    PendingIntent pendingIntent = PendingIntent.getActivity(context, (int)(alarmID), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	    alarmManager.cancel(pendingIntent);
@@ -330,11 +347,6 @@ public class Alarm {
 	     	        enabled = data.getInt(data.getColumnIndex("enabled"));
 	     	        testme = data.getInt(data.getColumnIndex("test"));
 	     	        counter=data.getInt(data.getColumnIndex("counter"));
-	     	        
-	     	        // Overwrite greeting with Title after initial run
-	     	        if(counter==0){greeting=greeting + " " + alarmTitle;}
-	     	        else greeting=alarmTitle;
-	     	        
 	        	}
 	        	else {
 	        		bolReturn = false;
@@ -367,6 +379,10 @@ public class Alarm {
 	    					getWeatherDetails();
 	    				}
 	    	
+	    	// Overwrite greeting with Title after initial run
+ 	        if(counter==0){greeting=greeting + gap + alarmTitle;}
+ 	        else greeting=alarmTitle;
+ 	        
 	    	bolReturn=true;
 	    	
 			return bolReturn;
@@ -519,6 +535,7 @@ public class Alarm {
 		        
 		        if (parsedXmlSet.getWind().length()>4){
 		        		nerdDetails = parsedXmlSet.toString();
+		        		nerdSummary = parsedXmlSet.getCondition();
 		        		}
 		}
 
