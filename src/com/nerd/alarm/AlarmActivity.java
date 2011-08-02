@@ -130,6 +130,12 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+        	if (mAlarmMode==2){ //Nuclear - no easy out!
+		        	if (oAlarm.getAlarmSnooze()>0) {
+		            	oAlarm.rescheduleAlarm(1); //nextSnooze
+		            	Toast.makeText(AlarmActivity.this, getString(R.string.snooze) + " : " + oAlarm.getAlarmSnooze(), Toast.LENGTH_SHORT).show();
+		        		}    
+        	}    	
         	closeAlarm();
         	finish();
         }

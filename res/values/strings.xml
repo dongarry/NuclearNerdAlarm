@@ -84,8 +84,8 @@
 	<string name="info_header">Preferences Information</string>
 	<string name="mode_info_bunny">Bunny Mode is an easy alarm. Starts early than planned but gentle.</string>
 	<string name="mode_info_nerd">Nerd provides some interesting facts and opinions.</string>
-	<string name="mode_info_nuclear">Nuclear is the loudest, when you absolutely need to hear an alarm.</string>
-	<string name="mode_info_ninja">Ninja. Ultra discrete. No sound, No talk, No unlock. Quick vibrate.</string>
+	<string name="mode_info_nuclear">Nuclear is the loudest, when you absolutely need to hear an alarm. You have to press stop on this mode.</string>
+	<string name="mode_info_ninja">Ninja. Ultra discreet. No sound, No talk, No unlock. Quick vibrate.</string>
 	<string name="mode_info_angry">Angry mode does not like alarms.</string>
 	<string name="mode_info_happy">Happy mode provides some more positivity to your life.</string>
 	<string name="pref_warning">WARNING : Note the nerd checkbox will access the internet. This is switched on for Nerd Mode by default.</string>

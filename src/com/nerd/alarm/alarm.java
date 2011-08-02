@@ -150,7 +150,7 @@ public class Alarm {
 	
 	public String getAlarmGreeting() {
 		String returnString=gap;
-		if (greeting!=null) {returnString=greeting;}
+		if (greeting!=null) {returnString=greeting + gap;}
 		if (nerdSummary!=null) {returnString=greeting + gap + nerdSummary;}
 		return returnString; 
 	}

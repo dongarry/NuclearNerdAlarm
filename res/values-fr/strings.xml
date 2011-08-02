@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Nuclear Alarms</string>
+    <string name="app_name">Nerd Ninja Alarm</string>
+    <string name="add">Ajouter l\'Alarme</string>
+    <string name="clear">Tous Eclaircir</string>
+    <string name="preferences">Préférences</string>
+    <string name="wakeup">Se Lever!!</string>
+    <string name="changetime">Changer le Temps!!</string>
+    <string name="setthetime">Régler le temps d\'alarme</string>
+    <string name="timesetto">L\'alarme est réglée pour</string>
+    <string name="save">Arrêt</string>
+    <string name="title">Titre</string>
+    <string name="sound">Son</string>
+    <string name="testme">S\'il vous plaît M\'essayer</string>
+    <string name="nerd">Nerd</string>
+    <string name="snooze">Snooze</string>
+    <string name="vibrate">Vibrer</string>
+    <string name="music">Musique</string>
+    <string name="volume">Volume</string>
+    <string name="enabled">Activée</string>
+    <string name="mode">Mode</string>
+    <string name="mode_summary">Ce sera de définir les caractéristiques de votre alarme</string>
+    <string name="delete_all">Toutes les alarmes supprimés!</string>
+    <string name="mode_select">S\'il vous plaît sélectionner un mode</string>
+    <string name="snooze_select">S\'il vous plaît choisir la durée snooze</string>
+    <string name="sound_select">S\'il vous plaît sélectionner un son</string>
+    <string name="sound_over">sommeil</string>
+    <string name="noalarmset">Aucune alarme active</string>
+    <string name="alarms">Liste des Alarmes</string>
+    <string name="alarmtitle">N E R D   A L A R M</string>
+    <string name="alarmtext1">Beep Beep Ceci est votre alarme</string>
+    <string name="alarmtext2">Nerd Alarm</string>
+    <string name="repeatthat">Répéter à nouveau</string>
+    <string name="selectdays">Sélectionnez jours</string>
+    <string name="done">Fait</string>
+    <string name="info">Infos</string>
+    <string name="stop">Arrêtez</string>
+    <string name="nerd_cough">cough</string>
+    <string name="angry_cough">arrrgh</string>
+    <string name="happy_cough">ooh la la</string>
+    <string name="repeat">Répétition d\'alarme</string>
+    <string name="repeat_2">Pas de répétition Actifs</string>
+	<string name="norepeatset">Pas de répétition Actifs</string>
+	<string name="monday">Lun</string>
+	<string name="tuesday">Mar</string>
+	<string name="wednesday">Mer</string>
+	<string name="thursday">Jeu</string>
+	<string name="friday">Ven</string>
+	<string name="saturday">Sam</string>
+	<string name="sunday">Dim</string>
+	<string name="weekdays">Semaine</string>
+	<string name="everyday">Tous les jours - pas de repos pour vous!</string>
+	<string name="alarm_enabled">L\'alarme active dans le</string>
+	<string name="alarm_disabled">L\'alarme est maintenant désactivé</string>
+	<string name="alarm_updated">L\'alarme est maintenant mis à jour</string>
+	<string name="alarm_update_failed">Alarme échoué à mettre à jour</string>
+	<string name="testme_title">Testez pour vous</string>
+	<string name="ok">OK</string>
+	<string name="testme_ok">Vous avez réussi!</string>
+	<string name="testme_move_on">Passons sur les</string>
+	<string name="testme_incorrect">Incorrecte - essayez à nouveau</string>
+	<string name="alarm_days">jours et</string>
+	<string name="alarm_minutes">minutes</string>
+	<string name="alarm_hours">heures et</string>
+	<string name="mode_default">Bunny</string>
+	<string name="alarm_category">Détails d\'alarme</string>
+	<string name="alarm_greeting">Salutation d\'alarme</string>
+	<string name="greeting_summary">Ce sera inclus pour l\'alarme de parler</string>
+	<string name="alarm_vibrate">Vibrer</string>
+	<string name="vibrate_summary">Alarme se met à vibrer à l\'activation</string>
+	<string name="snooze_summary">Combien de temps durera l\'avertisseur snooze pour</string>
+	<string name="alarm_ringtone">Tonalité d\'Alarme</string>
+	<string name="ringtone_summary">Quel bruit se font de l\'alarme</string>
+	<string name="nerd_summary">Accéder à votre information météo locale et inclure cette information</string>
+	<string name="err_greeting">eek! Une erreur s\'est produite!</string>	
+	<string name="temp">degrés(c)</string>
+	<string name="bunny_greeting">hmmmmmmm</string>
+	<string name="nerd_greeting">Nerd dit Salut</string>
+	<string name="nuclear_greeting">Sortez!, Sortez! Couchez-vous! Levez-vous! Pressé</string>
+	<string name="ninja_greeting">Je suis silencieuse mais mortelle</string>
+	<string name="andy_greeting">Que faites-vous?</string>
+	<string name="helen_greeting">Oh ma ma, vous êtes fantastiques!</string>
+	<string name="info_header">Informations Préférences</string>
+	<string name="mode_info_bunny">Bunny Mode est une alarme facile. Commence tôt que prévu mais doux.</string>
+	<string name="mode_info_nerd">Nerd fournit quelques faits intéressants et des opinions.</string>
+	<string name="mode_info_nuclear">Nuclear est le plus fort, quand vous avez absolument besoin d\'entendre une alarme.Pas aussi facile de stopper cette alerte.</string>
+	<string name="mode_info_ninja">Ninja. Très discret. Pas de son, Pas de bavardages, Pas de déverrouillage. Rapide vibrent.</string>
+	<string name="mode_info_angry">Angry mode ne vous aime pas.</string>
+	<string name="mode_info_happy">Happy mode fournit un peu plus de positivité à votre vie.</string>
+	<string name="pref_warning">ATTENTION: Notez la case ballot auront accès à l\'internet. Ceci est allumé pour le mode par défaut, Nerd.</string>
+	<string name="pref_warning_two">Le volume est réinitialisé aux niveaux précédents après que l\'alarme est terminée. Presque tous les modes de s\'appuyer sur parlant pour plein effet.</string>
+	
+<string-array name="nerd_array">
+	<item>Une méduse est de 95 pour cent d\'eau!</item>
+	<item>La Joconde a pas de sourcils. C\'était la mode à Florence de la Renaissance à les raser! Elle est laide</item>
+	<item>Il ya plus de 58 millions de chiens dans le U.S! C\'est chiens animaux.</item>
+	<item>Moulins à vent tourne toujours le sens antihoraire. Sauf pour les moulins à vent en Irlande! ... Weirdos irlandais!</item>
+	<item>Le recyclage d\'une fiole en verre, économise suffisamment d\'énergie pour regarder la télévision pendant 3 heures. Sinon, arrêter de regarder T.V</item>
+	<item>Plus de 10 000 oiseaux meurent chaque année de fracassant dans les fenêtres. Permet interdiction fenêtres</item>
+	<item>Les hommes sont 6 fois plus susceptibles d\'être frappé par la foudre que les femmes!. C\'est parce que les femmes sont généralement dans la cuisine.</item>
+	<item>En l\'an 2000, le Pape Jean Paul II a été nommé honoraire des Harlem Globetrotters. Il était le meilleur.</item>
+	<item>Dents de l\'homme sont presque aussi dur que les roches. Jouons dents, papier, ciseaux!</item>
+	<item>Chaque 20 jours banques sont volés. La moyenne est de prendre 2.500 dollars. Sauf en Irlande, où les banques volent le peuple.</item>
+	</string-array>
+<string-array name="helen_array">
+	<item>Vous êtes merveilleux.</item>
+	<item>Vous regardez bien.</item>
+	<item>Je pense que vous êtes le meilleur.</item>
+	<item>Aujourd\'hui sera super, maintenant que vous êtes ici.</item>
+	<item>Vous êtes ridiculement chaud.</item>
+	<item>Je voterais pour vous pour le président.</item>
+	<item>Ne vous inquiétez pas pour une chose, vous êtes plus capables.</item>
+	<item>Vous êtes si chaud, je ne pouvais frire des oeufs sur vous.</item>
+	<item>Zut! vous continuez à obtenir une meilleure recherche!</item>
+	<item>rangée, rangée, rangée de votre bateau, doucement le courant, joyeux joyeux joyeux joyeux, la vie n\'est qu\'un rêve.</item>
+	</string-array>
+<string-array name="andy_array">
+	<item>Je secoue un oignon dans vos cheveux ... et pousser mon doigt dans ton nez.</item>
+	<item>Votre chambre sent l\'aisselle.</item>
+	<item>J\'ai mis une chaussette malodorante dans votre visage et de la toux dans votre direction générale.</item>
+	<item>J\'ai caché vos chaussures, vous ne serez jamais les trouver.</item>
+	<item>Votre brosse à dents est désormais dans les toilettes. Je me réjouis de cette.</item>
+	<item>Vous avez un téléphone stupide, mais certaines personnes disent: comme le téléphone, comme propriétaire.</item>
+	<item>Vous ne pouvez pas me garder ignorant, je vais jeter dans vos chaussures et de s\'asseoir sur votre chat.</item>
+	<item>Je suis en utilisant jusqu\'à la batterie de votre téléphone, bientôt, je serai chef de votre monde muh hahahahaha haha</item>
+	<item>Vous êtes têtu comme une mule. Et avoir un goût étrange dans la musique. Mais je vous le souhaitez.</item>
+	<item>J\'abandonne. Vous ignorez tout ce que je dis. Cette relation ne fonctionne pas sur. Aaaaaaaaaaaaarrrrrgh. Obtenez jusqu\'à!</item>
+	</string-array>
+<string-array name="modes_array">
+	<item>Bunny</item>
+	<item>Nerd</item>
+	<item>Nuclear</item>
+	<item>Ninja</item>
+	<item>AngryAlarm</item>
+	<item>HappyHappy</item>
+	</string-array>
+<string-array name="modes_codes">
+	<item>0</item>
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>
+	<item>4</item>
+	<item>5</item>
+	</string-array>
+<string-array name="days_array">
+	<item>Répétez</item>
+	<item>Lundi</item>
+	<item>Mardi</item>
+	<item>Mercredi</item>
+	<item>Jeudi</item>
+	<item>Vendredi</item>
+	<item>Samedi</item>
+	<item>Dimanche</item>
+	</string-array>
+<string-array name="snooze_array">
+	<item>0 mins - simplement arrêter!</item>
+	<item>5 mins</item>
+	<item>10 mins</item>
+	<item>15 mins</item>
+	<item>20 mins</item>
+	<item>30 mins</item>
+	</string-array>
+<string-array name="snooze_codes">
+	<item>0</item>
+	<item>5</item>
+	<item>10</item>
+	<item>15</item>
+	<item>20</item>
+	<item>30</item>
+	</string-array>
+<string-array name="testme_array">
+	<item>Etes-vous éveillés?? - S\'il vous plaît taper "oui"</item>
+	<item>Etes-vous éveillés?? - S\'il vous plaît taper "bâillement"</item>
+	<item>Etes-vous éveillés?? - S\'il vous plaît taper "snoozy"</item>
+	<item>Etes-vous éveillés?? - S\'il vous plaît taper ":("</item>
+	<item>Etes-vous éveillés?? - S\'il vous plaît taper "merci"</item>
+	<item>You deserve more rest</item>
+	<item>You look tired, - just hit OK</item>
+	</string-array>
+<string-array name="testme_answers">
+	<item>oui</item>
+	<item>bâillement</item>
+	<item>snoozy</item>
+	<item>:(</item>
+	<item>merci</item>
+	<item>ok</item>
+	<item>ok</item>
+	</string-array>
+</resources>
