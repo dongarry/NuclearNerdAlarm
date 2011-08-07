@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="hello">Budziki Nuklearne</string>
+	<string name="app_name">Nerd Ninja Alarm</string>
+    <string name="add">Dodaj Budzik</string>
+   <string name="clear">Wyczyść Wszystko</string>
+    <string name="preferences">Preferencje</string>
+    <string name="wakeup">wstawaj pobudka!!</string>
+    <string name="changetime">Zmiana czasu!!</string>
+    <string name="setthetime">Ustawienia budzika</string>
+    <string name="timesetto">Budzik ustawiony na</string>
+    <string name="save">Zachowaj</string>
+    <string name="title">Tytuł</string>
+    <string name="sound">Dzwięk</string>
+    <string name="testme">Przetestuj mnie</string>
+    <string name="nerd">Kujon</string>
+    <string name="snooze">Drzemka</string>
+    <string name="vibrate">Wibracja</string>
+    <string name="music">Muzyka</string>
+    <string name="volume">Głośność</string>
+    <string name="enabled">Włączony</string>
+    <string name="mode">Profil</string>
+    <string name="mode_summary">Tu ustawisz szczegóły budzika</string>
+    <string name="delete_all">Wszystkie budziki usunięte!</string>
+    <string name="mode_select">Proszę wybierz profil</string>
+    <string name="snooze_select">Proszę wybierz długość drzemki</string>
+    <string name="sound_select">Proszę wybierz dźwięk</string>
+    <string name="sound_over">śpi</string>
+	<string name="noalarmset">brak nastawionych budzików</string>
+	<string name="alarms">Lista Budzików</string>
+	<string name="alarmtitle">B U D Z I K   K U J O N A</string>
+	<string name="alarmtext1">Bip Bip To Twój Budzik</string>
+	<string name="alarmtext2">Budzik Kujona</string>
+	<string name="repeatthat">Powtórz raz jeszcze</string>
+	<string name="selectdays">Wybierz dni</string>
+	<string name="done">Zrobione</string>
+	<string name="info">Informacja</string>
+	<string name="stop">Stop</string>
+	<string name="nerd_cough">kaszel</string>
+	<string name="angry_cough">wrrr</string>
+	<string name="happy_cough">uuu la la</string>
+	<string name="repeat">Powtarznie Budzika</string>
+    <string name="repeat_2">Zestaw Bez Powtarzania</string>
+	<string name="norepeatset">Zestaw Bez Powtarzania</string>
+	<string name="monday">Pon</string>
+	<string name="tuesday">Wt</string>
+	<string name="wednesday">Śr</string>
+	<string name="thursday">Czw</string>
+	<string name="friday">Pt</string>
+	<string name="saturday">Sob</string>
+	<string name="sunday">Ndz</string>
+	<string name="weekdays">Dni pracujące</string>
+	<string name="everyday">Każdego dnia - Nie ma wytchnienia dla Ciebie!</string>
+	<string name="alarm_enabled">Budzik włączy się za</string>
+	<string name="alarm_disabled">Budzik jest już wyłączony</string>
+	<string name="alarm_updated">Budzik jest już uaktualniony</string>
+	<string name="alarm_update_failed">Uaktualnienie Budzika się nie powiodło</string>
+	<string name="testme_title">Test dla Ciebie</string>
+	<string name="ok">Dobra</string>
+	<string name="testme_ok">Zdałeś!</string>
+	<string name="testme_move_on">Dobra, następne</string>
+	<string name="testme_incorrect">Coś nie tak - Spróbuj jeszcze raz</string>
+	<string name="alarm_days">dni i</string>
+	<string name="alarm_minutes">minuty</string>
+	<string name="alarm_hours">godziny i</string>
+	<string name="mode_default">Króliczek</string>
+	<string name="alarm_category">Szczegóły Budzika</string>
+	<string name="alarm_greeting">Powitanie Budzika</string>
+	<string name="greeting_summary">To będzie zawarte w gadającym budziku</string>
+	<string name="alarm_vibrate">Wibracja</string>
+	<string name="vibrate_summary">Budzik będzie wibrował przy włączeniu</string>
+	<string name="snooze_summary">Jak długo będzie budzik drzemał</string>
+	<string name="alarm_ringtone">dźwięk budzika</string>
+	<string name="ringtone_summary">Jakie dźwięki będzie robił budzik</string>
+	<string name="nerd_summary">Ta funkcja sprawdzi lokalną prognozę pogody i wyświetli aktualną informację</string>
+	<string name="err_greeting">ups! Wystąpił błąd!</string>	
+	<string name="temp">stopnie Celsiusza</string>
+	<string name="bunny_greeting">hmmmmmmm</string>
+	<string name="nerd_greeting">Kujon mówi cześć</string>
+	<string name="nuclear_greeting">Wyłaź!, Wyłaź! Zejdź! Wstawaj! Streszczaj się</string>
+	<string name="ninja_greeting">Jestem cichy ale śmiertelny</string>
+	<string name="andy_greeting">Co robisz?</string>
+	<string name="helen_greeting">Oh ach ach, jesteś fantastyczny!</string>
+	<string name="info_header">Informacja o Preferencjach</string>
+	<string name="mode_info_bunny">Profil Króliczek to lekki budzik. Zaczyna się wcześniej niż w planie ale delikatnie.</string>
+	<string name="mode_info_nerd">Kujon zapewnia pewne ciekawe fakty i opinie.</string>
+	<string name="mode_info_nuclear">Nuklearny jest najgłośniejszy, gdy zdecydowanie musisz usłyszeć budzik.</string>
+	<string name="mode_info_ninja">Nindża. Ultra dyskretny. Bez dźwięku, Bez gadania, Bez odblokowania. Szybka wibracja.</string>
+	<string name="mode_info_angry">Profil Rozzłoszczony nie lubi alarmów.</string>
+	<string name="mode_info_happy">Profil Szczęśliwy dostarcza więcej pozytywów do Twego życia.</string>
+	<string name="pref_warning">UWAGA : Zauważ, że kujonowe okienko wyboru podłączy Cię do internetu. Ta funkcja włączy się automatycznie w profilu Kujona.</string>
+	<string name="pref_warning_two">Głośność jest zrestartowana do poprzedniego poziomu po skończeniu budzenia. Prawie wszystkie profile polegają na gadaniu dla uzyskania pełnych rezultatów.</string>
+	
+<string-array name="nerd_array">
+	<item>Meduza w dziewięćdziesięciu procentach składa się z wody!</item>
+	<item>Mona Lisa nie ma brwi. W renesansowej Florencji modą było ich kompletne golenie! Brzydka jest</item>
+	<item>W USA jest ponad pięćdziesiąt milionów psów! Znaczy się zwierzęcych psów.</item>
+	<item>Wiatraki zawsze kręcą się przeciwnie do ruchu wskazówek zegara. Z wyjątkiem wiatraków w Irlandii!... Irlandzkie dziwaki!</item>
+	<item>Recykling jednego szklanego słoika, oszczędza wystarczająco dużo energii by oglądać telewizję przez trzy godziny. Alternatywnie, przestać oglądać telewizję</item>
+	<item>Ponad dziesięć tysięcy ptaków rocznie umiera od wpadania na okna. Zakażmy okien</item>
+	<item>Mężczyźni są o sześć razy bardziej narażeni na porażenie piorunem niż kobiety!. To dlatego, że oni chcą być porażeni.</item>
+	<item>W roku dwutysięcznym , Papież Jan Paweł Drugi został nazwany Honorowym Globtroterem Harlemu. Był najlepszym.</item>
+	<item>Ludzkie zęby są prawie tak samo twarde jak kamienie. Zagrajmy w papier, nożyce, zęby!</item>
+	<item>Każdego dnia dwadzieścia banków jest obrabowane. Średnio zabrane jest dwa i pół tysiąca dola</item>
+</string-array>
+<string-array name="helen_array">
+	<item>Jesteś wspaniały.</item>
+	<item>Dobrze wyglądasz.</item>
+	<item>Myślę, że jesteś najlepszy.</item>
+	<item>Dzisiaj będzie cudowne ponieważ tutaj jesteś.</item>
+	<item>Jesteś niewyobrażalnie seksi.</item>
+	<item>Głosowałbym na Ciebie na Prezydenta.</item>
+	<item>O nic się nie martw, jesteś super zdolny.</item>
+	<item>Jesteś tak gorący, że można by na tobie smażyć jajka.</item>
+	<item>Cholera! Wyglądasz coraz lepiej!</item>
+	<item>Domowe przedszkole wszystkie dzieci kocha i chce byśmy także kochali je trochę, domowe przedszkole czy słońce czy deszcz przyjść może do Ciebie jeśli tylko chcesz.</item>
+</string-array>
+<string-array name="andy_array">
+	<item>Trzęsę cebulę nad Twoją głową ... i wciskam swój palec w twój noc.</item>
+	<item>Twój pokój śmierdzi jak Twoje pachy.</item>
+	<item>Macham śmierdzącą skarpetą przy Twojej twarzy i kaszle w Twoim kierunku.</item>
+	<item>Schowałem Twoje buty, nigdy ich nie znajdziesz.</item>
+	<item>Twoja szczoteczka do zębów jest teraz w toalecie. Jestem przeszczęśliwy z tego powodu.</item>
+	<item>Masz głupi telefon, ale niektórzy powiadają : jaki telefon, taki właściciel.</item>
+	<item>Nie możesz mnie wciąż ignorować. Zwymiotuję w Twoje buty i usiądę na Twoim kocie.</item>
+	<item>Zużywam baterię w Twoim telefonie, wkrótce, będę panem Twojego świata bła hahahahaha haha</item>
+	<item>Jesteś uparty jak wół. I masz dziwne upodobania muzyczne. Ale lubię Cię.</item>
+	<item>Poddaję się. Ignorujesz wszystko co mówię. Ten związek nie działa. Aaaaaaaaaaaaahhhhh. Wstawaj!</item>
+</string-array>
+<string-array name="modes_array">
+	<item>Króliczek</item>
+	<item>Kujon</item>
+	<item>Nuklearny</item>
+	<item>Nindża</item>
+	<item>Rozzłoszczony Budzik</item>
+	<item>Szczęśliwy</item>
+</string-array>
+<string-array name="modes_codes">
+	<item>0</item>
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>
+	<item>4</item>
+	<item>5</item>
+</string-array>
+<string-array name="days_array">
+	<item>Powtórz</item>
+	<item>Poniedziałek</item>
+	<item>Wtorek</item>
+	<item>Środa</item>
+	<item>Czwartek</item>
+	<item>Piątek</item>
+	<item>Sobota</item>
+	<item>Niedziela</item>
+</string-array>
+<string-array name="snooze_array">
+	<item>0 min - już przestań!</item>
+	<item>5 min</item>
+	<item>10 min</item>
+	<item>15 min</item>
+	<item>20 min</item>
+	<item>30 min</item>
+</string-array>
+<string-array name="snooze_codes">
+	<item>0</item>
+	<item>5</item>
+	<item>10</item>
+	<item>15</item>
+	<item>20</item>
+	<item>30</item>
+</string-array>
+<string-array name="testme_array">
+	<item>Obudziłeś się?? - Proszę napisz "tak"</item>
+	<item>Obudziłeś się?? - Proszę napisz "ziew"</item>
+	<item>Obudziłeś się?? - Proszę napisz "drzemka"</item>
+	<item>Obudziłeś się?? - Proszę napisz ":("</item>
+	<item>Obudziłeś się?? - Proszę napisz "jużtak"</item>
+	<item>Zasługujesz na więcej odpoczynku</item>
+	<item>Wyglądasz na zmęczonego, - po prostu wciśnij Dobra</item>
+</string-array>
+<string-array name="testme_answers">
+	<item>tak</item>
+	<item>ziew</item>
+	<item>drzemka</item>
+	<item>:(</item>
+	<item>jużtak</item>
+	<item>dobra</item>
+	<item>dobra</item>
+</string-array>
+</resources>
