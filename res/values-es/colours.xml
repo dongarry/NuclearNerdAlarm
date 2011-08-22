@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<color name="forest_green">#228b22</color>
+<color name="dark_orange">#ff8c00</color>
+<color name="black">#000000</color>
+<color name="firebrick">#b22222</color>
+<color name="royal_blue">#4169e1</color>
+<color name="medium_orchid">#ba55d3</color>
+<color name="default_text">#000f00</color>
+</resources>

@@ -1,5 +1,7 @@
 package com.nerd.alarm;
 
+import java.io.IOException;
+
 import android.app.Activity;
 
 import android.app.KeyguardManager;
@@ -186,8 +188,11 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     	}
     
     
-    public void handleSpeak(View view) {
+    public void handleSpeak(View view) throws IllegalStateException, IOException {
+    									// Let's lower the alarm volume on repeat..
+    									oAlarm.setMediaVolume(true);
     									saySomething();
+    									//oAlarm.setMediaVolume(false);
     									}
     
     
@@ -196,7 +201,7 @@ public class AlarmActivity extends Activity implements TextToSpeech.OnInitListen
     									}
     
     private void saySomething() {
-    	textToSpeech.speak(oAlarm.getAlarmGreeting(), TextToSpeech.QUEUE_FLUSH, null);
+    	textToSpeech.speak(oAlarm.getSpeakGreeting(), TextToSpeech.QUEUE_FLUSH, null);
         textToSpeech.speak(oAlarm.getSpeakLine(), TextToSpeech.QUEUE_ADD, null);
         textToSpeech.speak(oAlarm.getSpeakNextLine(), TextToSpeech.QUEUE_ADD, null);        
     	}

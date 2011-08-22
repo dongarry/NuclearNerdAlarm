@@ -21,7 +21,7 @@ private Context context;
 		
 		this.setAlarmVolume(maxVolume);    	   	
     	
-		if (this.getAlarmCounter()>0){
+		if (this.getAlarmCounter()>=0){
 				this.setAlarmVolume(maxVolume-2);    	   	
 	        	this.setInterval(1);        	
 	      	   
@@ -29,7 +29,7 @@ private Context context;
 	        	String[] facts=context.getResources().getStringArray(R.array.nerd_array); 
 	    	    this.setSpeakNextLine(facts[nerdFact]);
 	        	
-	        	if (this.getAlarmCounter()==1){this.setSpeakNextLine(context.getResources().getString(R.string.nerd_cough)+ "...");}
+	        	if (this.getAlarmCounter()==1){this.setSpeakLine(context.getResources().getString(R.string.nerd_cough)+ "...");}
 	    	    if (this.getAlarmCounter()>6){this.setInterval(0);} 
 	 		 }
 		

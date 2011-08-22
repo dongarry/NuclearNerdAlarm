@@ -217,13 +217,18 @@ public final class R {
         public static final int MyDefaultPrefAppearance=0x7f060006;
         /**  Override properties in the default theme 
  NOTE: you must explicitly the windowTitleSize property, the title bar will not re-size automatically, text will be clipped 
+ Override properties in the default theme 
+ NOTE: you must explicitly the windowTitleSize property, the title bar will not re-size automatically, text will be clipped 
          */
         public static final int NuclearTheme=0x7f060003;
         /**  Set the theme for the window title 
  NOTE: setting android:textAppearence to style defined above 
+ Set the theme for the window title 
+ NOTE: setting android:textAppearence to style defined above 
          */
         public static final int NuclearWindowTitle=0x7f060002;
         /**  Changes the background color of the title bar 
+ Changes the background color of the title bar 
          */
         public static final int NuclearWindowTitleBackground=0x7f060001;
         public static final int NuclearWindowTitleText=0x7f060000;

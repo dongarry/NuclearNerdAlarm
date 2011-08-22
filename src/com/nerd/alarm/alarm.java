@@ -66,8 +66,9 @@ public class Alarm {
 	private int vibrate;
 	private int snooze;
 	private int nerd;
-	private String gap = "   ";
-	private String greeting="..";
+	private String gap = ". ";
+	private String greeting;
+	private String talkgreeting="..";
 	private String talk1="..";
 	private String talk2="..";
 	private String sound;
@@ -134,7 +135,16 @@ public class Alarm {
 	
 	public String getSpeakNextLine() {return talk2;}
 	public void setSpeakNextLine(String newValue) {
-		if (newValue!=null){talk2 = newValue;}
+		if (newValue!=null){talk2 =newValue + gap;}
+		}
+	
+	public String getSpeakGreeting() {
+		String returnString=talkgreeting;
+		if (nerdSummary!=null) {returnString=talkgreeting + gap + nerdSummary + gap;}
+		return returnString;}
+	
+	public void setSpeakGreeting(String newValue) {
+		if (newValue!=null){talkgreeting =newValue + gap;}
 		}
 
 	public void setInterval(long newValue) {interval = newValue;}
@@ -150,8 +160,8 @@ public class Alarm {
 	
 	public String getAlarmGreeting() {
 		String returnString=gap;
-		if (greeting!=null) {returnString=greeting + gap;}
-		if (nerdSummary!=null) {returnString=greeting + gap + nerdSummary;}
+		if (greeting!=null) {returnString=greeting;}
+		//if (nerdSummary!=null) {returnString=greeting + gap + nerdSummary + gap;}
 		return returnString; 
 	}
 	
@@ -285,6 +295,17 @@ public class Alarm {
 		db.close();  
 	}
 	
+	public void setMediaVolume(boolean bolLow)
+	{
+		// Reset Volume
+   	    if (mp != null) {
+   	    	if (bolLow) {
+   	            mp.setVolume((float)(0.1), (float)(0.1));
+   	        	}
+   	    	else
+   	    		mp.setVolume(1, 1);
+   	    	}  	    	
+	}
 	
     public void mediaPlay() throws IllegalStateException, IOException
     {	
@@ -380,8 +401,8 @@ public class Alarm {
 	    				}
 	    	
 	    	// Overwrite greeting with Title after initial run
- 	        if(counter==0){greeting=greeting + gap + alarmTitle;}
- 	        else greeting=alarmTitle;
+ 	        if(counter==0){talkgreeting= greeting + gap + alarmTitle;}
+ 	        else talkgreeting=alarmTitle;
  	        
 	    	bolReturn=true;
 	    	
